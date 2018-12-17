@@ -79,3 +79,16 @@ h5 {
   top: 0;
   left: 0;
 }
+.newDot {
+  cursor: pointer;
+}
+.oldDot {
+  cursor: pointer;
+  pointer-events: none;
+}
+.minuteMark {
+  font-family: stratum-medium;
+  fill: white;
+  text-anchor: end;
+  font-size: 18px;
+}
