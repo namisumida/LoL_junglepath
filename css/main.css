@@ -1,0 +1,81 @@
+@font-face {
+  font-family: radnika-black;
+  src: url("fonts/Radnika-Black.otf");
+}
+@font-face {
+  font-family: radnika-bold;
+  src: url("fonts/Radnika-Bold.otf");
+}
+@font-face {
+  font-family: radnika-regular;
+  src: url("fonts/Radnika-Regular.otf");
+}
+@font-face {
+  font-family: radnika-medium;
+  src: url("fonts/Radnika-Medium.otf");
+}
+@font-face {
+  font-family: stratum-medium;
+  src: url("fonts/Stratum2-Medium.otf");
+}
+@font-face {
+  font-family: stratum-regular;
+  src: url("fonts/Stratum2-Regular.otf");
+}
+body,html {
+  margin: 0 auto;
+}
+#title {
+  position: relative;
+  margin: 0 auto;
+  width: 515px;
+  margin-top: 30px;
+  border-bottom: 1px solid black;
+}
+h1 {
+  font-family: radnika-black;
+  font-size: 30px;
+  text-align: center;
+  margin: 0;
+}
+h3 {
+  font-family: radnika-medium;
+  font-size: 14px;
+}
+p {
+  font-family: radnika-regular;
+  font-size: 13px;
+}
+h5 {
+  margin: 8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  color: rgb(79,39,79);
+  font-family: radnika-regular;
+}
+#options {
+  position: relative;
+  margin: 0 auto;
+  width: 515px;
+}
+#graphic {
+  width: 100%;
+  position: relative;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+.img-overlay-container {
+  position: relative;
+  width: 512px;
+  margin: 0 auto;
+}
+.img-overlay-container img { /* <= optional, for responsiveness */
+   display: block;
+   max-width: 100%;
+   height: auto;
+}
+.img-overlay-container svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
