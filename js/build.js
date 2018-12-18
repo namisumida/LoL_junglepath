@@ -47,7 +47,7 @@ var lightRed = d3.rgb(227,128,115);
 var demblue = d3.rgb(69,106,131);
 
 var dataset, posList, dataset_positions, array_priorXY, minuteCount;
-d3.csv('../Data/compData.csv', rowConverterInput, function(data) {
+d3.csv('Data/compData.csv', rowConverterInput, function(data) {
   dataset = data; // save to variable
   array_priorXY = [];
   minuteCount = 2;
