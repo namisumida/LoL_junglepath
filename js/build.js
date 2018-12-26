@@ -1,18 +1,4 @@
 ////////////////////////////////////////////////////////////////////////////////////
-function rowConverterOutput(d) { // can delete eventually
-  return {
-    matchId: parseInt(d.matchId),
-    pos: parseInt(d.pos),
-    position2: d.position2,
-    position3: d.position3,
-    position4: d.position4,
-    distance2: d.distance2,
-    distance3: d.distance3,
-    x_position4: parseInt(d.x_position4),
-    y_position4: parseInt(d.y_position4)
-
-  }
-}; // end rowConverter
 function rowConverterInput(d) {
   return {
     matchId: parseInt(d.matchId),
@@ -20,7 +6,6 @@ function rowConverterInput(d) {
     pos: d.pos,
     distance: d.distance,
     difference: d.difference
-
   }
 }; // end rowConverter
 
@@ -38,15 +23,101 @@ var xScale_Xpos = d3.scaleLinear() // x scale that converts a X coord to positio
                     .domain([0, w_map])
                     .range([0,14700]);
 var yScale_posY = d3.scaleLinear()
-                    .domain([0,14600])
+                    .domain([0,14700])
                     .range([h_map,0]);
 var yScale_Ypos = d3.scaleLinear()
                     .domain([h_map,0])
-                    .range([0,14600]);
+                    .range([0,14700]);
 var lightRed = d3.rgb(227,128,115);
 var demblue = d3.rgb(69,106,131);
 
-var dataset, posList, dataset_positions, array_priorXY, minuteCount;
+function getHeatmapData(data, radius, minute) {
+  var numBuckets = Math.floor(w_map/radius); // number of entries in a row
+  var counts = Array(numBuckets*numBuckets).fill(0); // set up an array that counts the number of points that fall into each bucket with all the buckets filled in with 0
+  for (var i=0; i<data.length; i++) { // for every row in data
+    var row = data[i]; // pull out the row we're looking at
+    var xBucket = Math.floor(xScale_posX(row[(minute-1)][0])/radius); // find which xBucket it would be in
+    var yBucket = Math.floor(yScale_posY(row[(minute-1)][1])/radius); // find which yBucket it would be in
+    var bucket = xBucket + yBucket*numBuckets; // based on which bucket it's in, find the index in the counts array
+    counts[bucket] = counts[bucket]+1; // add into counts array
+  }
+  var dataset_output = []; // set up the dataset that needs to go into heatmap setData
+  for (var j=0; j<counts.length; j++) { // for every bucket in counts array
+    // now need to work "backwards" and assign x y coordinates to buckets
+    var colIndex = Math.floor(j / numBuckets);
+    var rowIndex = j % numBuckets;
+    dataset_output.push({x: rowIndex*radius+Math.floor(radius/2), y: colIndex*radius+Math.floor(radius/2), value: counts[j]}) // what needs to go into heatmap setData
+    // added radius/2 to center it in the bucket square
+  }
+  return {max: d3.max(dataset_output, function(d) { return d.value; }),
+          min: d3.min(dataset_output, function(d) { return d.value; }),
+          data: dataset_output};
+}; // end getHeatmapData function
+
+function init() {
+  // Minute mark
+  var minuteMark = svg.append("text")
+                      .text("Minute "+minuteCount)
+                      .attr("class", "minuteMark")
+                      .attr("x", w_map-5)
+                      .attr("y", h_map-5);
+
+  // Plot initial points - all 2nd minute positions
+  var dots = svg.selectAll("dot")
+                   .data(dataset_positions)
+                   .enter()
+                   .append("circle")
+                   .attr("class", "dot")
+                   .attr("cx", function(d) {
+                     return xScale_posX(d[1][0])
+                   })
+                   .attr("cy", function(d) {
+                     return yScale_posY(d[1][1])
+                   })
+                   .attr("r", 4)
+                   .style("opacity", 0.5)
+                   .style("fill", "white")
+                   .on("mouseover", function(d) {
+                     d3.select(this).style("opacity", 1);
+                   })
+                   .on("mouseout", function() {
+                     dots.style("opacity", 0.5);
+                   })
+                   .on("click", function() {
+                      var x = d3.select(this).attr("cx");
+                      var y = d3.select(this).attr("cy");
+                      onClickFunction(x,y);
+                   });
+
+  // Create heatmap instance
+  // create configuration object
+  var heatmap_config = {
+    container: document.getElementById('heatmap-container'),
+    radius: 20,
+    maxOpacity: 1,
+    minOpacity: 0,
+    blur: .7
+  };
+  // create heatmap with configuration
+  heatmapInstance = h337.create(heatmap_config);
+  dataset_heatmap = getHeatmapData(dataset_positions, 15, 2);
+
+  // interactivity
+  d3.select("#button-dots").on("click", function() {
+    updateButton(d3.select(this));
+    svg.selectAll(".dot").style("fill", "white"); // show dots
+    heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
+  }); // end sorting changes
+  d3.select("#button-heatmap").on("click", function() {
+    updateButton(d3.select(this));
+    svg.selectAll(".dot").style("fill", "none"); // hide dots
+    heatmapInstance.setData(dataset_heatmap); // show heatmap
+  }); // end sorting changes
+}; // end init
+
+////////////////////////////////////////////////////////////////////////////////////
+// Get data and run
+var dataset, posList, dataset_positions, array_priorXY, minuteCount, heatmapInstance, dataset_heatmap;
 d3.csv('Data/compData.csv', rowConverterInput, function(data) {
   dataset = data; // save to variable
   array_priorXY = [];
@@ -65,131 +136,6 @@ d3.csv('Data/compData.csv', rowConverterInput, function(data) {
     dataset_positions.push(rowList);
   })
 
-  // Minute mark
-  var minuteMark = svg.append("text")
-                      .text("Minute "+minuteCount)
-                      .attr("class", "minuteMark")
-                      .attr("x", w_map-5)
-                      .attr("y", h_map-5);
-
-  // Plot initial points - all 2nd minute positions
-  var newDot = svg.selectAll("newDot")
-                   .data(dataset_positions)
-                   .enter()
-                   .append("circle")
-                   .attr("class", "newDot")
-                   .attr("cx", function(d) {
-                     return xScale_posX(d[1][0])
-                   })
-                   .attr("cy", function(d) {
-                     return yScale_posY(d[1][1])
-                   })
-                   .attr("r", 4)
-                   .style("opacity", 0.5)
-                   .style("fill", "white")
-                   .on("mouseover", function(d) {
-                     d3.select(this).style("opacity", 1);
-                   })
-                   .on("mouseout", function() {
-                     newDot.style("opacity", 0.5);
-                   })
-                   .on("click", function() {
-                      var x = d3.select(this).attr("cx");
-                      var y = d3.select(this).attr("cy");
-                      onClickFunction(x,y);
-                   });
+  init();
 
 }); // end d3.csv
-
-////////////////////////////////////////////////////////////////////////////////////
-// Plotting points
-function plotNewPoints(array_priorXY, array_newPos, minuteCount) { // plot any additional sets of points
-  // Plot the new positions
-  var newDot = svg.selectAll(".newDot")
-                  .data(array_newPos);
-  newDot.exit().remove();
-  var newDot_enter = newDot.enter()
-                           .append("circle")
-                           .attr("class", "newDot")
-                           .attr("cx", function(d) {
-                             return xScale_posX(d[(minuteCount-1)][0])
-                           })
-                           .attr("cy", function(d) {
-                             return yScale_posY(d[(minuteCount-1)][1])
-                           })
-                           .attr("r", 4);
-  newDot = newDot.merge(newDot_enter); // merge in the entered dots
-  newDot.attr("cx", function(d) {
-           return xScale_posX(d[(minuteCount-1)][0])
-         })
-         .attr("cy", function(d) {
-           return yScale_posY(d[(minuteCount-1)][1])
-         })
-         .style("opacity", 0.5)
-         .style("fill", "white")
-         .on("mouseover", function(d) {
-           d3.select(this).style("opacity", 1);
-         })
-         .on("mouseout", function() {
-           newDot.style("opacity", 0.5);
-         })
-         .on("click", function() {
-            var x = d3.select(this).attr("cx");
-            var y = d3.select(this).attr("cy");
-            onClickFunction(x,y);
-         });
-
-  // Plot the old positions (that were clicked on)
-  var oldDot = svg.selectAll(".oldDot")
-                  .data(array_priorXY);
-  oldDot.exit().remove(); // remove the points that weren't clicked on
-  var oldDot_enter = oldDot.enter() // enter new dots
-                           .append("circle")
-                           .attr("class", "oldDot")
-                           .attr("cx", function(d) {
-                             return d[0]; // don't need to use xScale because it's based off of clicked positions
-                           })
-                           .attr("cy", function(d) {
-                             return d[1];
-                           })
-                           .attr("r", 4);
-  oldDot = oldDot.merge(oldDot_enter); // merge in the entered dots
-  oldDot.attr("cx", function(d) {
-           return d[0];
-         })
-         .attr("cy", function(d) {
-           return d[1];
-         })
-         .style("opacity", 1)
-         .style("fill", lightRed);
-
-}; // end plot new points
-
-////////////////////////////////////////////////////////////////////////////////////
-// Interactivity with clicking
-function onClickFunction(xCoord, yCoord) {
-  array_priorXY.push([xCoord, yCoord]); // Add clicked position to array_priorPos
-
-  // Get new paths/positions
-  // var array_newPos = definePath(clickXY);
-  var array_newPos = dataset_positions;
-
-  // Change minute count and text
-  minuteCount++;
-  svg.select(".minuteMark").text("Minute " + minuteCount);
-  plotNewPoints(array_priorXY, array_newPos, minuteCount);
-}
-
-/*function findClickPos(event) { // function to find x y coords of clicked position
-  var adjustedX = event.clientX - x_map;
-  var adjustedY = event.clientY - y_map;
-  return [adjustedX, adjustedY];
-}; // end findClickPos*/
-
-////////////////////////////////////////////////////////////////////////////////////
-// Function to predict a path
-function definePath(clickXY) {
-  // first convert the XY coordinate from the clicked location to
-  xPos = xScale_Xpos(clickXY[0])
-  yPos = yScale_Ypos(clickXY[1])
-}; // end definePath

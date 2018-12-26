@@ -14,16 +14,21 @@
 		<h3 id="subtitle-text">Subtitle</h3>
 		<p id="instructions">Instructions</p>
 	</section>
-	<section id="options"></section>
+	<section id="options">
+		<button type="button" id="button-dots" value="dots">Individual positions</button>
+		<button type="button" id="button-heatmap" value="heatmap">Heat map</button>
+	</section>
 	<section id="graphic">
 		<div class="img-overlay-container">
-			<img src="css/SRFull.png">
+			<div id="heatmap-container"></div>
+			<img src="css/SRFull.png"></img>
 			<svg id="graphic-svg" width="100%" height="100%"></svg>
 		</div>
 	</section>
 
-  <script src="https://d3js.org/d3.v4.min.js"></script>
-	<script type="text/python3" src="python/predictPaths.py"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+	<script type="text/javascript" src="js/heatmap.min.js"></script>
+	<script src="js/updates.js"></script>
 	<script src="js/build.js"></script>
 
 </body>
