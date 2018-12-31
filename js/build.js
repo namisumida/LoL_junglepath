@@ -1,21 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////////
-function rowConverterInput(d) {
-  return {
-    matchId: parseInt(d.matchId),
-    participantId: parseInt(d.participantId),
-    pos: d.pos,
-    distance: d.distance,
-    difference: d.difference
-  }
-}; // end rowConverter
-
 var w_graphic = document.getElementById("graphic").getBoundingClientRect().width;
 var h_graphic = document.getElementById("graphic").getBoundingClientRect().height;
 var svg = d3.select("#graphic-svg");
 var w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
 var h_map = document.getElementById("graphic-svg").getBoundingClientRect().height;
-var x_map = document.getElementById("graphic-svg").getBoundingClientRect().left;
-var y_map = document.getElementById("graphic-svg").getBoundingClientRect().top;
 var xScale_posX = d3.scaleLinear() // x scale that converts a position to X coord
                     .domain([0,14700])
                     .range([0, w_map]); // svg/map doesn't start at 0 since centered
@@ -30,7 +18,10 @@ var yScale_Ypos = d3.scaleLinear()
                     .range([0,14700]);
 var lightRed = d3.rgb(227,128,115);
 var demblue = d3.rgb(69,106,131);
+var dataset, posList, dataset_positions, array_priorXY, minuteCount, heatmap_config, heatmapInstance, dataset_heatmap;
 
+////////////////////////////////////////////////////////////////////////////////////
+// Helper functions
 function getHeatmapData(data, radius, minute) {
   var numBuckets = Math.floor(w_map/radius); // number of entries in a row
   var counts = Array(numBuckets*numBuckets).fill(0); // set up an array that counts the number of points that fall into each bucket with all the buckets filled in with 0
@@ -54,7 +45,7 @@ function getHeatmapData(data, radius, minute) {
           data: dataset_output};
 }; // end getHeatmapData function
 
-function init() {
+function setup() {
   // Minute mark
   var minuteMark = svg.append("text")
                       .text("Minute "+minuteCount)
@@ -64,60 +55,110 @@ function init() {
 
   // Plot initial points - all 2nd minute positions
   var dots = svg.selectAll("dot")
-                   .data(dataset_positions)
-                   .enter()
-                   .append("circle")
-                   .attr("class", "dot")
-                   .attr("cx", function(d) {
-                     return xScale_posX(d[1][0])
-                   })
-                   .attr("cy", function(d) {
-                     return yScale_posY(d[1][1])
-                   })
-                   .attr("r", 4)
-                   .style("opacity", 0.5)
-                   .style("fill", "white")
-                   .on("mouseover", function(d) {
-                     d3.select(this).style("opacity", 1);
-                   })
-                   .on("mouseout", function() {
-                     dots.style("opacity", 0.5);
-                   })
-                   .on("click", function() {
-                      var x = d3.select(this).attr("cx");
-                      var y = d3.select(this).attr("cy");
-                      onClickFunction(x,y);
-                   });
+                 .data(dataset_positions)
+                 .enter()
+                 .append("circle")
+                 .attr("class", "dot")
+                 .attr("cx", function(d) {
+                   return xScale_posX(d[1][0])
+                 })
+                 .attr("cy", function(d) {
+                   return yScale_posY(d[1][1])
+                 })
+                 .attr("r", 4)
+                 .style("opacity", 0.5)
+                 .style("fill", "white")
+                 .on("mouseover", function(d) {
+                   d3.select(this).style("opacity", 1);
+                 })
+                 .on("mouseout", function() {
+                   dots.style("opacity", 0.5);
+                 })
+                 .on("click", function() {
+                    var x = d3.select(this).attr("cx");
+                    var y = d3.select(this).attr("cy");
+                    onClickFunction(x,y);
+                 });
 
   // Create heatmap instance
-  // create configuration object
-  var heatmap_config = {
-    container: document.getElementById('heatmap-container'),
+  heatmapInstance = h337.create({
+    container: document.getElementById("heatmap-container"),
     radius: 20,
     maxOpacity: 1,
     minOpacity: 0,
     blur: .7
-  };
-  // create heatmap with configuration
-  heatmapInstance = h337.create(heatmap_config);
+  });
   dataset_heatmap = getHeatmapData(dataset_positions, 15, 2);
+}; // end setup
 
-  // interactivity
-  d3.select("#button-dots").on("click", function() {
-    updateButton(d3.select(this));
-    svg.selectAll(".dot").style("fill", "white"); // show dots
-    heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
-  }); // end sorting changes
-  d3.select("#button-heatmap").on("click", function() {
-    updateButton(d3.select(this));
-    svg.selectAll(".dot").style("fill", "none"); // hide dots
-    heatmapInstance.setData(dataset_heatmap); // show heatmap
-  }); // end sorting changes
-}; // end init
+function resize() {
+  w_graphic = document.getElementById("graphic").getBoundingClientRect().width;
+  h_graphic = document.getElementById("graphic").getBoundingClientRect().height;
+  w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
+  h_map = document.getElementById("graphic-svg").getBoundingClientRect().height;
+  xScale_posX = d3.scaleLinear() // x scale that converts a position to X coord
+                  .domain([0,14700])
+                  .range([0, w_map]); // svg/map doesn't start at 0 since centered
+  xScale_Xpos = d3.scaleLinear() // x scale that converts a X coord to position (to be used in definePath)
+                  .domain([0, w_map])
+                  .range([0,14700]);
+  yScale_posY = d3.scaleLinear()
+                  .domain([0,14700])
+                  .range([h_map,0]);
+  yScale_Ypos = d3.scaleLinear()
+                  .domain([h_map,0])
+                  .range([0,14700]);
 
+  // Minute mark
+  svg.selectAll(".minuteMark")
+     .attr("x", w_map-5)
+     .attr("y", h_map-5);
+
+  // Plot initial points - all 2nd minute positions
+  svg.selectAll(".dot")
+     .attr("cx", function(d) {
+       return xScale_posX(d[1][0])
+     })
+     .attr("cy", function(d) {
+       return yScale_posY(d[1][1])
+     })
+     .on("click", function() {
+        var x = d3.select(this).attr("cx");
+        var y = d3.select(this).attr("cy");
+        onClickFunction(x,y);
+     });
+
+  // Heat map
+  heatmapInstance._renderer.canvas.remove(); // delete old one
+  /*heatmapInstance = h337.create({
+    container: document.getElementById("heatmap-container"),
+    radius: 20,
+    maxOpacity: 1,
+    minOpacity: 0,
+    blur: .7
+  });
+  var newHeight = heatmapInstance._renderer.canvas.width;
+  heatmapInstance._renderer.canvas.height = newHeight;
+  heatmapInstance._renderer.height = newHeight;
+  heatmapInstance._renderer.shadowCanvas.height = newHeight;*/
+}; // end resize
 ////////////////////////////////////////////////////////////////////////////////////
+// init function
+function init() {
+  setup();
+  window.addEventListener('resize', resize);
+}; // end init function
+
 // Get data and run
-var dataset, posList, dataset_positions, array_priorXY, minuteCount, heatmapInstance, dataset_heatmap;
+function rowConverterInput(d) {
+  return {
+    matchId: parseInt(d.matchId),
+    participantId: parseInt(d.participantId),
+    pos: d.pos,
+    distance: d.distance,
+    difference: d.difference
+  }
+}; // end rowConverter
 d3.csv('Data/compData.csv', rowConverterInput, function(data) {
   dataset = data; // save to variable
   array_priorXY = [];
@@ -137,5 +178,17 @@ d3.csv('Data/compData.csv', rowConverterInput, function(data) {
   })
 
   init();
+
+  // interactivity
+  d3.select("#button-dots").on("click", function() {
+    updateButton(d3.select(this));
+    svg.selectAll(".dot").style("fill", "white"); // show dots
+    heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
+  }); // end sorting changes
+  d3.select("#button-heatmap").on("click", function() {
+    updateButton(d3.select(this));
+    svg.selectAll(".dot").style("fill", "none"); // hide dots
+    heatmapInstance.setData(dataset_heatmap); // show heatmap
+  }); // end sorting changes
 
 }); // end d3.csv
