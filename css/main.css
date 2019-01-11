@@ -68,12 +68,9 @@ body,html {
   width: 100%;
   height: 100%;
 }
-.newDot {
-  cursor: pointer;
-}
-.oldDot {
-  cursor: pointer;
-  pointer-events: none;
+.nodesBlue {
+  fill: rgb(0, 109, 230);
+  opacity: 0.5;
 }
 .minuteMark {
   font-family: stratum-medium;
