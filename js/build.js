@@ -22,7 +22,7 @@ var red = d3.rgb(126,91,104);
 
 // Variables to store
 var currMinute, currNodeIndices, currTeam;
-var selectedNodes = [];
+var selectedNodes = [0];
 ////////////////////////////////////////////////////////////////////////////////////
 // Set up function
 function setup() {
@@ -34,7 +34,7 @@ function setup() {
      .attr("y", h_map-5);
   // Nodes - csv
   svg.selectAll("nodesBlue")
-     .data(dataset_bNodeList)
+     .data(currNodeIndices.map(i => dataset_bNodeList[i]))
      .enter()
      .append("circle")
      .attr("class", "nodes")
@@ -51,7 +51,7 @@ function setup() {
        else { return "none";}
      });
   svg.selectAll("nodesRed")
-     .data(dataset_rNodeList)
+     .data(currNodeIndices.map(i => dataset_rNodeList[i]))
      .enter()
      .append("circle")
      .attr("class", "nodes")
@@ -64,7 +64,81 @@ function setup() {
      })
      .attr("r", 20)
      .style("fill", "none");
+
+  svg.selectAll(".nodes")
+     .on("click", function() {
+       updateNodeClick(d3.select(this));
+     })
+     .on("mouseover", function() {
+       plotPositions(d3.select(this));
+       svg.select("#minuteMark").text("Minute "+ d3.min([currMinute+1,4], function(d) { return d; }) ); // change minute mark when hovered
+     })
+     .on("mouseout", function() {
+       svg.selectAll(".pathPoints").style("fill", "none");
+       svg.selectAll("#nodesBlue")
+          .style("fill", blue)
+       svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back
+     })
 }; // end setup
+
+// What happens when a node is clicked - need to update it every time a new node is added
+function updateNodeClick(currNode) {
+  // Update minute
+  currMinute = d3.min([currMinute+1, 4], function(d) { return d; }); // don't want it to be larger than 4
+  svg.select("#minuteMark").text("Minute " + currMinute);
+  // Find node indices
+  currNodeIndices = dataset_Lookup[currMinute-2].nodeIndices;
+  // Append selected node to list of selected nodes
+  selectedNodes.push(currNode.data()[0].index); // we only need the index because we only care about it as a parent index
+  // Update nodes
+  plotNewNodes(currNode.data()[0].index);
+}; // end updateNodeClick
+
+// Update nodes
+function plotNewNodes(parentIndex) {
+  // BLUE
+  var nodesBlue = svg.selectAll("#nodesBlue")
+                     .data(currNodeIndices.map(i => dataset_bNodeList[i]).filter(function(d) {
+                       return d.parent == parentIndex;
+                     }));
+  nodesBlue.exit().remove();
+  var nodesBlueEnter = nodesBlue.enter()
+                                .append("circle")
+                                .attr("class", "nodes")
+                                .attr("id", "nodesBlue")
+                                .attr("cx", function(d) {
+                                  return xScale_posX(d.pos[0]);
+                                })
+                                .attr("cy", function(d) {
+                                  return yScale_posY(d.pos[1]);
+                                })
+                                .attr("r", 20);
+  nodesBlue = nodesBlue.merge(nodesBlueEnter);
+  nodesBlue.attr("cx", function(d) {
+              return xScale_posX(d.pos[0]);
+            })
+            .attr("cy", function(d) {
+              return yScale_posY(d.pos[1]);
+            })
+            .attr("r", 20)
+            .style("fill", function() {
+              if (currTeam == "blue") { return blue; }
+              else { return "none"; }
+            })
+            .on("click", function() {
+              updateNodeClick(d3.select(this));
+            })
+            .on("mouseover", function() {
+              plotPositions(d3.select(this));
+              svg.select("#minuteMark").text("Minute "+ d3.min([currMinute+1,4], function(d) { return d; }) ); // change minute mark when hovered
+            })
+            .on("mouseout", function() {
+              svg.selectAll(".pathPoints").style("fill", "none");
+              svg.selectAll("#nodesBlue")
+                 .style("fill", blue)
+              svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back
+            })
+}; // end plotNewNodes
 
 // Plot path positions
 function plotPositions(currNode) {
@@ -105,39 +179,20 @@ function plotPositions(currNode) {
             .style("fill", "white");
 }; // end plotPositions
 
-// Update nodes
-function updateNodes(clickedNode) {
-  var currParentIndex = clickedNode.data()[0].index;
-  // BLUE
-  var nodesBlue = svg.selectAll("#nodesBlue")
-                     .data(currNodeIndices.map(i => dataset_bNodeList[i]).filter(function(d,i) {
-                       return d.parent == currParentIndex;
-                     }))
-  nodesBlue.exit().remove();
-  var nodesBlueEnter = svg.enter()
-                          .append("circle")
-                          .attr("class", "nodes")
-                          .attr("id", "nodesBlue")
-                          .attr("cx", function(d) {
-                            return xScale_posX(d.pos[0]);
-                          })
-                          .attr("cy", function(d) {
-                            return yScale_posY(d.pos[1]);
-                          })
-                          .attr("r", 20);
-  nodesBlue = nodesBlue.merge(nodesBlueEnter);
-  nodesBlue.attr("cx", function(d) {
-              return xScale_posX(d.pos[0]);
-            })
-            .attr("cy", function(d) {
-              return yScale_posY(d.pos[1]);
-            })
-            .attr("r", 20)
-            .style("fill", function() {
-              if (currTeam == "blue") { return blue; }
-              else { return "none"; }
-            });
-}; // end updateNodes
+// Function for when the back button is clicked: remove most recently selected node and replot nodes
+function backClick() {
+  // Update minute
+  currMinute = d3.max([currMinute-1, 2], function(d) { return d; }); // don't want it to be smaller than 2
+  svg.select("#minuteMark").text("Minute " + currMinute);
+
+  currNodeIndices = dataset_Lookup[currMinute-2].nodeIndices; // update currNodeIndices
+  // Update nodes
+  if ((selectedNodes.length) > 1) { // if it's not at Minute 2 (back to the beginning)
+    selectedNodes.pop(); // Remove the last node from list
+    plotNewNodes(selectedNodes[selectedNodes.length-1]); // plot new nodes
+  }
+  else { plotNewNodes(0); } // plot minute 2 nodes
+}; // end backClick
 
 // Init function
 function init() {
@@ -183,62 +238,9 @@ function init() {
       .style("color", d3.color("#a19da8"));
   }); // end on blue button select */
 
-  // Mouseover nodes to see possible positions
-  /*svg.selectAll(".nodes")
-     .on("mouseover", function() {
-       plotPositions(d3.select(this));
-       svg.select("#minuteMark").text("Minute "+(currMinute+1)); // change minute mark when hovered
-     })
-     .on("mouseout", function() {
-       svg.selectAll(".pathPoints").style("fill", "none");
-       if (currTeam == "blue") {
-         svg.selectAll("#nodesBlue")
-            .filter(function(d,i) { return currNodeIndices.includes(i); })
-            .style("fill", blue)
-       }
-       else {
-         svg.selectAll("#nodesRed")
-            .filter(function(d,i) { return currNodeIndices.includes(i); })
-            .style("fill", red)
-       }
-       svg.select("#minuteMark").text("Minute "+currMinute); // change minute mark back
-     })*/
-
-  // When a node is clicked
-  svg.selectAll(".nodes")
-     .on("click", function() {
-       var currNode = d3.select(this);
-       // Update minute
-       currMinute = currMinute + 1;
-       svg.select("#minuteMark").text("Minute " + currMinute);
-       // Find node indices
-       currNodeIndices = dataset_Lookup[currMinute-2].nodeIndices; 
-       // Append selected node to list of selected nodes
-       selectedNodes.push(currNode.data()[0].index);
-       // Update nodes
-       updateNodes(currNode);
-     });
-
   // When the back button is clicked
   d3.select("#button-back").on("click", function() {
-    // Update minute
-    currMinute = currMinute - 1;
-    svg.select("#minuteMark").text("Minute " + currMinute);
-
-    selectedNodes.pop(); // Remove the last node from list
-    currNodeIndices = dataset_Lookup[currMinute-2].nodeIndices; // update currNodeIndices
-    // Update nodes
-    if ((selectedNodes.length) == 0) { // if it's back to minute 2
-      svg.selectAll(".nodesBlue")
-         .style("fill", function(d,i) {
-           if (currNodeIndices.includes(i)) { return blue; }
-           else { return "none";}
-         });
-    }
-    else {
-      updateNodes(svg.selectAll(".nodesBlue").filter(function(d) { return d.index == selectedNodes[(selectedNodes.length-1)]; }))
-    }
-
+    backClick();
   })
 }; // end init function
 
@@ -249,7 +251,7 @@ function rowConverterNodes(d) {
   return {
     index: parseInt(d.index),
     pos: [parseInt(d.pos.split(",")[0].replace("[", "")), parseInt(d.pos.split(",")[1].replace("]", ""))],
-    parent: parseInt(d.parent),
+    parent: parseInt(d.parent.replace("", "0")),
     pathIndices: d.pathIndices.split(",").map(function(d) { return parseInt(d.replace("[","")); })
   }
 }; // end row converter nodes
