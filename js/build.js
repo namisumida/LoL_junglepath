@@ -50,21 +50,6 @@ function setup() {
        if (currNodeIndices.includes(i)) { return blue; }
        else { return "none";}
      });
-  svg.selectAll("nodesRed")
-     .data(currNodeIndices.map(i => dataset_rNodeList[i]))
-     .enter()
-     .append("circle")
-     .attr("class", "nodes")
-     .attr("id", "nodesRed")
-     .attr("cx", function(d) {
-        return xScale_posX(d.pos[0]);
-     })
-     .attr("cy", function(d) {
-        return yScale_posY(d.pos[1]);
-     })
-     .attr("r", 20)
-     .style("fill", "none");
-
   svg.selectAll(".nodes")
      .on("click", function() {
        updateNodeClick(d3.select(this));
@@ -87,25 +72,68 @@ function updateNodeClick(currNode) {
   currMinute = d3.min([currMinute+1, 4], function(d) { return d; }); // don't want it to be larger than 4
   svg.select("#minuteMark").text("Minute " + currMinute);
   // Find node indices
-  currNodeIndices = dataset_Lookup[currMinute-2].nodeIndices;
+  if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
+  else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
   // Append selected node to list of selected nodes
   selectedNodes.push(currNode.data()[0].index); // we only need the index because we only care about it as a parent index
   // Update nodes
   plotNewNodes(currNode.data()[0].index);
+  // Hide all the individual positions - it's annoying and lags/gets caught sometimes
+  svg.selectAll(".pathPoints").style("fill", "none");
 }; // end updateNodeClick
 
 // Update nodes
 function plotNewNodes(parentIndex) {
-  // BLUE
-  var nodesBlue = svg.selectAll("#nodesBlue")
-                     .data(currNodeIndices.map(i => dataset_bNodeList[i]).filter(function(d) {
-                       return d.parent == parentIndex;
-                     }));
-  nodesBlue.exit().remove();
-  var nodesBlueEnter = nodesBlue.enter()
+  if (currTeam == "blue") {  // BLUE
+    var nodesBlue = svg.selectAll(".nodes")
+                       .data(currNodeIndices.map(i => dataset_bNodeList[i]).filter(function(d) {
+                         return d.parent == parentIndex;
+                       }));
+    nodesBlue.exit().remove();
+    var nodesBlueEnter = nodesBlue.enter()
+                                  .append("circle")
+                                  .attr("class", "nodes")
+                                  .attr("id", "nodesBlue")
+                                  .attr("cx", function(d) {
+                                    return xScale_posX(d.pos[0]);
+                                  })
+                                  .attr("cy", function(d) {
+                                    return yScale_posY(d.pos[1]);
+                                  })
+                                  .attr("r", 20);
+    nodesBlue = nodesBlue.merge(nodesBlueEnter);
+    nodesBlue.attr("cx", function(d) {
+                return xScale_posX(d.pos[0]);
+              })
+              .attr("cy", function(d) {
+                return yScale_posY(d.pos[1]);
+              })
+              .attr("r", 20)
+              .style("fill", blue)
+              .on("click", function() {
+                updateNodeClick(d3.select(this));
+              })
+              .on("mouseover", function() {
+                plotPositions(d3.select(this));
+                svg.select("#minuteMark").text("Minute "+ d3.min([currMinute+1,4], function(d) { return d; }) ); // change minute mark when hovered
+              })
+              .on("mouseout", function() {
+                svg.selectAll(".pathPoints").style("fill", "none");
+                svg.selectAll(".nodes")
+                   .style("fill", blue)
+                svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back
+              })
+  } // end if blue statement
+  else { // RED
+    var nodesRed = svg.selectAll(".nodes")
+                       .data(currNodeIndices.map(i => dataset_rNodeList[i]).filter(function(d) {
+                         return d.parent == parentIndex;
+                       }));
+    nodesRed.exit().remove();
+    var nodesRedEnter = nodesRed.enter()
                                 .append("circle")
                                 .attr("class", "nodes")
-                                .attr("id", "nodesBlue")
+                                .attr("id", "nodesRed")
                                 .attr("cx", function(d) {
                                   return xScale_posX(d.pos[0]);
                                 })
@@ -113,18 +141,15 @@ function plotNewNodes(parentIndex) {
                                   return yScale_posY(d.pos[1]);
                                 })
                                 .attr("r", 20);
-  nodesBlue = nodesBlue.merge(nodesBlueEnter);
-  nodesBlue.attr("cx", function(d) {
+    nodesRed = nodesRed.merge(nodesRedEnter);
+    nodesRed.attr("cx", function(d) {
               return xScale_posX(d.pos[0]);
             })
             .attr("cy", function(d) {
               return yScale_posY(d.pos[1]);
             })
             .attr("r", 20)
-            .style("fill", function() {
-              if (currTeam == "blue") { return blue; }
-              else { return "none"; }
-            })
+            .style("fill", red)
             .on("click", function() {
               updateNodeClick(d3.select(this));
             })
@@ -134,10 +159,11 @@ function plotNewNodes(parentIndex) {
             })
             .on("mouseout", function() {
               svg.selectAll(".pathPoints").style("fill", "none");
-              svg.selectAll("#nodesBlue")
-                 .style("fill", blue)
+              svg.selectAll(".nodes")
+                 .style("fill", red)
               svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back
             })
+  }; // end else red
 }; // end plotNewNodes
 
 // Plot path positions
@@ -184,8 +210,9 @@ function backClick() {
   // Update minute
   currMinute = d3.max([currMinute-1, 2], function(d) { return d; }); // don't want it to be smaller than 2
   svg.select("#minuteMark").text("Minute " + currMinute);
-
-  currNodeIndices = dataset_Lookup[currMinute-2].nodeIndices; // update currNodeIndices
+  // update currNodeIndices
+  if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
+  else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
   // Update nodes
   if ((selectedNodes.length) > 1) { // if it's not at Minute 2 (back to the beginning)
     selectedNodes.pop(); // Remove the last node from list
@@ -194,25 +221,32 @@ function backClick() {
   else { plotNewNodes(0); } // plot minute 2 nodes
 }; // end backClick
 
+// Resent settings
+function reset() {
+  currMinute = 2; // reset minute
+  // update currNodeIndices
+  if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
+  else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
+}; // end reset function
+
 // Init function
 function init() {
   // Initial settings
-  currMinute = 2;
-  currNodeIndices = dataset_Lookup[currMinute-2].nodeIndices;
+  reset();
   currTeam = "blue";
 
+  // Create elements for initial load
   setup();
 
   // Interactivity
   // Toggle from blue and red team
   d3.select("#button-blue").on("click", function() {
+    // start over when color is changed
+    reset();
+    svg.select("#minuteMark")
+       .text("Minute " + currMinute);
     currTeam = "blue";
-    d3.selectAll("#nodesRed").style("fill", "none"); // Hide red
-    d3.selectAll("#nodesBlue") // Show blue
-      .style("fill", function(d,i) {
-        if (currNodeIndices.includes(i)) { return blue; }
-        else { return "none";}
-      });
+    plotNewNodes(0);
     // Change button styles
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
@@ -221,14 +255,14 @@ function init() {
       .style("background-color", "white")
       .style("color", d3.color("#a19da8"));
   }); // end on blue button select
-/*  d3.select("#button-red").on("click", function() {
+
+  d3.select("#button-red").on("click", function() {
+    // start over when color is changed
+    reset();
+    svg.select("#minuteMark")
+       .text("Minute " + currMinute);
     currTeam = "red";
-    d3.selectAll("#nodesBlue").style("fill", "none"); // Hide blue
-    d3.selectAll("#nodesRed") // Show red
-      .style("fill", function(d,i) {
-        if (currNodeIndices.includes(i)) { return red; }
-        else { return "none";}
-      });
+    plotNewNodes(0);
     // Change button styles
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
@@ -236,7 +270,7 @@ function init() {
     d3.select("#button-blue")
       .style("background-color", "white")
       .style("color", d3.color("#a19da8"));
-  }); // end on blue button select */
+  }); // end on red button select
 
   // When the back button is clicked
   d3.select("#button-back").on("click", function() {
@@ -247,9 +281,9 @@ function init() {
 ////////////////////////////////////////////////////////////////////////////////////
 // Load data
 var dataset_Lookup, dataset_bNodeList, dataset_bPathList, dataset_rNodeList, dataset_rPathList;
-function rowConverterNodes(d) {
+function rowConverterNodes(d,i) {
   return {
-    index: parseInt(d.index),
+    index: i,
     pos: [parseInt(d.pos.split(",")[0].replace("[", "")), parseInt(d.pos.split(",")[1].replace("]", ""))],
     parent: parseInt(d.parent.replace("", "0")),
     pathIndices: d.pathIndices.split(",").map(function(d) { return parseInt(d.replace("[","")); })
@@ -268,16 +302,19 @@ function rowConverterPaths(d) {
 d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
   d3.csv('Data/bNodeList.csv', rowConverterNodes, function(data_bNodeList) {
     d3.csv('Data/bPathList.csv', rowConverterPaths, function(data_bPathList) {
-      d3.csv('Data/rNodeList.csv', rowConverterNodes, function(data_rNodeList) {
-        d3.csv('Data/rPathList.csv', rowConverterPaths, function(data_rPathList) {
-          dataset_Lookup = data_bLookup;
-          dataset_bNodeList = data_bNodeList;
-          dataset_bPathList = data_bPathList;
-          dataset_rNodeList = data_rNodeList;
-          dataset_rPathList = data_rPathList;
+      d3.csv('Data/rLookupTable.csv', rowConverterLookup, function(data_rLookup) {
+        d3.csv('Data/rNodeList.csv', rowConverterNodes, function(data_rNodeList) {
+          d3.csv('Data/rPathList.csv', rowConverterPaths, function(data_rPathList) {
+            dataset_bLookup = data_bLookup;
+            dataset_bNodeList = data_bNodeList;
+            dataset_bPathList = data_bPathList;
+            dataset_rLookup = data_rLookup;
+            dataset_rNodeList = data_rNodeList;
+            dataset_rPathList = data_rPathList;
 
-          init();
+            init();
 
+          });
         });
       });
     });
