@@ -7,22 +7,22 @@ var h_map = document.getElementById("graphic-svg").getBoundingClientRect().heigh
 var xScale_posX = d3.scaleLinear() // x scale that converts a position to X coord
                     .domain([0,14700])
                     .range([0, w_map]); // svg/map doesn't start at 0 since centered
-/*var xScale_Xpos = d3.scaleLinear() // x scale that converts a X coord to position (to be used in definePath)
-                    .domain([0, w_map])
-                    .range([0,14700]);*/
 var yScale_posY = d3.scaleLinear()
                     .domain([0,14700])
                     .range([h_map,0]);
-/*var yScale_Ypos = d3.scaleLinear()
-                    .domain([h_map,0])
-                    .range([0,14700]);*/
 // Colors
 var blue = d3.rgb(0, 109, 230);
 var red = d3.rgb(126,91,104);
-
 // Variables to store
 var currMinute, currNodeIndices, currTeam;
 var selectedNodes = [0];
+////////////////////////////////////////////////////////////////////////////////////
+// Convenient helper functions
+d3.selection.prototype.moveToFront = function() {
+      return this.each(function(){
+        this.parentNode.appendChild(this);
+      });
+    };
 ////////////////////////////////////////////////////////////////////////////////////
 // Set up function
 function setup() {
@@ -32,6 +32,7 @@ function setup() {
      .attr("id", "minuteMark")
      .attr("x", w_map-5)
      .attr("y", h_map-5);
+
   // Nodes - csv
   svg.selectAll("nodesBlue")
      .data(currNodeIndices.map(i => dataset_bNodeList[i]))
@@ -46,28 +47,30 @@ function setup() {
        return yScale_posY(d.pos[1]);
      })
      .attr("r", 20)
-     .style("fill", function(d,i) {
-       if (currNodeIndices.includes(i)) { return blue; }
-       else { return "none";}
-     });
+     .style("fill", blue);
   svg.selectAll(".nodes")
      .on("click", function() {
        updateNodeClick(d3.select(this));
+     });
+  // Helper - to be deleted soon
+  svg.selectAll("nodesLabel")
+     .data(currNodeIndices.map(i => dataset_bNodeList[i]))
+     .enter()
+     .append("text")
+     .attr("class", "nodeLabels")
+     .attr("id", "nodeLabelsBlue")
+     .attr("x", function(d) {
+       return xScale_posX(d.pos[0]);
      })
-     .on("mouseover", function() {
-       plotPositions(d3.select(this));
-       svg.select("#minuteMark").text("Minute "+ d3.min([currMinute+1,4], function(d) { return d; }) ); // change minute mark when hovered
+     .attr("y", function(d) {
+       return yScale_posY(d.pos[1]);
      })
-     .on("mouseout", function() {
-       svg.selectAll(".pathPoints").style("fill", "none");
-       svg.selectAll("#nodesBlue")
-          .style("fill", blue)
-       svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back
-     })
-}; // end setup
+     .text(function(d) { return d.index; })
 
+}; // end setup
 // What happens when a node is clicked - need to update it every time a new node is added
 function updateNodeClick(currNode) {
+
   // Update minute
   currMinute = d3.min([currMinute+1, 4], function(d) { return d; }); // don't want it to be larger than 4
   svg.select("#minuteMark").text("Minute " + currMinute);
@@ -76,12 +79,11 @@ function updateNodeClick(currNode) {
   else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
   // Append selected node to list of selected nodes
   selectedNodes.push(currNode.data()[0].index); // we only need the index because we only care about it as a parent index
+  // Show individual path positions associated to node that was clicked
+  plotPositions(currNode.data()[0].pathIndices);
   // Update nodes
   plotNewNodes(currNode.data()[0].index);
-  // Hide all the individual positions - it's annoying and lags/gets caught sometimes
-  svg.selectAll(".pathPoints").style("fill", "none");
 }; // end updateNodeClick
-
 // Update nodes
 function plotNewNodes(parentIndex) {
   if (currTeam == "blue") {  // BLUE
@@ -113,16 +115,33 @@ function plotNewNodes(parentIndex) {
               .on("click", function() {
                 updateNodeClick(d3.select(this));
               })
-              .on("mouseover", function() {
-                plotPositions(d3.select(this));
-                svg.select("#minuteMark").text("Minute "+ d3.min([currMinute+1,4], function(d) { return d; }) ); // change minute mark when hovered
-              })
-              .on("mouseout", function() {
-                svg.selectAll(".pathPoints").style("fill", "none");
-                svg.selectAll(".nodes")
-                   .style("fill", blue)
-                svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back
-              })
+              .moveToFront();
+    // Labels
+    var nodeLabelsBlue = svg.selectAll(".nodeLabels")
+                            .data(currNodeIndices.map(i => dataset_bNodeList[i]).filter(function(d) {
+                              return d.parent == parentIndex;
+                            }));
+    nodeLabelsBlue.exit().remove();
+    var nodeLabelsBlueEnter = nodeLabelsBlue.enter()
+                                            .append("text")
+                                            .attr("class", "nodeLabels")
+                                            .attr("id", "nodeLabelsBlue")
+                                            .attr("x", function(d) {
+                                              return xScale_posX(d.pos[0]);
+                                            })
+                                            .attr("y", function(d) {
+                                              return yScale_posY(d.pos[1]);
+                                            })
+                                            .text(function(d,i) { return i; });
+    nodeLabelsBlue = nodeLabelsBlue.merge(nodeLabelsBlueEnter);
+    nodeLabelsBlue.attr("x", function(d) {
+                      return xScale_posX(d.pos[0]);
+                    })
+                    .attr("y", function(d) {
+                      return yScale_posY(d.pos[1]);
+                    })
+                    .text(function(d) { return d.index; })
+                    .moveToFront();
   } // end if blue statement
   else { // RED
     var nodesRed = svg.selectAll(".nodes")
@@ -153,30 +172,38 @@ function plotNewNodes(parentIndex) {
             .on("click", function() {
               updateNodeClick(d3.select(this));
             })
-            .on("mouseover", function() {
-              plotPositions(d3.select(this));
-              svg.select("#minuteMark").text("Minute "+ d3.min([currMinute+1,4], function(d) { return d; }) ); // change minute mark when hovered
-            })
-            .on("mouseout", function() {
-              svg.selectAll(".pathPoints").style("fill", "none");
-              svg.selectAll(".nodes")
-                 .style("fill", red)
-              svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back
-            })
+            .moveToFront();
+    // Labels
+    var nodeLabelsRed = svg.selectAll(".nodeLabels")
+                            .data(currNodeIndices.map(i => dataset_rNodeList[i]).filter(function(d) {
+                              return d.parent == parentIndex;
+                            }));
+    nodeLabelsRed.exit().remove();
+    var nodeLabelsRedEnter = nodeLabelsRed.enter()
+                                          .append("text")
+                                          .attr("class", "nodeLabels")
+                                          .attr("id", "nodeLabelsRed")
+                                          .attr("x", function(d) {
+                                            return xScale_posX(d.pos[0]);
+                                          })
+                                          .attr("y", function(d) {
+                                            return yScale_posY(d.pos[1]);
+                                          })
+                                          .text(function(d,i) { return i; });
+    nodeLabelsRed = nodeLabelsRed.merge(nodeLabelsRedEnter);
+    nodeLabelsRed.attr("x", function(d) {
+                    return xScale_posX(d.pos[0]);
+                  })
+                  .attr("y", function(d) {
+                    return yScale_posY(d.pos[1]);
+                  })
+                  .text(function(d) { return d.index; })
+                  .moveToFront();
   }; // end else red
 }; // end plotNewNodes
-
 // Plot path positions
-function plotPositions(currNode) {
-  // Hide nodes
-  svg.selectAll(".nodes")
-     .style("fill", "none");
-  currNode.style("fill", function() {
-    if (currTeam=="blue") { return blue; }
-    else { return red; }
-  })
-  // Find paths and plot them
-  var currPathIndices = currNode.data()[0].pathIndices; // Get pathIndices associated to node that was clicked on
+function plotPositions(currPathIndices) {
+
   if (currTeam=="blue") { // get paths from pathIndices
     var currPaths = currPathIndices.map(i => dataset_bPathList[i]);
   }
@@ -189,24 +216,25 @@ function plotPositions(currNode) {
                                   .append("circle")
                                   .attr("class", "pathPoints")
                                   .attr("cx", function(d) {
-                                    return xScale_posX(d.path[(currMinute)][0]); // using currMinute because index is always -1 and keeping it previous minute until a node is clicked on
+                                    return xScale_posX(d.path[(currMinute-1)][0]);
                                   })
                                   .attr("cy", function(d) {
-                                    return yScale_posY(d.path[(currMinute)][1]);
+                                    return yScale_posY(d.path[(currMinute-1)][1]);
                                   })
                                   .attr("r", 5);
   pathPoints = pathPoints.merge(pathPointsEnter);
   pathPoints.attr("cx", function(d) {
-              return xScale_posX(d.path[(currMinute)][0]);
+              return xScale_posX(d.path[(currMinute-1)][0]);
             })
             .attr("cy", function(d) {
-              return yScale_posY(d.path[(currMinute)][1]);
+              return yScale_posY(d.path[(currMinute-1)][1]);
             })
             .style("fill", "white");
 }; // end plotPositions
-
 // Function for when the back button is clicked: remove most recently selected node and replot nodes
 function backClick() {
+  // Remove previous node from list
+  selectedNodes.pop();
   // Update minute
   currMinute = d3.max([currMinute-1, 2], function(d) { return d; }); // don't want it to be smaller than 2
   svg.select("#minuteMark").text("Minute " + currMinute);
@@ -214,21 +242,25 @@ function backClick() {
   if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
   else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
   // Update nodes
-  if ((selectedNodes.length) > 1) { // if it's not at Minute 2 (back to the beginning)
-    selectedNodes.pop(); // Remove the last node from list
+  if (selectedNodes.length > 1) { // if it's not at Minute 2 (back to the beginning)
+    plotPositions(dataset_bNodeList[selectedNodes.length-1].pathIndices);
     plotNewNodes(selectedNodes[selectedNodes.length-1]); // plot new nodes
   }
-  else { plotNewNodes(0); } // plot minute 2 nodes
+  else {
+    svg.selectAll(".pathPoints").style("fill", "none"); // hide all path points
+    plotNewNodes(0); // plot minute 2 nodes
+  }
 }; // end backClick
-
 // Resent settings
 function reset() {
   currMinute = 2; // reset minute
   // update currNodeIndices
   if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
   else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
-}; // end reset function
 
+  // remove all path positions
+  svg.selectAll(".pathPoints").exit().remove();
+}; // end reset function
 // Init function
 function init() {
   // Initial settings
@@ -277,7 +309,6 @@ function init() {
     backClick();
   })
 }; // end init function
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Load data
 var dataset_Lookup, dataset_bNodeList, dataset_bPathList, dataset_rNodeList, dataset_rPathList;
