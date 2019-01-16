@@ -72,16 +72,20 @@ function setup() {
 function updateNodeClick(currNode) {
 
   // Update minute
-  currMinute = d3.min([currMinute+1, 4], function(d) { return d; }); // don't want it to be larger than 4
+  currMinute = d3.min([currMinute+1, 5], function(d) { return d; }); // don't want it to be larger than 5
   svg.select("#minuteMark").text("Minute " + currMinute);
-  // Find node indices
-  if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
-  else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
-  // Append selected node to list of selected nodes
-  selectedNodes.push(currNode.data()[0].index); // we only need the index because we only care about it as a parent index
+
   // Show individual path positions associated to node that was clicked
   plotPositions(currNode.data()[0].pathIndices);
-  // Update nodes
+  // Append selected node to list of selected nodes
+  selectedNodes.push(currNode.data()[0].index); // we only need the index because we only care about it as a parent index
+  // Plot nodes if min < 5
+  if (currMinute < 5) {
+    // Find node indices
+    if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
+    else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
+  }
+  else { currNodeIndices = []; }
   plotNewNodes(currNode.data()[0].index);
 }; // end updateNodeClick
 // Update nodes
@@ -203,10 +207,8 @@ function plotNewNodes(parentIndex) {
 }; // end plotNewNodes
 // Plot path positions
 function plotPositions(currPathIndices) {
-
-  if (currTeam=="blue") { // get paths from pathIndices
-    var currPaths = currPathIndices.map(i => dataset_bPathList[i]);
-  }
+  // get paths from pathIndices
+  if (currTeam=="blue") { var currPaths = currPathIndices.map(i => dataset_bPathList[i]); }
   else { var currPaths = currPathIndices.map(i => dataset_rPathList[i]); }
   // Plot paths
   var pathPoints = svg.selectAll(".pathPoints")
@@ -243,7 +245,8 @@ function backClick() {
   else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
   // Update nodes
   if (selectedNodes.length > 1) { // if it's not at Minute 2 (back to the beginning)
-    plotPositions(dataset_bNodeList[selectedNodes.length-1].pathIndices);
+    if (currTeam == "blue") { plotPositions(dataset_bNodeList[selectedNodes[selectedNodes.length-1]].pathIndices); }
+    else { plotPositions(dataset_rNodeList[selectedNodes[selectedNodes.length-1]].pathIndices); };
     plotNewNodes(selectedNodes[selectedNodes.length-1]); // plot new nodes
   }
   else {

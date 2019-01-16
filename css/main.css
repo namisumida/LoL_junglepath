@@ -91,6 +91,10 @@ body,html {
 }
 .nodes {
   opacity: 0.8;
+  cursor: pointer;
+}
+.nodeLabels {
+  pointer-events: none;
 }
 .pathPoints {
   opacity: 0.2;
