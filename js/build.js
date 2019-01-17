@@ -70,15 +70,22 @@ function setup() {
 }; // end setup
 // What happens when a node is clicked - need to update it every time a new node is added
 function updateNodeClick(currNode) {
+  var currData = currNode.data()[0];
 
   // Update minute
   currMinute = d3.min([currMinute+1, 5], function(d) { return d; }); // don't want it to be larger than 5
   svg.select("#minuteMark").text("Minute " + currMinute);
 
+  // Figure out transition delays/durations for path positions
+  var currPathIndices = currData.pathIndices;
+
+
   // Show individual path positions associated to node that was clicked
-  plotPositions(currNode.data()[0].pathIndices);
+  plotPositions(currPathIndices, true);
+
   // Append selected node to list of selected nodes
-  selectedNodes.push(currNode.data()[0].index); // we only need the index because we only care about it as a parent index
+  selectedNodes.push(currData.index); // we only need the index because we only care about it as a parent index
+
   // Plot nodes if min < 5
   if (currMinute < 5) {
     // Find node indices
@@ -86,7 +93,7 @@ function updateNodeClick(currNode) {
     else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
   }
   else { currNodeIndices = []; }
-  plotNewNodes(currNode.data()[0].index);
+  plotNewNodes(currData.index);
 }; // end updateNodeClick
 // Update nodes
 function plotNewNodes(parentIndex) {
@@ -206,7 +213,7 @@ function plotNewNodes(parentIndex) {
   }; // end else red
 }; // end plotNewNodes
 // Plot path positions
-function plotPositions(currPathIndices) {
+function plotPositions(currPathIndices, delay) {
   // get paths from pathIndices
   if (currTeam=="blue") { var currPaths = currPathIndices.map(i => dataset_bPathList[i]); }
   else { var currPaths = currPathIndices.map(i => dataset_rPathList[i]); }
@@ -223,13 +230,19 @@ function plotPositions(currPathIndices) {
                                   .attr("cy", function(d) {
                                     return yScale_posY(d.path[(currMinute-1)][1]);
                                   })
-                                  .attr("r", 5);
+                                  .attr("r", 5)
+                                  .style("fill", "none");
   pathPoints = pathPoints.merge(pathPointsEnter);
   pathPoints.attr("cx", function(d) {
               return xScale_posX(d.path[(currMinute-1)][0]);
             })
             .attr("cy", function(d) {
               return yScale_posY(d.path[(currMinute-1)][1]);
+            })
+            .transition()
+            .delay(function(d,i) {
+              if (delay) { return i/(currPathIndices.length/800); }
+              else { return 0; }
             })
             .style("fill", "white");
 }; // end plotPositions
@@ -245,8 +258,8 @@ function backClick() {
   else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
   // Update nodes
   if (selectedNodes.length > 1) { // if it's not at Minute 2 (back to the beginning)
-    if (currTeam == "blue") { plotPositions(dataset_bNodeList[selectedNodes[selectedNodes.length-1]].pathIndices); }
-    else { plotPositions(dataset_rNodeList[selectedNodes[selectedNodes.length-1]].pathIndices); };
+    if (currTeam == "blue") { plotPositions(dataset_bNodeList[selectedNodes[selectedNodes.length-1]].pathIndices, false); }
+    else { plotPositions(dataset_rNodeList[selectedNodes[selectedNodes.length-1]].pathIndices, false); };
     plotNewNodes(selectedNodes[selectedNodes.length-1]); // plot new nodes
   }
   else {
