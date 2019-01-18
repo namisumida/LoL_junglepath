@@ -333,7 +333,9 @@ function init() {
     reset();
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "blue";
-    plotNewNodes(-1, false);
+    // Plot nodes and positions
+    plotPositions(dataset_bPathList.slice(0,10000), true);
+    plotNewNodes(-1, true);
     // Change button styles
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
@@ -348,9 +350,9 @@ function init() {
     reset();
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "red";
-    // Plot positions and nodes 
+    // Plot positions and nodes
     plotPositions(dataset_rPathList.slice(0,10000), true);
-    plotNewNodes(-1, false);
+    plotNewNodes(-1, true);
     // Change button styles
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
