@@ -101,27 +101,43 @@ body,html {
   fill: #BB0000;
 }
 .nodeRings {
-  stroke-dasharray: 3,3; /* border pattern */
-  fill: none; /* you can give the rings a fill color here */
+  opacity: 0.4;
+  stroke-width: 3;
+  pointer-events: none;
 }
 #nodeRingsBlue { /* Only affects blue rings around the nodes. */
   stroke: #0032EE; /* border color */
+  fill: #80CBEB;
 }
 #nodeRingsRed { /* Only affects red rings around the nodes. Same as nodeRingsBlue */
   stroke: #BB0000; /* border color */
+  fill: #B4616B;
 }
 .nodeLabels {
   pointer-events: none;
   fill: none;
-}
-.selectedNodes {
-  opacity: 0.8;
 }
 #selectedNodesBlue {
   fill: #2277AA;
 }
 #selectedNodesRed {
   fill: #FE8585;
+}
+.selectedNodeRings {
+  fill: none;
+  stroke-width: 2;
+}
+#selectedNodeRingsBlue {
+  stroke: #2277AA;
+}
+#selectedNodeRingsRed {
+  stroke: #FE8585;
+}
+.selectedLines {
+  stroke: white;
+}
+#arrow {
+  fill: white;
 }
 .pathPoints { /* Individual path positions */
   opacity: 0.4;
