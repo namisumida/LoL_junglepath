@@ -12,7 +12,7 @@ var yScale_posY = d3.scaleLinear()
                     .range([h_map,0]);
 var numPositionsMin = 5000;
 // Variables to store
-var currMinute, currTeam, currNodeIndices, currPaths;
+var currMinute, currTeam, currDisplay, currNodeIndices, currPaths, heatmapInstance, radius, numBuckets;
 var selectedNodesList = [];
 ////////////////////////////////////////////////////////////////////////////////////
 // Convenient helper functions
@@ -32,19 +32,20 @@ function updateNodeClick(currNode) {
   currMinute = d3.min([currMinute+1, 5], function(d) { return d; }); // don't want it to be larger than 5
   svg.select("#minuteMark").text("Minute " + currMinute);
 
+  // PATH POSITIONS
   // Find path positions for the next minute
   if (currData.pathIndices.length > numPositionsMin) { // if there are more paths to be displayed than the min
     var currPathIndices = currData.pathIndices.slice(0,numPositionsMin);
   }
-  else {
-    var currPathIndices = currData.pathIndices;
-  };
-
-  // Plot the path positions
+  else { var currPathIndices = currData.pathIndices; };
+  // Find currPaths
   if (currTeam == "blue") { currPaths = currPathIndices.map(i => dataset_bPathList[i]); }
   else { currPaths = currPathIndices.map(i => dataset_rPathList[i]); }
-  plotPositions(currPaths);
+  // Plot dots or heatmap
+  if (currDisplay == "dots") { plotPositions(currPaths); }
+  else { heatmapInstance.setData(getHeatmapData(currPaths)); };
 
+  // NODES
   // Append selected node to list of selected nodes
   selectedNodesList.push(currData.index); // we only need the index because we only care about it as a parent index
   if (currMinute < 5) { // plot nodes if min<5
@@ -268,15 +269,16 @@ function backClick() {
       var dataset_node = dataset_rNodeList;
       var dataset_path = dataset_rPathList;
     }
-
     // determine path indices
     if (dataset_node[selectedNodesList[selectedNodesList.length-1]].pathIndices.length > numPositionsMin) { // if the new list of path positions is longer than our min...
       var currPathIndices = dataset_node[selectedNodesList[selectedNodesList.length-1]].pathIndices.slice(0, numPositionsMin);
     }
     else { var currPathIndices = dataset_node[selectedNodesList[selectedNodesList.length-1]].pathIndices; }
     currPaths = currPathIndices.map(i => dataset_path[i]);
-
-    plotPositions(currPaths);
+    // Plot dots or heatmap
+    if (currDisplay == "dots") { plotPositions(currPaths); }
+    else { heatmapInstance.setData(getHeatmapData(currPaths)); };
+    // Plot nodes
     plotSelectedNodes(selectedNodesList); // plot nodes that have already been selected
     plotNewNodes(currNodeIndices, selectedNodesList[selectedNodesList.length-1]); // plot new nodes
   }
@@ -284,11 +286,52 @@ function backClick() {
   else {
     if (currTeam == "blue") { currPaths = dataset_bPathList.slice(0, numPositionsMin); }
     else { currPaths = dataset_rPathList.slice(0, numPositionsMin); }
-    plotPositions(currPaths);
+    // Plot dots or heatmap
+    if (currDisplay == "dots") { plotPositions(currPaths); }
+    else { heatmapInstance.setData(getHeatmapData(currPaths)); };
+    // Plot nodes
     plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
     svg.selectAll(".selectedNodesGroup").remove();
   }
 }; // end backClick
+function getHeatmapData(data) {
+  var counts = Array(numBuckets*numBuckets).fill(0); // set up an array that counts the number of points that fall into each bucket with all the buckets filled in with 0
+  for (var i=0; i<data.length; i++) { // for every row in data
+    var row = data[i]; // pull out the row we're looking at
+    var xBucket = Math.floor(xScale_posX(row.path[(currMinute-1)][0])/radius); // find which xBucket it would be in
+    var yBucket = Math.floor(yScale_posY(row.path[(currMinute-1)][1])/radius); // find which yBucket it would be in
+    var bucket = xBucket + yBucket*numBuckets; // based on which bucket it's in, find the index in the counts array
+    counts[bucket] = counts[bucket]+1; // add into counts array
+  }
+  var dataset_output = []; // set up the dataset that needs to go into heatmap setData
+  for (var j=0; j<counts.length; j++) { // for every bucket in counts array
+    // now need to work "backwards" and assign x y coordinates to buckets
+    var colIndex = Math.floor(j / numBuckets);
+    var rowIndex = j % numBuckets;
+    dataset_output.push({x: rowIndex*radius+Math.floor(radius/2), y: colIndex*radius+Math.floor(radius/2), value: counts[j]}) // what needs to go into heatmap setData
+    // added radius/2 to center it in the bucket square
+  }
+  return {max: d3.max(dataset_output, function(d) { return d.value; }),
+          min: d3.min(dataset_output, function(d) { return d.value; }),
+          data: dataset_output};
+}; // end getHeatmapData function
+function generateHeatmapInstance(container) {
+  return (h337.create({
+    container: document.getElementById(container),
+    radius: 22,
+    maxOpacity: 1,
+    minOpacity: 0,
+    blur: 0.85,
+    gradient: {
+      '0.001': 'purple',
+      '0.2': 'blue',
+      '0.4': 'green',
+      '0.6': 'yellow',
+      '0.8': 'orange',
+      '1': 'red'
+    }
+  }));
+}; // end generateHeatmapInstance
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Set up function
@@ -358,6 +401,12 @@ function setup() {
        return yScale_posY(d.pos[1]);
      })
      .text(function(d) { return d.index; });
+
+  // Heatmap instance
+  radius = 15;
+  numBuckets = Math.floor(w_map/radius);
+  heatmapInstance = generateHeatmapInstance("heatmap-container");
+
 }; // end setup
 // Resent settings
 function reset() {
@@ -382,9 +431,12 @@ function init() {
     reset();
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "blue";
-    // Plot nodes and positions
+
     currPaths = dataset_bPathList.slice(0,numPositionsMin);
-    plotPositions(currPaths);
+    // Plot dots or heatmap
+    if (currDisplay == "dots") { plotPositions(currPaths); }
+    else { heatmapInstance.setData(getHeatmapData(currPaths)); };
+    // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
@@ -401,9 +453,12 @@ function init() {
     reset();
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "red";
-    // Plot positions and nodes
+
     currPaths = dataset_rPathList.slice(0,numPositionsMin);
-    plotPositions(currPaths);
+    // Plot dots or heatmap
+    if (currDisplay == "dots") { plotPositions(currPaths); }
+    else { heatmapInstance.setData(getHeatmapData(currPaths)); };
+    // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
@@ -420,9 +475,13 @@ function init() {
   });
   // Dot button selected
   d3.select("#button-dots").on("click", function() {
+    currDisplay = "dots";
+    // Plot dots
     plotPositions(currPaths);
     svg.selectAll(".nodes").moveToFront();
     svg.selectAll(".selectedNodesGroup").moveToFront();
+    // Hide heatmap
+    heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
     // Change button styles
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
@@ -433,11 +492,11 @@ function init() {
   });
   // Heatmap button selected
   d3.select("#button-heatmap").on("click", function() {
+    currDisplay = "heatmap";
     // plot heatmap
-    var radius = 15;
-    var numBuckets = Math.floor(w_map/radius);
-    if (currTeam == "blue") { generateHeatmap(getHeatmapData(currPaths, radius, numBuckets, currMinute), numBuckets); }
-    else { generateHeatmap(getHeatmapData(currPaths, radius, numBuckets, currMinute), numBuckets); }
+    heatmapInstance.setData(getHeatmapData(currPaths));
+    //if (currTeam == "blue") { generateHeatmap(getHeatmapData(currPaths, radius, numBuckets, currMinute), numBuckets); }
+    //else { generateHeatmap(getHeatmapData(currPaths, radius, numBuckets, currMinute), numBuckets); }
 
     // Remove dots
     svg.selectAll(".pathPoints").remove();
