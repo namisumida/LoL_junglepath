@@ -392,7 +392,7 @@ function init() {
       svg.selectAll(".selectedNodesGroup").remove();
     }
   }; // end backClick
-  function getHeatmapData(data) {
+/*  function getHeatmapData(data) {
     var counts = Array(numBuckets*numBuckets).fill(0); // set up an array that counts the number of points that fall into each bucket with all the buckets filled in with 0
     for (var i=0; i<data.length; i++) { // for every row in data
       var row = data[i]; // pull out the row we're looking at
@@ -429,7 +429,7 @@ function init() {
         '1': 'red'
       }*/
     }));
-  }; // end generateHeatmapInstance
+  }; // end generateHeatmapInstance*/
 
   // Initial settings
   reset();
