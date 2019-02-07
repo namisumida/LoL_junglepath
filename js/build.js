@@ -77,7 +77,7 @@ function init() {
     // Heatmap instance
     radius = 15;
     numBuckets = 50;
-    currHeatmapData = getHeatmapData(currPositionPaths);
+    currHeatmapData = formatHeatmapData(dataset_bNodeList[0].heatMap); // TODO: Change when I get new data structure
     heatmapInstance = generateHeatmapInstance("heatmap-container");
 
   }; // end setup
@@ -359,17 +359,18 @@ function init() {
     if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
     else { currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices; }
 
+    // set the right datasets to be used for blue/red team
+    if (currTeam == "blue") { // blue team
+      var dataset_node = dataset_bNodeList;
+      var dataset_path = dataset_bPathList;
+    }
+    else { // red team
+      var dataset_node = dataset_rNodeList;
+      var dataset_path = dataset_rPathList;
+    }
+
     // Re plot positions (if any) and nodes
     if (selectedNodesList.length > 0) { // if even after popping last node, there are more nodes...
-      // set the right datasets to be used for blue/red team
-      if (currTeam == "blue") { // blue team
-        var dataset_node = dataset_bNodeList;
-        var dataset_path = dataset_bPathList;
-      }
-      else { // red team
-        var dataset_node = dataset_rNodeList;
-        var dataset_path = dataset_rPathList;
-      }
       // determine path indices
       var currNodeData = dataset_node[selectedNodesList[selectedNodesList.length-1]];
       if (currNodeData.pathIndices.length > numPositionsMin) { // if the new list of path positions is longer than our min...
@@ -388,39 +389,17 @@ function init() {
     }
     // Else, you're back at min 2 and you need to plot those path points
     else {
-      if (currTeam == "blue") { currPositionPaths = dataset_bPathList.slice(0, numPositionsMin); }
-      else { currPositionPaths = dataset_rPathList.slice(0, numPositionsMin); }
+      currPositionPaths = dataset_path.slice(0, numPositionsMin);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else {
-        currHeatmapData = getHeatmapData(currPositionPaths);
+        currHeatmapData = formatHeatmapData(dataset_node[0].heatMap); // TODO: Change when I get new data structure
         heatmapInstance.setData(currHeatmapData); };
       // Plot nodes
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
     }
   }; // end backClick
-  function getHeatmapData(data) {
-    var counts = Array(numBuckets*numBuckets).fill(0); // set up an array that counts the number of points that fall into each bucket with all the buckets filled in with 0
-    for (var i=0; i<data.length; i++) { // for every row in data
-      var row = data[i]; // pull out the row we're looking at
-      var xBucket = Math.floor(xScale_posX(row.path[(currMinute-2)][0])/radius); // find which xBucket it would be in
-      var yBucket = Math.floor(yScale_posY(row.path[(currMinute-2)][1])/radius); // find which yBucket it would be in
-      var bucket = xBucket + yBucket*numBuckets; // based on which bucket it's in, find the index in the counts array
-      counts[bucket] = counts[bucket]+1; // add into counts array
-    }
-    var dataset_output = []; // set up the dataset that needs to go into heatmap setData
-    for (var j=0; j<counts.length; j++) { // for every bucket in counts array
-      // now need to work "backwards" and assign x y coordinates to buckets
-      var colIndex = Math.floor(j / numBuckets);
-      var rowIndex = j % numBuckets;
-      dataset_output.push({x: rowIndex*radius+Math.floor(radius/2), y: colIndex*radius+Math.floor(radius/2), value: counts[j]}) // what needs to go into heatmap setData
-      // added radius/2 to center it in the bucket square
-    }
-    return {max: d3.max(dataset_output, function(d) { return d.value; }),
-            min: d3.min(dataset_output, function(d) { return d.value; }),
-            data: dataset_output};
-  }; // end getHeatmapData function
   function formatHeatmapData(dataset) {
     // data only has the dataset; need to add max and min
     return {max: d3.max(dataset, function(d) { return d; }),
@@ -433,15 +412,15 @@ function init() {
       radius: 20,
       maxOpacity: 1,
       minOpacity: 0,
-      blur: 0.8
-      /*gradient: {
+      blur: 0.8,
+      gradient: {
         '0.001': 'purple',
         '0.2': 'blue',
         '0.4': 'green',
         '0.6': 'yellow',
         '0.8': 'orange',
         '1': 'red'
-      }*/
+      }
     }));
   }; // end generateHeatmapInstance
 
@@ -462,7 +441,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else {
-      currHeatmapData = getHeatmapData(currPositionPaths);
+      currHeatmapData = formatHeatmapData(dataset_bNodeList[0].heatMap); // TODO: Change when I get new data structure
       heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
@@ -486,7 +465,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else {
-      currHeatmapData = getHeatmapData(currPositionPaths);
+      currHeatmapData = formatHeatmapData(dataset_rNodeList[0].heatMap); // TODO: Change when I get new data structure
       heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
@@ -525,8 +504,6 @@ function init() {
     currDisplay = "heatmap";
     // plot heatmap
     heatmapInstance.setData(currHeatmapData);
-    //if (currTeam == "blue") { generateHeatmap(getHeatmapData(currPositionPaths, radius, numBuckets, currMinute), numBuckets); }
-    //else { generateHeatmap(getHeatmapData(currPositionPaths, radius, numBuckets, currMinute), numBuckets); }
 
     // Remove dots
     svg.selectAll(".pathPoints").remove();
