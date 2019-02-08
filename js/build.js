@@ -554,6 +554,7 @@ d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
             dataset_rPathList = data_rPathList;
 
             init();
+            document.getElementById("loading-spinner").style.display = "none";
 
           });
         });
