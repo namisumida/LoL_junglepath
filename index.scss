@@ -22,6 +22,14 @@
   font-family: stratum-regular;
   src: url("fonts/Stratum2-Regular.otf");
 }
+$blueNode: #0032EE;
+$redNode: #BB0000;
+$blueRingFill: #80CBEB;
+$redRingFill: #B4616B;
+$blueSelectedNode: #2277AA;
+$redSelectedNode: #FE8585;
+$purple: rgb(79,39,79);
+
 body,html {
   min-width: 300px;
 }
@@ -77,7 +85,6 @@ body,html {
   height: 100%;
 }
 
-/* Loading icon */
 .spinner {
   width: 40px;
   height: 40px;
@@ -122,48 +129,48 @@ body,html {
   width: 100%;
   height: 100%;
 }
-.nodes { /* This affects ALL nodes (including blue and red nodes) */
+.nodes {
   cursor: pointer;
   opacity: 0.8;
 }
-#nodesBlue { /* Only affects blue nodes */
-  fill: #0032EE;
+#nodesBlue {
+  fill: $blueNode;
 }
-#nodesRed { /* Only affects red nodes */
-  fill: #BB0000;
+#nodesRed {
+  fill: $redNode;
 }
 .nodeRings {
   opacity: 0.4;
   stroke-width: 3;
   pointer-events: none;
 }
-#nodeRingsBlue { /* Only affects blue rings around the nodes. */
-  stroke: #0032EE; /* border color */
-  fill: #80CBEB;
+#nodeRingsBlue {
+  stroke: $blueNode;
+  fill: $blueRingFill;
 }
-#nodeRingsRed { /* Only affects red rings around the nodes. Same as nodeRingsBlue */
-  stroke: #BB0000; /* border color */
-  fill: #B4616B;
+#nodeRingsRed {
+  stroke: $redNode;
+  fill: $redRingFill;
 }
 .nodeLabels {
   pointer-events: none;
   fill: none;
 }
 #selectedNodesBlue {
-  fill: #2277AA;
+  fill: $blueSelectedNode;
 }
 #selectedNodesRed {
-  fill: #FE8585;
+  fill: $redSelectedNode;
 }
 .selectedNodeRings {
   fill: none;
   stroke-width: 2;
 }
 #selectedNodeRingsBlue {
-  stroke: #2277AA;
+  stroke: $blueSelectedNode;
 }
 #selectedNodeRingsRed {
-  stroke: #FE8585;
+  stroke: $redSelectedNode;
 }
 .selectedLines {
   stroke: white;
@@ -171,7 +178,7 @@ body,html {
 #arrow {
   fill: white;
 }
-.pathPoints { /* Individual path positions */
+.pathPoints {
   opacity: 0.4;
   fill: white;
   pointer-events: none;
@@ -190,18 +197,18 @@ button {
   height: 25px;
   -webkit-transition-duration: 0.4s; /* Safari */
   transition-duration: 0.4s;
-  color: rgb(79,39,79);
-  border: 1.5px solid rgb(79,39,79);
+  color: $purple;
+  border: 1.5px solid $purple;
   font-family: stratum-medium;
   cursor: pointer;
   margin: 0.5em;
 }
 #button-dots {
-  background-color: rgb(79,39,79);
+  background-color: $purple;
   color: white;
 }
 #button-blue {
-  background-color: rgb(79,39,79);
+  background-color: $purple;
   color: white;
 }
 @media screen and (min-width:400px) {
