@@ -1,3 +1,4 @@
+var currMinute;
 function init() {
   var svg = d3.select("#graphic-svg");
   var w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
@@ -10,7 +11,7 @@ function init() {
                       .range([h_map,0]);
   var numPositionsMin = 5000; // the minimum # of path positions at a time
   // Variables to store
-  var currMinute, currTeam, currNodeIndices, currPositionPaths, currHeatmapData, heatmapInstance, radius, numBuckets, selectedNodesList;
+  var currTeam, currNodeIndices, currPositionPaths, currHeatmapData, heatmapInstance, radius, numBuckets, selectedNodesList;
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
 
@@ -146,7 +147,8 @@ function init() {
     plotNewNodes(currNodeIndices, currData.index); // plot the new nodes
 
     // BREADCRUMBS - show breadcrumb for the previous min
-    var breadcrumbID = "#button-" + (currMinute-2);
+    var breadcrumbID = "#button-min" + (currMinute-1);
+    console.log(breadcrumbID);
     d3.select(breadcrumbID)//.html(currData.position) // change the text to position text of current node
                            .style("display", "inline"); // display it
     if (currMinute == 4 | currMinute == 5) { // if the next minute is 4 or 5, show the arrow
@@ -310,23 +312,35 @@ function init() {
               .style("fill", "white");
   }; // end plotPositions
   // Function for when the back button is clicked: remove most recently selected node and replot nodes
-  function backClick() {
+  function backClick(numClicks) {
 
     // Update minute
-    currMinute = d3.max([currMinute-1, 2], function(d) { return d; }); // don't want it to be smaller than 2
+    currMinute = d3.max([currMinute-numClicks, 2], function(d) { return d; }); // don't want it to be smaller than 2
     svg.select("#minuteMark").text("Minute " + currMinute);
 
-    // Update breadcrumbs - remove the last one
-    var breadcrumbID = "#button-" + (currMinute-1);
-    d3.select(breadcrumbID).style("display", "none"); // display it
-    if (currMinute == 4 | currMinute == 3) { // if the next minute is 4 or 5, show the arrow
-      var arrowID = "#arrow-" + (currMinute-2);
-      d3.select(arrowID).style("display", "none");
+    // Update breadcrumbs
+    if (currMinute==2) {
+      d3.select("#button-min2").style("display", "none");
+      d3.select("#button-min3").style("display", "none");
+      d3.select("#button-min4").style("display", "none");
+      d3.select("#arrow-1").style("display", "none");
+      d3.select("#arrow-2").style("display", "none");
+    }
+    else if (currMinute==3) {
+      d3.select("#button-min3").style("display", "none");
+      d3.select("#button-min4").style("display", "none");
+      d3.select("#arrow-1").style("display", "none");
+      d3.select("#arrow-2").style("display", "none");
+    }
+    else if (currMinute==4) {
+      d3.select("#button-min4").style("display", "none");
+      d3.select("#arrow-2").style("display", "none");
     };
-
     // Remove previous node from list if there are any to be removed
     if (selectedNodesList.length > 0) { // if it's not at Minute 2 (back to the beginning)
-      selectedNodesList.pop(); // Remove previous node from list
+      for (var i=0; i<numClicks; i++) {
+        selectedNodesList.pop(); // Remove previous node from list the number of times we "click" back
+      };
     };
 
     // Set currNodeIndices
@@ -454,7 +468,7 @@ function init() {
   }); // end on red button select
   // Back button selected
   d3.select("#button-back").on("click", function() {
-    backClick();
+    backClick(1);
   });
   // Dot button selected
   d3.select("#button-dots").on("click", function() {
@@ -490,6 +504,14 @@ function init() {
       .style("background-color", "white")
       .style("color", d3.rgb(79,39,79));
   })
+  // Breadcrumb "buttons"
+  for (var i=2; i<5; i++) {
+    var breadcrumbID = "#button-min" + i;
+    d3.select(breadcrumbID).on("click", function() {
+      var breadcrumbIndex = d3.select(this).node().value; // value of breadcrumb/which min
+      backClick(currMinute-breadcrumbIndex-1);
+    }); // end on click
+  }; // end for loop for breadcrumb buttons
   // Resizing window
   window.addEventListener("resize", resize);
 }; // end init function
