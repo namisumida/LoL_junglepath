@@ -14,6 +14,7 @@ function init() {
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
 
+
   ////////////////////////////////////////////////////////////////////////////////////
   function setup() {
     // Minute mark
@@ -59,20 +60,6 @@ function init() {
          svg.selectAll(".nodeRings").remove();
          updateNodeClick(d3.select(this));
        });
-    // Helper - to be deleted soon
-    svg.selectAll("nodesLabel")
-       .data(currNodeIndices.map(i => dataset_bNodeList[i]))
-       .enter()
-       .append("text")
-       .attr("class", "nodeLabels")
-       .attr("id", "nodeLabelsBlue")
-       .attr("x", function(d) {
-         return xScale_posX(d.pos[0]);
-       })
-       .attr("y", function(d) {
-         return yScale_posY(d.pos[1]);
-       })
-       .text(function(d) { return d.index; });
 
     // Heatmap instance
     radius = 15;
@@ -158,6 +145,16 @@ function init() {
     plotSelectedNodes(selectedNodesList); // plot nodes that have already been selected
     plotNewNodes(currNodeIndices, currData.index); // plot the new nodes
 
+    // BREADCRUMBS - show breadcrumb for the previous min
+    var breadcrumbID = "#button-" + (currMinute-2);
+    d3.select(breadcrumbID).style("display", "inline");
+    if (currMinute == 4 | currMinute == 5) {
+      var arrowID = "#arrow-" + (currMinute-3);
+      d3.select(arrowID).style("display", "inline-block");
+    };
+
+
+
   }; // end updateNodeClick
   // Update nodes
   function updateMouseoverRing(currNode) {
@@ -218,35 +215,6 @@ function init() {
          updateNodeClick(d3.select(this));
        });
 
-    // Labels
-    var nodeLabels = svg.selectAll(".nodeLabels")
-                        .data(currNodeIndices.map(i => dataset_node[i]).filter(function(d) {
-                          return d.parent == parentIndex;
-                        }));
-    nodeLabels.exit().remove();
-    var nodeLabelsEnter = nodeLabels.enter()
-                                    .append("text")
-                                    .attr("class", "nodeLabels")
-                                    .attr("x", function(d) {
-                                      return xScale_posX(d.pos[0]);
-                                    })
-                                    .attr("y", function(d) {
-                                      return yScale_posY(d.pos[1]);
-                                    })
-                                    .text(function(d,i) { return i; });
-    nodeLabels = nodeLabels.merge(nodeLabelsEnter);
-    nodeLabels.attr("id", function() {
-                if (currTeam == "blue") { return "nodeLabelsBlue"; }
-                else { return "nodeLabelsRed"; }
-              })
-              .attr("x", function(d) {
-                return xScale_posX(d.pos[0]);
-              })
-              .attr("y", function(d) {
-                return yScale_posY(d.pos[1]);
-              })
-              .text(function(d) { return d.index; })
-              .moveToFront();
   }; // end plotNewNodes
   // Plot path positions
   function plotSelectedNodes(selectedNodesList) {
@@ -526,19 +494,19 @@ function rowConverterNodes(d,i) {
     index: i,
     pos: [parseInt(d.pos.split(",")[0].replace("[", "")), parseInt(d.pos.split(",")[1].replace("]", ""))],
     parent: parseInt(d.parent) || -1,
-    pathIndices: d.pathIndices.split(",").map(function(d) { return parseInt(d.replace("[","")); }),
+    pathIndices: d.pathIndices.split(",").map(function(d) { return parseInt(d.replace("[","")); }) || -1,
     heatMap: d.heatMap.split(",").map(function(d) { return parseFloat(d.replace("[[", "").replace("[", "")); })
-  }
+  };
 }; // end row converter nodes
 function rowConverterLookup(d) {
   return {
     nodeIndices: d.nodeIndices.split(",").map(function(d) { return parseInt(d.replace("[","")); })
-  }
+  };
 }; // end rowconverter lookup
 function rowConverterPaths(d) {
   return {
     path: d.path.split("],[").map(function(d) { return d.replace("[[", "").replace("]]", "").replace("[", "").split(",").map(function(d) { return parseInt(d); }); })
-  }
+  };
 }; // end rowconverter paths
 d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
   d3.csv('Data/bNodeList.csv', rowConverterNodes, function(data_bNodeList) {

@@ -9,33 +9,48 @@
 
 </head>
 <body>
-	<section id="options">
-		<div id="options1">
-			<h3 class="options-title">Show:</h3>
-			<button type="button" id="button-dots" value="dots">Individual positions</button>
-		  <button type="button" id="button-heatmap" value="heatmap">Heat map</button>
-		</div>
-		<div id="options2">
-			<h3 class="options-title">Team:</h3>
-			<button type="button" id="button-blue" value="blue">Blue</button>
-		  <button type="button" id="button-red" value="red">Red</button>
-		</div>
-		<div id="options3">
-			<h3 class="options-title">Navigation:</h3>
-			<button type="button" id="button-back" value="back">Back</button>
-		</div>
-	</section>
-	<section id="graphic">
-		<div class="img-overlay-container">
-			<div id="heatmap-container"></div>
-			<img src="SRFull.png"></img>
-			<svg id="graphic-svg"></svg>
-			<div class="spinner" id="loading-spinner">
-			  <div class="double-bounce1"></div>
-			  <div class="double-bounce2"></div>
+	<div id="menu-graphic-container">
+		<div id="menu">
+			<div id="info-box"></div>
+			<div id="options">
+				<div id="options1">
+					<h3 class="options-title">Show:</h3>
+					<button type="button" id="button-dots" value="dots">Individual positions</button>
+				  <button type="button" id="button-heatmap" value="heatmap">Heat map</button>
+				</div>
+				<div id="options2">
+					<h3 class="options-title">Team:</h3>
+					<button type="button" id="button-blue" value="blue">Blue</button>
+				  <button type="button" id="button-red" value="red">Red</button>
+				</div>
 			</div>
 		</div>
-	</section>
+		<div id="righthand">
+			<div id="breadcrumbs-back-container">
+				<div id="breadcrumb-container">
+					<button type="button" class="breadcrumb" id="button-1" value="breadcrumb1">Position</button>
+					<i class="arrow right breadcrumbArrow" id="arrow-1"></i>
+					<button type="button" class="breadcrumb" id="button-2" value="breadcrumb2">Position</button>
+					<i class="arrow right breadcrumbArrow" id="arrow-2"></i>
+					<button type="button" class="breadcrumb" id="button-3" value="breadcrumb3">Position</button>
+				</div>
+				<div id="back-container">
+					<button type="button" id="button-back" value="back"><i class="arrow left"></i> Back</button>
+				</div>
+			</div>
+			<div id="graphic">
+				<div class="img-overlay-container">
+					<div id="heatmap-container"></div>
+					<img src="SRFull.png"></img>
+					<svg id="graphic-svg"></svg>
+					<div class="spinner" id="loading-spinner">
+					  <div class="double-bounce1"></div>
+					  <div class="double-bounce2"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
   <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 	<script type="text/javascript" src="heatmap.min.js"></script>

@@ -29,46 +29,121 @@ $redRingFill: #B4616B;
 $blueSelectedNode: #2277AA;
 $redSelectedNode: #FE8585;
 $purple: rgb(79,39,79);
+$lightGray: #DDDAC8;
+$maxMapWidth: 512px;
 
-body,html {
+body {
   min-width: 300px;
 }
-#options {
-  position: relative;
-  margin: 0 auto;
-  margin-top: 0.75em;
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 500px;
+@media screen and (min-width: $maxMapWidth+1px) { // desktop
+  #menu-graphic-container {
+    display: flex;
+    max-width: $maxMapWidth + 300px;
+    margin: auto;
+  }
+  #menu {
+    position: relative;
+    margin: 0 auto;
+    margin-top: 1em;
+    max-width: 300px;
+  }
+  #info-box {
+    height: 100px;
+    border: solid 1.5px $purple;
+    padding: 0.5em;
+    margin-bottom: 1em;
+  }
+  #options {
+    border: solid 1.5px $purple;
+    padding: 0.5em;
+  }
+  .options-title {
+    margin: 0;
+    margin-left: 0.5em;
+    color: $purple;
+  }
 }
-.options-title {
-  margin: 0;
-  margin-left: 0.5em;
-  color: #a19da8;
+@media screen and (max-width: $maxMapWidth) { // mobile
+  #menu {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: $maxMapWidth;
+  }
+  #info-box {
+  }
 }
-#options1 {
+button {
+  background-color: none;
+  font-size: 14px;
+  border-radius: 3px;
+  font-weight: 600;
+  height: 25px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  color: $purple;
+  border: 1.5px solid $purple;
+  font-family: stratum-medium;
+  cursor: pointer;
+  margin: 0.5em;
+}
+#button-dots {
+  background-color: $purple;
+  color: white;
+}
+#button-blue {
+  background-color: $purple;
+  color: white;
+}
+#breadcrumbs-back-container {
+  height: 35px;
+}
+#breadcrumb-container {
+  height: 35px;
   float: left;
-  padding: 0.25em;
-  margin: 0.25em;
 }
-#options2 {
+.breadcrumb {
+  display: none;
+  border: none;
+  background-color: $lightGray;
+}
+#back-container {
+  display: flex;
   float: right;
-  padding: 0.25em;
-  margin: 0.25em;
 }
-#options3 {
-  padding: 0.25em;
-  margin: 0.25em;
+#button-back {
+  margin: 0;
+  margin-left: 5px;
+  margin-top: 5px;
+  border: none;
+}
+i {
+  border: solid $purple;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+.breadcrumbArrow {
+  display: none;
+}
+#righthand {
+  margin-top: 1em;
 }
 #graphic {
   position: relative;
   margin: 0 auto;
-  margin-top: 1em;
 }
 .img-overlay-container {
   position: relative;
-  max-width: 512px;
-  max-height: 512px;
+  max-width: $maxMapWidth;
+  max-height: $maxMapWidth;
   margin: 0 auto;
 }
 .img-overlay-container img {
@@ -84,7 +159,6 @@ body,html {
   width: 100%;
   height: 100%;
 }
-
 .spinner {
   width: 40px;
   height: 40px;
@@ -152,10 +226,6 @@ body,html {
   stroke: $redNode;
   fill: $redRingFill;
 }
-.nodeLabels {
-  pointer-events: none;
-  fill: none;
-}
 #selectedNodesBlue {
   fill: $blueSelectedNode;
 }
@@ -188,28 +258,6 @@ body,html {
   fill: white;
   text-anchor: start;
   font-size: 18px;
-}
-button {
-  background-color: none;
-  font-size: 14px;
-  border-radius: 3px;
-  font-weight: 600;
-  height: 25px;
-  -webkit-transition-duration: 0.4s; /* Safari */
-  transition-duration: 0.4s;
-  color: $purple;
-  border: 1.5px solid $purple;
-  font-family: stratum-medium;
-  cursor: pointer;
-  margin: 0.5em;
-}
-#button-dots {
-  background-color: $purple;
-  color: white;
-}
-#button-blue {
-  background-color: $purple;
-  color: white;
 }
 @media screen and (min-width:400px) {
   h1 {
@@ -244,6 +292,6 @@ button {
   }
   button {
     font-size: 12px;
-    height: 35px;
+    height: 30px;
   }
 }
