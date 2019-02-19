@@ -64,8 +64,8 @@ function init() {
 
     // Heatmap instance
     radius = 15;
-    numBuckets = 50;
-    currHeatmapData = formatHeatmapData(dataset_bNodeList[0].heatMap); // TODO: Change when I get new data structure
+    numBuckets = 30;
+    currHeatmapData = formatHeatmapData(dataset_bNodeList[0].heatMap);
     heatmapInstance = generateHeatmapInstance("heatmap-container");
 
   }; // end setup
@@ -76,7 +76,7 @@ function init() {
     svg.selectAll(".pathPoints").style("fill", "none"); // remove all path positions
     svg.selectAll(".selectedNodesGroup").remove(); // remove all selected node groups which include rings and selected nodes
     svg.selectAll(".selectedLines").remove();
-    clearBreadcrumbs(); // clear breadcrumbs 
+    clearBreadcrumbs(); // clear breadcrumbs
   }; // end reset function
   function resize() {
     w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
@@ -156,7 +156,6 @@ function init() {
 
     // BREADCRUMBS - show breadcrumb for the previous min
     var breadcrumbID = "#button-min" + (currMinute-1);
-    console.log(breadcrumbID);
     d3.select(breadcrumbID)//.html(currData.position) // change the text to position text of current node
                            .style("display", "inline"); // display it
     if (currMinute == 4 | currMinute == 5) { // if the next minute is 4 or 5, show the arrow
@@ -397,11 +396,11 @@ function init() {
     return {max: d3.max(dataset, function(d) { return d; }),
             min: d3.min(dataset, function(d) { return d; }),
             data: dataset };
-  }
+  }; // end formatHeatmapData
   function generateHeatmapInstance(container) {
     return (h337.create({
       container: document.getElementById(container),
-      radius: 20,
+      radius: 30,
       maxOpacity: 1,
       minOpacity: 0,
       blur: 0.8,
@@ -523,7 +522,7 @@ function init() {
 // Load data
 function rowConverterNodes(d,i) {
   return {
-    index: i,
+    index: (i-1),
     pos: [parseInt(d.pos.split(",")[0].replace("[", "")), parseInt(d.pos.split(",")[1].replace("]", ""))],
     parent: parseInt(d.parent) || -1,
     pathIndices: d.pathIndices.split(",").map(function(d) { return parseInt(d.replace("[","")); }) || -1,
@@ -546,11 +545,13 @@ d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
       d3.csv('Data/rLookupTable.csv', rowConverterLookup, function(data_rLookup) {
         d3.csv('Data/rNodeList.csv', rowConverterNodes, function(data_rNodeList) {
           d3.csv('Data/rPathList.csv', rowConverterPaths, function(data_rPathList) {
+            var bNodeRow1 = data_bNodeList[0];
+            var rNodeRow1 = data_rNodeList[0];
             dataset_bLookup = data_bLookup;
-            dataset_bNodeList = data_bNodeList;
+            dataset_bNodeList = data_bNodeList.slice(1,data_bNodeList.length);
             dataset_bPathList = data_bPathList;
             dataset_rLookup = data_rLookup;
-            dataset_rNodeList = data_rNodeList;
+            dataset_rNodeList = data_rNodeList.slice(1,data_rNodeList.length);
             dataset_rPathList = data_rPathList;
 
             init();
