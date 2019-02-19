@@ -76,6 +76,7 @@ function init() {
     svg.selectAll(".pathPoints").style("fill", "none"); // remove all path positions
     svg.selectAll(".selectedNodesGroup").remove(); // remove all selected node groups which include rings and selected nodes
     svg.selectAll(".selectedLines").remove();
+    clearBreadcrumbs(); // clear breadcrumbs 
   }; // end reset function
   function resize() {
     w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
@@ -112,6 +113,13 @@ function init() {
         });
   }; // end moveToFront function
   // What happens when a node is clicked - need to update it every time a new node is added
+  function clearBreadcrumbs() {
+    d3.select("#button-min2").style("display", "none");
+    d3.select("#button-min3").style("display", "none");
+    d3.select("#button-min4").style("display", "none");
+    d3.select("#arrow-1").style("display", "none");
+    d3.select("#arrow-2").style("display", "none");
+  }; // end clearBreadcrumbs
   function updateNodeClick(currNode) {
 
     var currData = currNode.data()[0];
@@ -320,11 +328,7 @@ function init() {
 
     // Update breadcrumbs
     if (currMinute==2) {
-      d3.select("#button-min2").style("display", "none");
-      d3.select("#button-min3").style("display", "none");
-      d3.select("#button-min4").style("display", "none");
-      d3.select("#arrow-1").style("display", "none");
-      d3.select("#arrow-2").style("display", "none");
+      clearBreadcrumbs();
     }
     else if (currMinute==3) {
       d3.select("#button-min3").style("display", "none");
