@@ -1,4 +1,3 @@
-var currMinute;
 function init() {
   var svg = d3.select("#graphic-svg");
   var w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
@@ -10,8 +9,10 @@ function init() {
                       .domain([0,14700])
                       .range([h_map,0]);
   var numPositionsMin = 5000; // the minimum # of path positions at a time
+  var numRowBuckets = 30;
+  var bucketWidth = document.getElementById("graphic").getBoundingClientRect().width/numRowBuckets;
   // Variables to store
-  var currTeam, currNodeIndices, currPositionPaths, currHeatmapData, heatmapInstance, radius, numBuckets, selectedNodesList;
+  var currTeam, currNodeIndices, currPositionPaths, currHeatmapData, heatmapInstance, radius, numBuckets, selectedNodesList, currMinute;
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
 
@@ -63,11 +64,14 @@ function init() {
        });
 
     // Heatmap instance
-    radius = 15;
-    numBuckets = 30;
-    currHeatmapData = formatHeatmapData(dataset_bNodeList[0].heatMap);
-    heatmapInstance = generateHeatmapInstance("heatmap-container");
-
+    currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
+    heatmapInstance = h337.create({
+      container: document.getElementById("heatmap-container"),
+      radius: 30,
+      maxOpacity: 1,
+      minOpacity: 0,
+      blur: 0.8
+    });
   }; // end setup
   // Resent settings
   function reset() {
@@ -139,7 +143,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else {
-      currHeatmapData = formatHeatmapData(currData.heatMap);
+      currHeatmapData = formatHeatmapData(currData.heatMap, numRowBuckets, bucketWidth);
       heatmapInstance.setData(currHeatmapData);};
 
     // NODES
@@ -354,10 +358,12 @@ function init() {
     if (currTeam == "blue") { // blue team
       var dataset_node = dataset_bNodeList;
       var dataset_path = dataset_bPathList;
+      var dataset_heatmap = bNodeRow1.heatMap;
     }
     else { // red team
       var dataset_node = dataset_rNodeList;
       var dataset_path = dataset_rPathList;
+      var dataset_heatmap = rNodeRow1.heatMap;
     };
 
     // Re plot positions (if any) and nodes
@@ -372,8 +378,9 @@ function init() {
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else {
-        currHeatmapData = formatHeatmapData(currNodeData.heatMap)
-        heatmapInstance.setData(currHeatmapData);};
+        currHeatmapData = formatHeatmapData(currNodeData.heatMap, numRowBuckets, bucketWidth);
+        heatmapInstance.setData(currHeatmapData);
+      };
       // Plot nodes
       plotSelectedNodes(selectedNodesList); // plot nodes that have already been selected
       plotNewNodes(currNodeIndices, selectedNodesList[selectedNodesList.length-1]); // plot new nodes
@@ -384,36 +391,29 @@ function init() {
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else {
-        currHeatmapData = formatHeatmapData(dataset_node[0].heatMap); // TODO: Change when I get new data structure
-        heatmapInstance.setData(currHeatmapData); };
+        currHeatmapData = formatHeatmapData(dataset_heatmap, numRowBuckets, bucketWidth);
+        heatmapInstance.setData(currHeatmapData);
+      };
       // Plot nodes
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
     };
   }; // end backClick
-  function formatHeatmapData(dataset) {
-    // data only has the dataset; need to add max and min
+  function formatHeatmapData(dataset, numRowBuckets, radius) {
+    var dataset_output = [];
+    for (var j=0; j<900; j++) { // for every bucket in counts array
+      // assign x y coordinates to buckets
+      var rowIndex = Math.floor(j / numRowBuckets);
+      var colIndex = j % numRowBuckets;
+      dataset_output.push({x: rowIndex*radius+Math.floor(radius/2),
+                           y: colIndex*radius+Math.floor(radius/2),
+                           value: dataset[j]}) // what needs to go into heatmap setData
+      // added radius/2 to center it in the bucket square
+    };
     return {max: d3.max(dataset, function(d) { return d; }),
             min: d3.min(dataset, function(d) { return d; }),
-            data: dataset };
+            data: dataset_output };
   }; // end formatHeatmapData
-  function generateHeatmapInstance(container) {
-    return (h337.create({
-      container: document.getElementById(container),
-      radius: 30,
-      maxOpacity: 1,
-      minOpacity: 0,
-      blur: 0.8,
-      gradient: {
-        '0.001': 'purple',
-        '0.2': 'blue',
-        '0.4': 'green',
-        '0.6': 'yellow',
-        '0.8': 'orange',
-        '1': 'red'
-      }
-    }));
-  }; // end generateHeatmapInstance
 
   // Initial settings
   reset();
@@ -432,7 +432,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else {
-      currHeatmapData = formatHeatmapData(dataset_bNodeList[0].heatMap); // TODO: Change when I get new data structure
+      currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
       heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
@@ -456,7 +456,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else {
-      currHeatmapData = formatHeatmapData(dataset_rNodeList[0].heatMap); // TODO: Change when I get new data structure
+      currHeatmapData = formatHeatmapData(rNodeRow1.heatMap, numRowBuckets, bucketWidth);
       heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
@@ -545,8 +545,8 @@ d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
       d3.csv('Data/rLookupTable.csv', rowConverterLookup, function(data_rLookup) {
         d3.csv('Data/rNodeList.csv', rowConverterNodes, function(data_rNodeList) {
           d3.csv('Data/rPathList.csv', rowConverterPaths, function(data_rPathList) {
-            var bNodeRow1 = data_bNodeList[0];
-            var rNodeRow1 = data_rNodeList[0];
+            bNodeRow1 = data_bNodeList[0];
+            rNodeRow1 = data_rNodeList[0];
             dataset_bLookup = data_bLookup;
             dataset_bNodeList = data_bNodeList.slice(1,data_bNodeList.length);
             dataset_bPathList = data_bPathList;
