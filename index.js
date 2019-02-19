@@ -147,14 +147,12 @@ function init() {
 
     // BREADCRUMBS - show breadcrumb for the previous min
     var breadcrumbID = "#button-" + (currMinute-2);
-    d3.select(breadcrumbID).style("display", "inline");
-    if (currMinute == 4 | currMinute == 5) {
+    d3.select(breadcrumbID)//.html(currData.position) // change the text to position text of current node
+                           .style("display", "inline"); // display it
+    if (currMinute == 4 | currMinute == 5) { // if the next minute is 4 or 5, show the arrow
       var arrowID = "#arrow-" + (currMinute-3);
       d3.select(arrowID).style("display", "inline-block");
     };
-
-
-
   }; // end updateNodeClick
   // Update nodes
   function updateMouseoverRing(currNode) {
@@ -318,10 +316,18 @@ function init() {
     currMinute = d3.max([currMinute-1, 2], function(d) { return d; }); // don't want it to be smaller than 2
     svg.select("#minuteMark").text("Minute " + currMinute);
 
+    // Update breadcrumbs - remove the last one
+    var breadcrumbID = "#button-" + (currMinute-1);
+    d3.select(breadcrumbID).style("display", "none"); // display it
+    if (currMinute == 4 | currMinute == 3) { // if the next minute is 4 or 5, show the arrow
+      var arrowID = "#arrow-" + (currMinute-2);
+      d3.select(arrowID).style("display", "none");
+    };
+
     // Remove previous node from list if there are any to be removed
     if (selectedNodesList.length > 0) { // if it's not at Minute 2 (back to the beginning)
       selectedNodesList.pop(); // Remove previous node from list
-    }
+    };
 
     // Set currNodeIndices
     if (currTeam == "blue") { currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices; }
@@ -335,7 +341,7 @@ function init() {
     else { // red team
       var dataset_node = dataset_rNodeList;
       var dataset_path = dataset_rPathList;
-    }
+    };
 
     // Re plot positions (if any) and nodes
     if (selectedNodesList.length > 0) { // if even after popping last node, there are more nodes...
@@ -366,7 +372,7 @@ function init() {
       // Plot nodes
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
-    }
+    };
   }; // end backClick
   function formatHeatmapData(dataset) {
     // data only has the dataset; need to add max and min
