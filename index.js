@@ -10,7 +10,7 @@ function init() {
                       .range([h_map,0]);
   var numPositionsMin = 5000; // the minimum # of path positions at a time
   var numRowBuckets = 30;
-  var bucketWidth = document.getElementById("graphic").getBoundingClientRect().width/numRowBuckets;
+  var bucketWidth = document.getElementById("graphic").getBoundingClientRect().height/numRowBuckets;
   // Variables to store
   var currTeam, currNodeIndices, currPositionPaths, currHeatmapData, heatmapInstance, radius, numBuckets, selectedNodesList, currMinute;
   var currTeam = "blue"; // default
@@ -414,10 +414,8 @@ function init() {
             data: dataset_output };
   }; // end formatHeatmapData
 
-  // Initial settings
-  reset();
-  // Create elements for initial load
-  setup();
+  reset();// Initial settings
+  setup();// Create elements for initial load
 
   // Interactivity
   // Blue team button selected
@@ -437,7 +435,7 @@ function init() {
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
-    d3.select(this)
+    d3.selectAll(".button-blue")
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
     d3.selectAll(".button-red")
@@ -461,7 +459,7 @@ function init() {
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
-    d3.select(this)
+    d3.selectAll(".button-red")
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
     d3.selectAll(".button-blue")
@@ -482,7 +480,7 @@ function init() {
     // Hide heatmap
     heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
     // Change button styles
-    d3.select(this)
+    d3.selectAll(".button-dots")
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
     d3.selectAll(".button-heatmap")
@@ -498,7 +496,7 @@ function init() {
     svg.selectAll(".pathPoints").remove();
 
     // Change button styles
-    d3.select(this)
+    d3.selectAll(".button-heatmap")
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
     d3.selectAll(".button-dots")
