@@ -41,11 +41,6 @@ body {
   margin-left: 0.5em;
   color: $purple;
 }
-#menu {
-  position: relative;
-  margin: 0 auto;
-  margin-top: 1em;
-}
 #info-box {
   height: 100px;
   border: solid 1.5px $purple;
@@ -66,15 +61,15 @@ button {
   cursor: pointer;
   margin: 0.5em;
 }
-#button-dots {
+.button-dots {
   background-color: $purple;
   color: white;
 }
-#button-blue {
+.button-blue {
   background-color: $purple;
   color: white;
 }
-#righthand {
+#lefthand {
   margin-top: 1em;
 }
 #breadcrumbs-back-container {
@@ -123,8 +118,14 @@ i {
     max-width: 830px;
     margin: auto;
   }
-  #menu {
+  #menu-desktop {
     max-width: 300px;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 1em;
+  }
+  #menu-mobile {
+    display: none;
   }
   #options {
     border: solid 1.5px $purple;
@@ -132,8 +133,14 @@ i {
   }
 }
 @media screen and (max-width: 799px) { // mobile
-  #menu {
+  #menu-mobile {
     max-width: $maxMapWidth;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 1em;
+  }
+  #menu-desktop {
+    display: none;
   }
   #info-box {
     max-width: $maxMapWidth;
@@ -148,7 +155,7 @@ i {
     max-width: $maxMapWidth;
     margin: auto;
   }
-  #righthand {
+  #lefthand {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
   }

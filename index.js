@@ -421,7 +421,7 @@ function init() {
 
   // Interactivity
   // Blue team button selected
-  d3.select("#button-blue").on("click", function() {
+  d3.selectAll(".button-blue").on("click", function() {
     // start over when color is changed
     reset();
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
@@ -440,12 +440,12 @@ function init() {
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
-    d3.select("#button-red")
+    d3.selectAll(".button-red")
       .style("background-color", "white")
       .style("color", d3.rgb(79,39,79));
   }); // end on blue button select
   // Red team button selected
-  d3.select("#button-red").on("click", function() {
+  d3.selectAll(".button-red").on("click", function() {
     // start over when color is changed
     reset();
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
@@ -464,7 +464,7 @@ function init() {
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
-    d3.select("#button-blue")
+    d3.selectAll(".button-blue")
       .style("background-color", "white")
       .style("color", d3.rgb(79,39,79));
   }); // end on red button select
@@ -473,7 +473,7 @@ function init() {
     backClick(1);
   });
   // Dot button selected
-  d3.select("#button-dots").on("click", function() {
+  d3.selectAll(".button-dots").on("click", function() {
     currDisplay = "dots";
     // Plot dots
     plotPositions(currPositionPaths);
@@ -485,16 +485,15 @@ function init() {
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
-    d3.select("#button-heatmap")
+    d3.selectAll(".button-heatmap")
       .style("background-color", "white")
       .style("color", d3.rgb(79,39,79));
   });
   // Heatmap button selected
-  d3.select("#button-heatmap").on("click", function() {
+  d3.selectAll(".button-heatmap").on("click", function() {
     currDisplay = "heatmap";
     // plot heatmap
     heatmapInstance.setData(currHeatmapData);
-    console.log(currHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
 
@@ -502,7 +501,7 @@ function init() {
     d3.select(this)
       .style("background-color", d3.rgb(79,39,79))
       .style("color", "white");
-    d3.select("#button-dots")
+    d3.selectAll(".button-dots")
       .style("background-color", "white")
       .style("color", d3.rgb(79,39,79));
   })
