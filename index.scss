@@ -69,7 +69,7 @@ button {
   background-color: $purple;
   color: white;
 }
-#lefthand {
+#main {
   margin-top: 1em;
 }
 #breadcrumbs-back-container {
@@ -155,7 +155,7 @@ i {
     max-width: $maxMapWidth;
     margin: auto;
   }
-  #lefthand {
+  #main {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
   }
@@ -269,8 +269,9 @@ i {
 }
 .selectedLines {
   stroke: white;
+  stroke-width: 3;
 }
-#arrow {
+marker {
   fill: white;
 }
 .pathPoints {

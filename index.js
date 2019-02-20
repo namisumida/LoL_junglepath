@@ -240,8 +240,8 @@ function init() {
        .attr("viewBox", "0 -5 10 10")
        .attr("refX", 15)
        .attr("refY", 0)
-       .attr("markerWidth", 12)
-       .attr("markerHeight", 12)
+       .attr("markerWidth", 4)
+       .attr("markerHeight", 4)
        .attr("orient", "auto")
        .append("svg:path")
        .attr("d", "M0,-5L10,0L0,5");
@@ -255,7 +255,7 @@ function init() {
                                             .attr("x1", function(d,i) { return xScale_posX(dataset_node[selectedNodesList[i]].pos[0]); }) // using i because we slice in data() and skipping the first item in list
                                             .attr("y1", function(d,i) { return yScale_posY(dataset_node[selectedNodesList[i]].pos[1]); })
                                             .attr("x2", function(d,i) { return xScale_posX(d.pos[0]); })
-                                            .attr("y2", function(d,i) { return yScale_posY(d.pos[1]); });
+                                            .attr("y2", function(d,i) { return yScale_posY(d.pos[1]); })
       selectedLines = selectedLines.merge(selectedLinesEnter);
       selectedLines.attr("class", "selectedLines")
                    .attr("x1", function(d,i) { return xScale_posX(dataset_node[selectedNodesList[i]].pos[0]); })
@@ -263,7 +263,6 @@ function init() {
                    .attr("x2", function(d,i) { return xScale_posX(d.pos[0]); })
                    .attr("y2", function(d,i) { return yScale_posY(d.pos[1]); })
                    .attr("marker-end", "url(#arrow)");
-
     } // end drawing lines
     else { svg.selectAll(".selectedLines").remove(); }
 
