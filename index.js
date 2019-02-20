@@ -67,10 +67,9 @@ function init() {
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
     heatmapInstance = h337.create({
       container: document.getElementById("heatmap-container"),
-      radius: 30,
+      radius: bucketWidth*1.5,
       maxOpacity: 1,
-      minOpacity: 0,
-      blur: 0.8
+      minOpacity: 0
     });
   }; // end setup
   // Resent settings
@@ -403,10 +402,10 @@ function init() {
     var dataset_output = [];
     for (var j=0; j<900; j++) { // for every bucket in counts array
       // assign x y coordinates to buckets
-      var rowIndex = Math.floor(j / numRowBuckets);
-      var colIndex = j % numRowBuckets;
-      dataset_output.push({x: rowIndex*radius+Math.floor(radius/2),
-                           y: colIndex*radius+Math.floor(radius/2),
+      var rowBucket = numRowBuckets - Math.floor(j / numRowBuckets); // tells what row you're in; determines y position
+      var colBucket = (j % numRowBuckets); // tells what col you're in; determines x position
+      dataset_output.push({x: colBucket*radius+Math.floor(radius/2),
+                           y: rowBucket*radius,
                            value: dataset[j]}) // what needs to go into heatmap setData
       // added radius/2 to center it in the bucket square
     };
@@ -429,10 +428,10 @@ function init() {
     currTeam = "blue";
 
     currPositionPaths = dataset_bPathList.slice(0,numPositionsMin);
+    currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else {
-      currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
       heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
@@ -453,10 +452,10 @@ function init() {
     currTeam = "red";
 
     currPositionPaths = dataset_rPathList.slice(0,numPositionsMin);
+    currHeatmapData = formatHeatmapData(rNodeRow1.heatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else {
-      currHeatmapData = formatHeatmapData(rNodeRow1.heatMap, numRowBuckets, bucketWidth);
       heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
@@ -495,7 +494,7 @@ function init() {
     currDisplay = "heatmap";
     // plot heatmap
     heatmapInstance.setData(currHeatmapData);
-
+    console.log(currHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
 
