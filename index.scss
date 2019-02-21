@@ -22,55 +22,76 @@
   font-family: stratum-regular;
   src: url("fonts/Stratum2-Regular.otf");
 }
+@font-face {
+  font-family: stratum-bold;
+  src: url("fonts/Stratum2-Bold.otf");
+}
 $blueNode: #0032EE;
 $redNode: #BB0000;
 $blueRingFill: #80CBEB;
 $redRingFill: #B4616B;
 $blueSelectedNode: #2277AA;
 $redSelectedNode: #FE8585;
-$purple: rgb(79,39,79);
-$lightGray: rgb(221,221,221);
+$purple: #7D6199;
+$lightGray: #9F9EA6;
 $maxMapWidth: 512px;
 
-body {
-  min-width: 300px;
-}
 // OPTIONS/MENU AREA
+#info-box {
+  height: 100px;
+  padding: 0.5em;
+  margin-bottom: 1em;
+  border: solid 1px gray;
+  border-radius: 4px;
+}
 .options-title {
   margin: 0;
   margin-left: 0.5em;
-  color: $purple;
-}
-#info-box {
-  height: 100px;
-  border: solid 1.5px $purple;
-  padding: 0.5em;
-  margin-bottom: 1em;
-}
-button {
-  background-color: none;
-  font-size: 14px;
-  border-radius: 3px;
-  font-weight: 600;
-  height: 25px;
-  -webkit-transition-duration: 0.4s; /* Safari */
-  transition-duration: 0.4s;
-  color: $purple;
-  border: 1.5px solid $purple;
+  margin-bottom: 5px;
+  color: $lightGray;
   font-family: stratum-medium;
+  font-size: 11px;
+}
+/* Customize the label (the container) */
+.radiobutton-container {
+  display: block;
+  position: relative;
+  padding-left: 25px;
+  margin-top: 5px;
+  margin-left: 5px;
   cursor: pointer;
-  margin: 0.5em;
+  font-size: 15px;
+  font-family: stratum-medium;
+  color: $purple;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
-.button-dots {
-  background-color: $purple;
-  color: white;
+/* Hide the browser's default radio button */
+.radiobutton-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 }
-.button-blue {
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 13px;
+  width: 13px;
+  border: solid 2px $purple;
+  border-radius: 50%;
+}
+/* When the radio button is checked, add a purple background */
+.checked {
   background-color: $purple;
-  color: white;
 }
 #main {
-  margin-top: 1em;
+  margin-top: 10px;
 }
 #breadcrumbs-back-container {
   height: 35px;
@@ -81,19 +102,25 @@ button {
 }
 .breadcrumb {
   display: none;
-  border: none;
-  background-color: $lightGray;
+  margin: 0.5em;
   margin-top: 0;
-}
-#back-container {
-  display: flex;
-  float: right;
+  font-size: 14px;
+  border: solid 1px $lightGray;
+  border-radius: 3px;
+  font-weight: 500;
+  height: 25px;
+  color: $lightGray;
+  font-family: stratum-medium;
+  cursor: pointer;
 }
 #button-back {
-  margin: 0;
   margin-left: 5px;
   margin-top: 5px;
   border: none;
+  font-size: 16px;
+  font-family: stratum-bold;
+  color: $purple;
+  cursor: pointer;
 }
 i {
   border: solid $purple;
@@ -108,31 +135,42 @@ i {
 .right {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
+  border-color: $lightGray;
+}
+.active {
+  color: black;
+  border-color: black;
 }
 .breadcrumbArrow {
   display: none;
 }
-@media screen and (min-width: 800px) { // desktop
+#back-container {
+  display: flex;
+  float: right;
+}
+@media screen and (min-width: 740px) { // desktop
   #menu-graphic-container {
     display: flex;
-    max-width: 830px;
+    max-width: 850px;
     margin: auto;
   }
   #menu-desktop {
-    max-width: 300px;
+    max-width: 180px;
     position: relative;
     margin: 0 auto;
-    margin-top: 1em;
+    margin-top: 45px;
   }
   #menu-mobile {
     display: none;
   }
   #options {
-    border: solid 1.5px $purple;
     padding: 0.5em;
   }
+  #options2 {
+    margin-top: 40px;
+  }
 }
-@media screen and (max-width: 799px) { // mobile
+@media screen and (max-width: 739px) { // not desktop
   #menu-mobile {
     max-width: $maxMapWidth;
     position: relative;
@@ -143,13 +181,15 @@ i {
     display: none;
   }
   #info-box {
-    max-width: $maxMapWidth;
+    display: none;
+    //max-width: $maxMapWidth;
   }
   #options {
     display: flex;
+    margin-bottom: 20px;
   }
   #options2 {
-    margin-left: 1em;
+    margin-left: 30px;
   }
   #breadcrumbs-back-container {
     max-width: $maxMapWidth;
@@ -285,39 +325,31 @@ marker {
   text-anchor: start;
   font-size: 18px;
 }
-@media screen and (min-width:400px) {
-  h1 {
-    font-family: radnika-black;
-    font-size: 30px;
-    text-align: center;
+@media screen and (max-width: 400px) { // mobile text sizes
+  .options-title {
+    font-size: 10px;
+  }
+  .radiobutton-container {
+    font-size: 11px;
+    padding-left: 20px;
+  }
+  .checkmark {
+    height: 8px;
+    width: 8px;
+  }
+  .breadcrumb {
+    font-size: 11px;
     margin: 0;
+    margin-left: 3px;
+    padding: 3px;
   }
-  h3 {
-    font-family: radnika-medium;
-    font-size: 14px;
+  .breadcrumbArrow {
+    margin-top: 5px;
   }
-  p {
-    font-family: radnika-regular;
-    font-size: 13px;
-  }
-}
-@media screen and (max-width:400px) {
-  h1 {
-    font-family: radnika-black;
-    font-size: 20px;
-    text-align: center;
-    margin: 0;
-  }
-  h3 {
-    font-family: radnika-medium;
-    font-size: 12px;
-  }
-  p {
-    font-family: radnika-regular;
+  #button-back {
     font-size: 11px;
   }
-  button {
-    font-size: 12px;
-    height: 30px;
+  #minuteMark {
+    font-size: 13px;
   }
 }

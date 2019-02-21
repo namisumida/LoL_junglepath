@@ -159,8 +159,10 @@ function init() {
 
     // BREADCRUMBS - show breadcrumb for the previous min
     var breadcrumbID = "#button-min" + (currMinute-1);
+    d3.selectAll(".breadcrumb").classed("active", false); // remove styling for previous breadcrumbs
     d3.select(breadcrumbID)//.html(currData.position) // change the text to position text of current node
-                           .style("display", "inline"); // display it
+                           .style("display", "inline") // display it
+                           .classed("active", true); // change style
     if (currMinute == 4 | currMinute == 5) { // if the next minute is 4 or 5, show the arrow
       var arrowID = "#arrow-" + (currMinute-3);
       d3.select(arrowID).style("display", "inline-block");
@@ -341,6 +343,7 @@ function init() {
       d3.select("#button-min4").style("display", "none");
       d3.select("#arrow-2").style("display", "none");
     };
+    d3.select("#button-min"+(currMinute-1)).classed("active", true);
     // Remove previous node from list if there are any to be removed
     if (selectedNodesList.length > 0) { // if it's not at Minute 2 (back to the beginning)
       for (var i=0; i<numClicks; i++) {
@@ -434,12 +437,8 @@ function init() {
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
-    d3.selectAll(".button-blue")
-      .style("background-color", d3.rgb(79,39,79))
-      .style("color", "white");
-    d3.selectAll(".button-red")
-      .style("background-color", "white")
-      .style("color", d3.rgb(79,39,79));
+    d3.selectAll(".button-blue").select(".checkmark").classed("checked", true);
+    d3.selectAll(".button-red").select(".checkmark").classed("checked", false);
   }); // end on blue button select
   // Red team button selected
   d3.selectAll(".button-red").on("click", function() {
@@ -458,12 +457,8 @@ function init() {
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
-    d3.selectAll(".button-red")
-      .style("background-color", d3.rgb(79,39,79))
-      .style("color", "white");
-    d3.selectAll(".button-blue")
-      .style("background-color", "white")
-      .style("color", d3.rgb(79,39,79));
+    d3.selectAll(".button-red").select(".checkmark").classed("checked", true);
+    d3.selectAll(".button-blue").select(".checkmark").classed("checked", false);
   }); // end on red button select
   // Back button selected
   d3.select("#button-back").on("click", function() {
@@ -479,12 +474,8 @@ function init() {
     // Hide heatmap
     heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
     // Change button styles
-    d3.selectAll(".button-dots")
-      .style("background-color", d3.rgb(79,39,79))
-      .style("color", "white");
-    d3.selectAll(".button-heatmap")
-      .style("background-color", "white")
-      .style("color", d3.rgb(79,39,79));
+    d3.selectAll(".button-dots").select(".checkmark").classed("checked", true);
+    d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
   });
   // Heatmap button selected
   d3.selectAll(".button-heatmap").on("click", function() {
@@ -493,14 +484,9 @@ function init() {
     heatmapInstance.setData(currHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
-
     // Change button styles
-    d3.selectAll(".button-heatmap")
-      .style("background-color", d3.rgb(79,39,79))
-      .style("color", "white");
-    d3.selectAll(".button-dots")
-      .style("background-color", "white")
-      .style("color", d3.rgb(79,39,79));
+    d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", true);
+    d3.selectAll(".button-dots").select(".checkmark").classed("checked", false);
   })
   // Breadcrumb "buttons"
   for (var i=2; i<5; i++) {
