@@ -37,13 +37,6 @@ $lightGray: #9F9EA6;
 $maxMapWidth: 512px;
 
 // OPTIONS/MENU AREA
-#info-box {
-  height: 100px;
-  padding: 0.5em;
-  margin-bottom: 1em;
-  border: solid 1px gray;
-  border-radius: 4px;
-}
 .options-title {
   margin: 0;
   margin-left: 0.5em;
@@ -148,20 +141,51 @@ i {
   display: flex;
   float: right;
 }
-@media screen and (min-width: 740px) { // desktop
+@media screen and (min-width: 870px) { // desktop
   #menu-graphic-container {
     display: flex;
-    max-width: 850px;
+    max-width: 1000px;
     margin: auto;
   }
+  #presets {
+    margin: auto;
+    margin-top: 45px;
+    max-width: 100px;
+  }
+  #preset-text {
+    text-align: right;
+    width: 90px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    margin-left: 0;
+    margin-right: 0.5em;
+  }
+  #preset-box-wrapper {
+    width: 90px;
+  }
+  .preset-box {
+    border: solid 1px gray;
+    border-radius: 4px;
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    margin-bottom: 20px;
+  }
   #menu-desktop {
-    max-width: 180px;
     position: relative;
-    margin: 0 auto;
+    margin: auto;
     margin-top: 45px;
   }
   #menu-mobile {
     display: none;
+  }
+  #info-box {
+    width: 180px;
+    height: 100px;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    border: solid 1px gray;
+    border-radius: 4px;
   }
   #options {
     padding: 0.5em;
@@ -170,7 +194,7 @@ i {
     margin-top: 40px;
   }
 }
-@media screen and (max-width: 739px) { // not desktop
+@media screen and (max-width: 869px) { // not desktop
   #menu-mobile {
     max-width: $maxMapWidth;
     position: relative;
@@ -178,6 +202,9 @@ i {
     margin-top: 1em;
   }
   #menu-desktop {
+    display: none;
+  }
+  #presets {
     display: none;
   }
   #info-box {

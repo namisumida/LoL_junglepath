@@ -90,6 +90,8 @@ function init() {
     yScale_posY = d3.scaleLinear()
                     .domain([0,14700])
                     .range([h_map,0]);
+    if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
+    else { var dataset_node = dataset_rNodeList; }
     svg.selectAll(".pathPoints")
        .attr("cx", function(d) { return xScale_posX(d.path[(currMinute-2)][0]); })
        .attr("cy", function(d) { return yScale_posY(d.path[(currMinute-2)][1]); });
@@ -107,7 +109,7 @@ function init() {
     svg.selectAll(".selectedNodeRings")
        .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
        .attr("cy", function(d) { return yScale_posY(d.pos[1]); });
-  }
+  }; // end resize
 
   ////////////////////////////////////////////////////////////////////////////////////
   d3.selection.prototype.moveToFront = function() {
