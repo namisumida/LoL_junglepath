@@ -141,11 +141,11 @@ function init() {
     // Find currPositionPaths
     if (currTeam == "blue") { currPositionPaths = currPathIndices.map(i => dataset_bPathList[i]); }
     else { currPositionPaths = currPathIndices.map(i => dataset_rPathList[i]); }
+    // For heatmap dataset
+    currHeatmapData = formatHeatmapData(currData.heatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else {
-      currHeatmapData = formatHeatmapData(currData.heatMap, numRowBuckets, bucketWidth);
-      heatmapInstance.setData(currHeatmapData);};
+    else { heatmapInstance.setData(currHeatmapData); };
 
     // NODES
     // Append selected node to list of selected nodes
@@ -378,12 +378,10 @@ function init() {
       }
       else { var currPathIndices = currNodeData.pathIndices; }
       currPositionPaths = currPathIndices.map(i => dataset_path[i]);
+      currHeatmapData = formatHeatmapData(currNodeData.heatMap, numRowBuckets, bucketWidth);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-      else {
-        currHeatmapData = formatHeatmapData(currNodeData.heatMap, numRowBuckets, bucketWidth);
-        heatmapInstance.setData(currHeatmapData);
-      };
+      else { heatmapInstance.setData(currHeatmapData); };
       // Plot nodes
       plotSelectedNodes(selectedNodesList); // plot nodes that have already been selected
       plotNewNodes(currNodeIndices, selectedNodesList[selectedNodesList.length-1]); // plot new nodes
@@ -391,12 +389,10 @@ function init() {
     // Else, you're back at min 2 and you need to plot those path points
     else {
       currPositionPaths = dataset_path.slice(0, numPositionsMin);
+      currHeatmapData = formatHeatmapData(dataset_heatmap, numRowBuckets, bucketWidth);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-      else {
-        currHeatmapData = formatHeatmapData(dataset_heatmap, numRowBuckets, bucketWidth);
-        heatmapInstance.setData(currHeatmapData);
-      };
+      else { heatmapInstance.setData(currHeatmapData); };
       // Plot nodes
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
@@ -433,8 +429,7 @@ function init() {
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else {
-      heatmapInstance.setData(currHeatmapData); };
+    else { heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
@@ -453,8 +448,7 @@ function init() {
     currHeatmapData = formatHeatmapData(rNodeRow1.heatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else {
-      heatmapInstance.setData(currHeatmapData); };
+    else { heatmapInstance.setData(currHeatmapData); };
     // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
