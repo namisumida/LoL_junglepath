@@ -26,11 +26,11 @@
   font-family: stratum-bold;
   src: url("fonts/Stratum2-Bold.otf");
 }
-$blueNode: #0032EE;
+$blueNode: #486DAF;
 $redNode: #BB0000;
-$blueRingFill: #80CBEB;
+$blueRingFill: #486DAF;
 $redRingFill: #B4616B;
-$blueSelectedNode: #2277AA;
+$blueSelectedNode: #486DAF;
 $redSelectedNode: #FE8585;
 $purple: #7D6199;
 $lightGray: #9F9EA6;
@@ -334,12 +334,20 @@ i {
 #selectedNodeRingsRed {
   stroke: $redSelectedNode;
 }
-.selectedLines {
-  stroke: white;
-  stroke-width: 3;
-}
-marker {
+.selectedNodeText {
+  font-family: stratum-medium;
   fill: white;
+  font-size: 13px;
+}
+.selectedLines {
+  stroke-width: 3;
+  stroke-dasharray: 5; 
+}
+#selectedLinesBlue {
+  stroke: $blueSelectedNode;
+}
+#selectedLinesRed {
+  stroke: $redSelectedNode;
 }
 .pathPoints {
   opacity: 0.4;

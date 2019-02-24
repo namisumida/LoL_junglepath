@@ -47,16 +47,14 @@ function init() {
        .attr("id", "nodesBlue")
        .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
        .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-       .attr("r", 5)
+       .attr("r", 7)
        .moveToFront()
        .on("mouseover", function() {
-         d3.select(this).attr("r", 5); // shrink the node
          updateMouseoverRing(d3.select(this));
        })
        .on("mouseout", function() {
          svg.selectAll(".nodeRings").remove();
-         d3.select(this).attr("r", 5) // expand node to normal size
-                        .style("opacity", 0.8);
+         d3.select(this).style("opacity", 0.8);
        })
        .on("click", function() {
          svg.selectAll(".nodeRings").remove();
@@ -200,7 +198,7 @@ function init() {
                           .attr("cy", function(d) {
                             return yScale_posY(d.pos[1]);
                           })
-                          .attr("r", 5);
+                          .attr("r", 7);
     nodes = nodes.merge(nodesEnter);
     nodes.attr("id", function() {
             if (currTeam == "blue") { return "nodesBlue"; }
@@ -212,16 +210,16 @@ function init() {
           .attr("cy", function(d) {
             return yScale_posY(d.pos[1]);
           })
-          .attr("r", 5);
+          .attr("r", 7);
     svg.selectAll(".nodes")
        .moveToFront()
        .on("mouseover", function() {
-         d3.select(this).attr("r", 5); // shrink the node
+         d3.select(this).attr("r", 7); // shrink the node
          updateMouseoverRing(d3.select(this));
        })
        .on("mouseout", function() {
          svg.selectAll(".nodeRings").remove();
-         d3.select(this).attr("r", 5) // expand node to normal size
+         d3.select(this).attr("r", 7) // expand node to normal size
                         .style("opacity", 0.8);
        })
        .on("click", function() {
@@ -236,19 +234,7 @@ function init() {
     if (currTeam == "blue") { var dataset_node = dataset_bNodeList; }
     else { var dataset_node = dataset_rNodeList; }
 
-    // Draw arrows
-    // marker/arrow head
-    svg.append("svg:defs")
-       .append("svg:marker")
-       .attr("id", "arrow")
-       .attr("viewBox", "0 -5 10 10")
-       .attr("refX", 15)
-       .attr("refY", 0)
-       .attr("markerWidth", 4)
-       .attr("markerHeight", 4)
-       .attr("orient", "auto")
-       .append("svg:path")
-       .attr("d", "M0,-5L10,0L0,5");
+    // Draw lines
     if (selectedNodesList.length > 1 ) { // only if there's more than 1 previously selected node
       // line
       var selectedLines = svg.selectAll(".selectedLines")
@@ -262,11 +248,14 @@ function init() {
                                             .attr("y2", function(d,i) { return yScale_posY(d.pos[1]); })
       selectedLines = selectedLines.merge(selectedLinesEnter);
       selectedLines.attr("class", "selectedLines")
+                   .attr("id", function() {
+                     if (currTeam == "blue") { return "selectedLinesBlue"; }
+                     else { return "selectedLinesRed"; }
+                   })
                    .attr("x1", function(d,i) { return xScale_posX(dataset_node[selectedNodesList[i]].pos[0]); })
                    .attr("y1", function(d,i) { return yScale_posY(dataset_node[selectedNodesList[i]].pos[1]); })
                    .attr("x2", function(d,i) { return xScale_posX(d.pos[0]); })
-                   .attr("y2", function(d,i) { return yScale_posY(d.pos[1]); })
-                   .attr("marker-end", "url(#arrow)");
+                   .attr("y2", function(d,i) { return yScale_posY(d.pos[1]); });
     } // end drawing lines
     else { svg.selectAll(".selectedLines").remove(); }
 
@@ -278,15 +267,11 @@ function init() {
                                                 .append("g")
                                                 .attr("class", "selectedNodesGroup");
     selectedNodesGroupEnter.append("circle")
-                           .attr("class", "selectedNodes")
-                           .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
-                           .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-                           .attr("r", 5);
+                           .attr("class", "selectedNodes");
     selectedNodesGroupEnter.append("circle")
-                           .attr("class", "selectedNodeRings")
-                           .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
-                           .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-                           .attr("r", 8);
+                           .attr("class", "selectedNodeRings");
+    selectedNodesGroupEnter.append("text")
+                           .attr("class", "selectedNodeText");
 
     // merge and update
     selectedNodesGroup = selectedNodesGroup.merge(selectedNodesGroupEnter).moveToFront();
@@ -297,7 +282,7 @@ function init() {
                       })
                       .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
                       .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-                      .attr("r", 5);
+                      .attr("r", 8);
     selectedNodesGroup.select(".selectedNodeRings")
                       .attr("id", function() {
                         if (currTeam == "blue") { return "selectedNodeRingsBlue"; }
@@ -305,7 +290,16 @@ function init() {
                       })
                       .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
                       .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-                      .attr("r", 8);
+                      .attr("r", 11);
+    selectedNodesGroup.select(".selectedNodeText")
+                      .attr("id", function() {
+                        if (currTeam == "blue") { return "selectedNodeTextBlue"; }
+                        else { return "selectedNodeTextRed"; }
+                      })
+                      .attr("x", function(d) { return xScale_posX(d.pos[0])-3; })
+                      .attr("y", function(d) { return yScale_posY(d.pos[1])+5; })
+                      .text(function(d,i) { return i+1; })
+                      .moveToFront();
   }; // end plotSelectedNodes
   function plotPositions(currPositionPaths) {
 
