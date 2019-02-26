@@ -10,7 +10,8 @@ function init() {
                       .range([h_map,0]);
   var numPositionsMin = 5000; // the minimum # of path positions at a time
   var numRowBuckets = 30;
-  var bucketWidth = document.getElementById("graphic").getBoundingClientRect().height/numRowBuckets;
+  var imageHeight = document.getElementById("graphic").getBoundingClientRect().height;
+  var bucketWidth = imageHeight/numRowBuckets;
   // Variables to store
   var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
   var currTeam = "blue"; // default
@@ -62,12 +63,9 @@ function init() {
 
     // Heatmap instance
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
-    heatmapInstance = h337.create({
-      container: document.getElementById("heatmap-container"),
-      radius: bucketWidth*1.3,
-    });
-    // Win rate heatmap instance
-    currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
+    var contourGenerator = d3.contours()
+                             .size([imageHeight, imageHeight])
+                             .thresholds(20);
   }; // end setup
   // Resent settings
   function reset() {
