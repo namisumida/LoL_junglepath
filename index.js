@@ -64,7 +64,7 @@ function init() {
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
     heatmapInstance = h337.create({
       container: document.getElementById("heatmap-container"),
-      radius: bucketWidth*1.5
+      radius: bucketWidth*1.3,
     });
     // Win rate heatmap instance
     currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
