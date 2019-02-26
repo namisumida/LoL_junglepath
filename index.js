@@ -12,10 +12,9 @@ function init() {
   var numRowBuckets = 30;
   var bucketWidth = document.getElementById("graphic").getBoundingClientRect().height/numRowBuckets;
   // Variables to store
-  var currTeam, currNodeIndices, currPositionPaths, currHeatmapData, heatmapInstance, radius, numBuckets, selectedNodesList, currMinute;
+  var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
-
 
   ////////////////////////////////////////////////////////////////////////////////////
   function setup() {
@@ -69,6 +68,8 @@ function init() {
       maxOpacity: 1,
       minOpacity: 0
     });
+    // Win rate heatmap instance
+    currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
   }; // end setup
   // Resent settings
   function reset() {
@@ -141,9 +142,11 @@ function init() {
     else { currPositionPaths = currPathIndices.map(i => dataset_rPathList[i]); }
     // For heatmap dataset
     currHeatmapData = formatHeatmapData(currData.heatMap, numRowBuckets, bucketWidth);
+    currWinrateHeatmapData = formatHeatmapData(currData.winHeatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else { heatmapInstance.setData(currHeatmapData); };
+    else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
+    else { heatmapInstance.setData(currWinrateHeatmapData) };
 
     // NODES
     // Append selected node to list of selected nodes
@@ -160,7 +163,7 @@ function init() {
     // BREADCRUMBS - show breadcrumb for the previous min
     var breadcrumbID = "#button-min" + (currMinute-1);
     d3.selectAll(".breadcrumb").classed("active", false); // remove styling for previous breadcrumbs
-    d3.select(breadcrumbID)//.html(currData.position) // change the text to position text of current node
+    d3.select(breadcrumbID).html(currData.name) // change the text to position text of current node
                            .style("display", "inline") // display it
                            .classed("active", true); // change style
     if (currMinute == 4 | currMinute == 5) { // if the next minute is 4 or 5, show the arrow
@@ -302,20 +305,17 @@ function init() {
                       .moveToFront();
   }; // end plotSelectedNodes
   function plotPositions(currPositionPaths) {
-
     // Plot paths
     var pathPoints = svg.selectAll(".pathPoints")
                         .data(currPositionPaths);
     pathPoints.exit().remove(); // remove any that are not needed
     var pathPointsEnter = pathPoints.enter()
                                     .append("circle")
-                                    .attr("class", "pathPoints")
-                                    .attr("cx", function(d) { return xScale_posX(d.path[(currMinute-2)][0]); })
-                                    .attr("cy", function(d) { return yScale_posY(d.path[(currMinute-2)][1]); })
-                                    .attr("r", 2);
+                                    .attr("class", "pathPoints");
     pathPoints = pathPoints.merge(pathPointsEnter);
     pathPoints.attr("cx", function(d) { return xScale_posX(d.path[(currMinute-2)][0]); })
               .attr("cy", function(d) { return yScale_posY(d.path[(currMinute-2)][1]); })
+              .attr("r", 2)
               .style("fill", "white");
   }; // end plotPositions
   // Function for when the back button is clicked: remove most recently selected node and replot nodes
@@ -356,11 +356,13 @@ function init() {
       var dataset_node = dataset_bNodeList;
       var dataset_path = dataset_bPathList;
       var dataset_heatmap = bNodeRow1.heatMap;
+      var dataset_winHeatMap = bNodeRow1.winHeatMap;
     }
     else { // red team
       var dataset_node = dataset_rNodeList;
       var dataset_path = dataset_rPathList;
       var dataset_heatmap = rNodeRow1.heatMap;
+      var dataset_winHeatMap = rNodeRow1.winHeatMap;
     };
 
     // Re plot positions (if any) and nodes
@@ -373,9 +375,11 @@ function init() {
       else { var currPathIndices = currNodeData.pathIndices; }
       currPositionPaths = currPathIndices.map(i => dataset_path[i]);
       currHeatmapData = formatHeatmapData(currNodeData.heatMap, numRowBuckets, bucketWidth);
+      currWinrateHeatmapData = formatHeatmapData(currNodeData.winHeatMap, numRowBuckets, bucketWidth);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-      else { heatmapInstance.setData(currHeatmapData); };
+      else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
+      else { heatmapInstance.setData(currWinrateHeatmapData) };
       // Plot nodes
       plotSelectedNodes(selectedNodesList); // plot nodes that have already been selected
       plotNewNodes(currNodeIndices, selectedNodesList[selectedNodesList.length-1]); // plot new nodes
@@ -384,9 +388,11 @@ function init() {
     else {
       currPositionPaths = dataset_path.slice(0, numPositionsMin);
       currHeatmapData = formatHeatmapData(dataset_heatmap, numRowBuckets, bucketWidth);
+      currWinrateHeatmapData = formatHeatmapData(dataset_winHeatMap, numRowBuckets, bucketWidth);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-      else { heatmapInstance.setData(currHeatmapData); };
+      else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
+      else { heatmapInstance.setData(currWinrateHeatmapData) };
       // Plot nodes
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
@@ -421,16 +427,18 @@ function init() {
 
     currPositionPaths = dataset_bPathList.slice(0,numPositionsMin);
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
+    currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else { heatmapInstance.setData(currHeatmapData); };
+    else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
+    else { heatmapInstance.setData(currWinrateHeatmapData) };
     // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
     d3.selectAll(".button-blue").select(".checkmark").classed("checked", true);
     d3.selectAll(".button-red").select(".checkmark").classed("checked", false);
-  }); // end on blue button select
+  }) // end on blue button select
   // Red team button selected
   d3.selectAll(".button-red").on("click", function() {
     // start over when color is changed
@@ -440,20 +448,22 @@ function init() {
 
     currPositionPaths = dataset_rPathList.slice(0,numPositionsMin);
     currHeatmapData = formatHeatmapData(rNodeRow1.heatMap, numRowBuckets, bucketWidth);
+    currWinrateHeatmapData = formatHeatmapData(rNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else { heatmapInstance.setData(currHeatmapData); };
+    else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
+    else { heatmapInstance.setData(currWinrateHeatmapData) };
     // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
     // Change button styles
     d3.selectAll(".button-red").select(".checkmark").classed("checked", true);
     d3.selectAll(".button-blue").select(".checkmark").classed("checked", false);
-  }); // end on red button select
+  }) // end on red button select
   // Back button selected
   d3.select("#button-back").on("click", function() {
     backClick(1);
-  });
+  })
   // Dot button selected
   d3.selectAll(".button-dots").on("click", function() {
     currDisplay = "dots";
@@ -466,7 +476,8 @@ function init() {
     // Change button styles
     d3.selectAll(".button-dots").select(".checkmark").classed("checked", true);
     d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
-  });
+    d3.selectAll(".button-winrate").select(".checkmark").classed("checked", false);
+  })
   // Heatmap button selected
   d3.selectAll(".button-heatmap").on("click", function() {
     currDisplay = "heatmap";
@@ -476,6 +487,19 @@ function init() {
     svg.selectAll(".pathPoints").remove();
     // Change button styles
     d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", true);
+    d3.selectAll(".button-dots").select(".checkmark").classed("checked", false);
+    d3.selectAll(".button-winrate").select(".checkmark").classed("checked", false);
+  })
+  // Win rate heatmap button selected
+  d3.selectAll(".button-winrate").on("click", function() {
+    currDisplay = "winrate";
+    // plot heatmap
+    heatmapInstance.setData(currWinrateHeatmapData);
+    // Remove dots
+    svg.selectAll(".pathPoints").remove();
+    // Change button styles
+    d3.selectAll(".button-winrate").select(".checkmark").classed("checked", true);
+    d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
     d3.selectAll(".button-dots").select(".checkmark").classed("checked", false);
   })
   // Breadcrumb "buttons"
@@ -493,11 +517,13 @@ function init() {
 // Load data
 function rowConverterNodes(d,i) {
   return {
-    index: (i-1),
+    index: i,
     pos: [parseInt(d.pos.split(",")[0].replace("[", "")), parseInt(d.pos.split(",")[1].replace("]", ""))],
+    name: d.name,
     parent: parseInt(d.parent) || -1,
     pathIndices: d.pathIndices.split(",").map(function(d) { return parseInt(d.replace("[","")); }) || -1,
-    heatMap: d.heatMap.split(",").map(function(d) { return parseFloat(d.replace("[[", "").replace("[", "")); })
+    heatMap: d.heatMap.split(",").map(function(d) { return parseFloat(d.replace("[[", "").replace("[", "")); }),
+    winHeatMap: d.winHeatMap.split(",").map(function(d) { return parseFloat(d.replace("[[", "").replace("[", "")); }),
   };
 }; // end row converter nodes
 function rowConverterLookup(d) {
@@ -507,7 +533,8 @@ function rowConverterLookup(d) {
 }; // end rowconverter lookup
 function rowConverterPaths(d) {
   return {
-    path: d.path.split("],[").map(function(d) { return d.replace("[[", "").replace("]]", "").replace("[", "").split(",").map(function(d) { return parseInt(d); }); })
+    path: d.pos.split("],[").map(function(d) { return d.replace("[[", "").replace("]]", "").replace("[", "").split(",").map(function(d) { return parseInt(d); }); }),
+    win: parseInt(d.win)
   };
 }; // end rowconverter paths
 d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
@@ -519,10 +546,10 @@ d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
             bNodeRow1 = data_bNodeList[0];
             rNodeRow1 = data_rNodeList[0];
             dataset_bLookup = data_bLookup;
-            dataset_bNodeList = data_bNodeList.slice(1,data_bNodeList.length);
+            dataset_bNodeList = data_bNodeList;
             dataset_bPathList = data_bPathList;
             dataset_rLookup = data_rLookup;
-            dataset_rNodeList = data_rNodeList.slice(1,data_rNodeList.length);
+            dataset_rNodeList = data_rNodeList;
             dataset_rPathList = data_rPathList;
 
             init();
