@@ -64,9 +64,7 @@ function init() {
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
     heatmapInstance = h337.create({
       container: document.getElementById("heatmap-container"),
-      radius: bucketWidth*1.5,
-      maxOpacity: 1,
-      minOpacity: 0
+      radius: bucketWidth*1.5
     });
     // Win rate heatmap instance
     currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
@@ -405,7 +403,7 @@ function init() {
       var rowBucket = numRowBuckets - Math.floor(j / numRowBuckets); // tells what row you're in; determines y position
       var colBucket = (j % numRowBuckets); // tells what col you're in; determines x position
       dataset_output.push({x: colBucket*radius+Math.floor(radius/2),
-                           y: rowBucket*radius,
+                           y: rowBucket*radius-Math.floor(radius/2),
                            value: dataset[j]}) // what needs to go into heatmap setData
       // added radius/2 to center it in the bucket square
     };
@@ -479,9 +477,37 @@ function init() {
     d3.selectAll(".button-winrate").select(".checkmark").classed("checked", false);
   })
   // Heatmap button selected
+  var heatmapConfig = {
+    maxOpacity: 1,
+    minOpacity: 0,
+    gradient: {
+      '0': d3.rgb(0,0,127.5),
+      '0.08': d3.rgb(0,0,222.95),
+      '0.17': d3.rgb(0,40.5,255),
+      '0.25': d3.rgb(0,128.5,255),
+      '0.32': d3.rgb(0,212.5,255),
+      '0.4': d3.rgb(54.03,255,255),
+      '0.48': d3.rgb(125,255,255),
+      '0.56': d3.rgb(192.74,255,255),
+      '0.64': d3.rgb(255,229.81,0),
+      '0.72': d3.rgb(255,148.33,0),
+      '0.8': d3.rgb(255,70.56,0),
+      '0.88': d3.rgb(222.95,0,0),
+      '1': d3.rgb(127.5,0,0)
+    }
+  };
+  var winConfig = {
+    maxOpacity: 0.5,
+    minOpacity: 0,
+    gradient: {
+      '0': d3.rgb(225,0,0),
+      '1': d3.rgb(0,0,255)
+    }
+  };
   d3.selectAll(".button-heatmap").on("click", function() {
     currDisplay = "heatmap";
     // plot heatmap
+    heatmapInstance.configure(heatmapConfig);
     heatmapInstance.setData(currHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
@@ -494,6 +520,7 @@ function init() {
   d3.selectAll(".button-winrate").on("click", function() {
     currDisplay = "winrate";
     // plot heatmap
+    heatmapInstance.configure(winConfig);
     heatmapInstance.setData(currWinrateHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
