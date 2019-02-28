@@ -66,6 +66,15 @@ function init() {
     var contourGenerator = d3.contours()
                              .size([imageHeight, imageHeight])
                              .thresholds(20);
+
+    var contours = svg.selectAll(".contour")
+                      .data(contourGenerator(currHeatmapData.data));
+
+    contours.enter().append("path")
+             .attr("class", "contour")
+             .attr("fill", d => colorScale(d.value))
+             .attr("clip-path", "url(#clipPath)")
+             .attr("d", null);
   }; // end setup
   // Resent settings
   function reset() {
@@ -468,8 +477,8 @@ function init() {
     svg.selectAll(".nodes").moveToFront();
     svg.selectAll(".selectedNodesGroup").moveToFront();
     // Hide heatmap
-    heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
-    // Change button styles
+
+   // Change button styles
     d3.selectAll(".button-dots").select(".checkmark").classed("checked", true);
     d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
     d3.selectAll(".button-winrate").select(".checkmark").classed("checked", false);
@@ -505,8 +514,7 @@ function init() {
   d3.selectAll(".button-heatmap").on("click", function() {
     currDisplay = "heatmap";
     // plot heatmap
-    heatmapInstance.configure(heatmapConfig);
-    heatmapInstance.setData(currHeatmapData);
+
     // Remove dots
     svg.selectAll(".pathPoints").remove();
     // Change button styles
@@ -518,8 +526,7 @@ function init() {
   d3.selectAll(".button-winrate").on("click", function() {
     currDisplay = "winrate";
     // plot heatmap
-    heatmapInstance.configure(winConfig);
-    heatmapInstance.setData(currWinrateHeatmapData);
+
     // Remove dots
     svg.selectAll(".pathPoints").remove();
     // Change button styles
