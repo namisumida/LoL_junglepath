@@ -8,8 +8,8 @@ function init() {
   var yScale_posY = d3.scaleLinear()
                       .domain([0,14700])
                       .range([h_map,0]);
-  var numPositionsMin = 5000; // the minimum # of path positions at a time
   var numRowBuckets = 30;
+  var numPositionsMin = 5000; // TODO: delete
   var bucketWidth = document.getElementById("graphic").getBoundingClientRect().height/numRowBuckets;
   // Variables to store
   var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
@@ -26,7 +26,7 @@ function init() {
        .attr("y", 25);
 
     // Path positions
-    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin);
+    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin); // TODO: delete
     svg.selectAll("pathPoints")
        .data(currPositionPaths)
        .enter()
@@ -131,10 +131,7 @@ function init() {
 
     // PATH POSITIONS
     // Find path positions for the next minute
-    if (currData.pathIndices.length > numPositionsMin) { // if there are more paths to be displayed than the min
-      var currPathIndices = currData.pathIndices.slice(0,numPositionsMin);
-    }
-    else { var currPathIndices = currData.pathIndices; };
+    var currPathIndices = currData.pathIndices;
     // Find currPositionPaths
     if (currTeam == "blue") { currPositionPaths = currPathIndices.map(i => dataset_bPathList[i]); }
     else { currPositionPaths = currPathIndices.map(i => dataset_rPathList[i]); }
@@ -367,10 +364,7 @@ function init() {
     if (selectedNodesList.length > 0) { // if even after popping last node, there are more nodes...
       // determine path indices
       var currNodeData = dataset_node[selectedNodesList[selectedNodesList.length-1]];
-      if (currNodeData.pathIndices.length > numPositionsMin) { // if the new list of path positions is longer than our min...
-        var currPathIndices = currNodeData.pathIndices.slice(0, numPositionsMin);
-      }
-      else { var currPathIndices = currNodeData.pathIndices; }
+      var currPathIndices = currNodeData.pathIndices;
       currPositionPaths = currPathIndices.map(i => dataset_path[i]);
       currHeatmapData = formatHeatmapData(currNodeData.heatMap, numRowBuckets, bucketWidth);
       currWinrateHeatmapData = formatHeatmapData(currNodeData.winHeatMap, numRowBuckets, bucketWidth);
@@ -384,7 +378,7 @@ function init() {
     }
     // Else, you're back at min 2 and you need to plot those path points
     else {
-      currPositionPaths = dataset_path.slice(0, numPositionsMin);
+      currPositionPaths = dataset_path.slice(0, numPositionsMin); // TODO: delete
       currHeatmapData = formatHeatmapData(dataset_heatmap, numRowBuckets, bucketWidth);
       currWinrateHeatmapData = formatHeatmapData(dataset_winHeatMap, numRowBuckets, bucketWidth);
       // Plot dots or heatmap
@@ -423,7 +417,7 @@ function init() {
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "blue";
 
-    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin);
+    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin); // TODO: delete
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
     currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
@@ -444,7 +438,7 @@ function init() {
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "red";
 
-    currPositionPaths = dataset_rPathList.slice(0,numPositionsMin);
+    currPositionPaths = dataset_rPathList.slice(0,numPositionsMin);// TODO: delete
     currHeatmapData = formatHeatmapData(rNodeRow1.heatMap, numRowBuckets, bucketWidth);
     currWinrateHeatmapData = formatHeatmapData(rNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
