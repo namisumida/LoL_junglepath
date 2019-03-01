@@ -68,6 +68,10 @@ function init() {
     });
     // Win rate heatmap instance
     currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
+    winrateHeatmapInstance = h337.create({
+      container: document.getElementById("winrate-heatmap-container"),
+      radius: bucketWidth*1.3,
+    });
   }; // end setup
   // Resent settings
   function reset() {
@@ -141,7 +145,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
-    else { heatmapInstance.setData(currWinrateHeatmapData) };
+    else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
 
     // NODES
     // Append selected node to list of selected nodes
@@ -371,7 +375,7 @@ function init() {
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
-      else { heatmapInstance.setData(currWinrateHeatmapData) };
+      else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
       // Plot nodes
       plotSelectedNodes(selectedNodesList); // plot nodes that have already been selected
       plotNewNodes(currNodeIndices, selectedNodesList[selectedNodesList.length-1]); // plot new nodes
@@ -384,7 +388,7 @@ function init() {
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
-      else { heatmapInstance.setData(currWinrateHeatmapData) };
+      else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
       // Plot nodes
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
@@ -423,7 +427,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
-    else { heatmapInstance.setData(currWinrateHeatmapData) };
+    else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
     // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
@@ -444,7 +448,7 @@ function init() {
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
-    else { heatmapInstance.setData(currWinrateHeatmapData) };
+    else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
     // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
@@ -491,10 +495,11 @@ function init() {
     }
   };
   var winConfig = {
-    opacity: .5,
+    opacity: 0.7,
     gradient: {
       0: d3.rgb(225,0,0),
-      0.5: 'white',
+      0.1: d3.rgb(222.95,0,0),
+      0.9: d3.rgb(0,40.5,255),
       1: d3.rgb(0,0,255)
     }
   };
@@ -505,6 +510,8 @@ function init() {
     heatmapInstance.setData(currHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
+    // Hide win rate heat map
+    winrateHeatmapInstance.setData({max:0, min:0, data:[]});
     // Change button styles
     d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", true);
     d3.selectAll(".button-dots").select(".checkmark").classed("checked", false);
@@ -514,10 +521,12 @@ function init() {
   d3.selectAll(".button-winrate").on("click", function() {
     currDisplay = "winrate";
     // plot heatmap
-    heatmapInstance.configure(winConfig);
-    heatmapInstance.setData(currWinrateHeatmapData);
+    winrateHeatmapInstance.configure(winConfig);
+    winrateHeatmapInstance.setData(currWinrateHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
+    // Remove position heat map
+    heatmapInstance.setData({max:0, min:0, data:[]});
     // Change button styles
     d3.selectAll(".button-winrate").select(".checkmark").classed("checked", true);
     d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
