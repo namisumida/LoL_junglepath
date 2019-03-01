@@ -80,12 +80,12 @@ function init() {
     svg.selectAll("heatmapCircles")
        .data(currHeatmapData)
        .enter()
-       .append("circle")
+       .append("rect")
        .attr("class", "heatmapCircles")
-       .attr("cx", function(d) { return d.x; })
-       .attr("cy", function(d) { return d.y; })
-       .attr("r", bucketWidth)
-       .style("filter", "url(#blur)")
+       .attr("x", function(d) { return d.x; })
+       .attr("y", function(d) { return d.y; })
+       .attr("width", bucketWidth)
+       .attr("height", bucketWidth)
        .style("opacity", function(d) {
          return heatmapOpacity(d.value);
        })
@@ -431,8 +431,8 @@ function init() {
       // assign x y coordinates to buckets
       var rowBucket = numRowBuckets - Math.floor(j / numRowBuckets); // tells what row you're in; determines y position
       var colBucket = (j % numRowBuckets); // tells what col you're in; determines x position
-      dataset_output.push({x: colBucket*bucketWidth+Math.floor(bucketWidth/2),
-                           y: rowBucket*bucketWidth-Math.floor(bucketWidth/2),
+      dataset_output.push({x: colBucket*bucketWidth,
+                           y: rowBucket*bucketWidth,
                            value: dataset[j]}) // what needs to go into heatmap setData
       // added radius/2 to center it in the bucket square
     };
