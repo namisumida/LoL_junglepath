@@ -495,10 +495,11 @@ function init() {
     }
   };
   var winConfig = {
-    opacity: 0.7,
+    opacity: 0.5,
     gradient: {
       0: d3.rgb(225,0,0),
       0.1: d3.rgb(222.95,0,0),
+      0.5: d3.color("#9F9EA6"), 
       0.9: d3.rgb(0,40.5,255),
       1: d3.rgb(0,0,255)
     }
