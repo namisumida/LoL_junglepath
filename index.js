@@ -1,4 +1,3 @@
-var winrateRainbow;
 function init() {
   var svg = d3.select("#graphic-svg");
   var w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
@@ -10,14 +9,13 @@ function init() {
                       .domain([0,14700])
                       .range([h_map,0]);
   var numRowBuckets = 30;
-  var numPositionsMin = 5000; // TODO: delete
   var bucketWidth = document.getElementById("graphic").getBoundingClientRect().height/numRowBuckets;
   // Variables to store
   var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
   // Styles for heatmap
-  winrateRainbow = new Rainbow();
+  var winrateRainbow = new Rainbow();
   winrateRainbow.setSpectrum("7F0000", "FF4600", "0028FF","0000FF");
   var filter = svg.append("defs")
                   .append("filter")
@@ -37,7 +35,7 @@ function init() {
        .attr("y", 25);
 
     // Path positions
-    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin); // TODO: delete
+    currPositionPaths = bNodeRow1.pathIndices.map(i => dataset_bPathList[i]);
     svg.selectAll("pathPoints")
        .data(currPositionPaths)
        .enter()
@@ -106,21 +104,12 @@ function init() {
     svg.selectAll("winHeatmapCircles")
        .data(currWinrateHeatmapData)
        .enter()
-<<<<<<< HEAD
        .append("circle")
        .attr("class", "winHeatmapCircles")
        .attr("cx", function(d) { return d.x; })
        .attr("cy", function(d) { return d.y; })
        .attr("r", bucketWidth*.7)
        .style("filter", "url(#blur)")
-=======
-       .append("rect")
-       .attr("class", "heatmapCircles")
-       .attr("x", function(d) { return d.x; })
-       .attr("y", function(d) { return d.y; })
-       .attr("width", bucketWidth)
-       .attr("height", bucketWidth)
->>>>>>> 328a6735521c7443aadb70c63543065ecbc32820
        .style("opacity", function(d) {
          if (d.value <= 50) {
            return winrateOpacity1(d.value);
@@ -415,14 +404,12 @@ function init() {
     if (currTeam == "blue") { // blue team
       var dataset_node = dataset_bNodeList;
       var dataset_path = dataset_bPathList;
-      var dataset_heatmap = bNodeRow1.heatMap;
-      var dataset_winHeatMap = bNodeRow1.winHeatMap;
+      var firstRow = bNodeRow1;
     }
     else { // red team
       var dataset_node = dataset_rNodeList;
       var dataset_path = dataset_rPathList;
-      var dataset_heatmap = rNodeRow1.heatMap;
-      var dataset_winHeatMap = rNodeRow1.winHeatMap;
+      var firstRow = rNodeRow1;
     };
 
     // Re plot positions (if any) and nodes
@@ -447,9 +434,9 @@ function init() {
     }
     // Else, you're back at min 2 and you need to plot those path points
     else {
-      currPositionPaths = dataset_path.slice(0, numPositionsMin); // TODO: delete
-      currHeatmapData = formatHeatmapData(dataset_heatmap);
-      currWinrateHeatmapData = formatWinrateData(dataset_winHeatMap);
+      currPositionPaths = firstRow.pathIndices.map(i => dataset_path[i]);
+      currHeatmapData = formatHeatmapData(firstRow.heatMap);
+      currWinrateHeatmapData = formatWinrateData(firstRow.winHeatMap);
       updateWinrate(currWinrateHeatmapData);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
@@ -512,7 +499,7 @@ function init() {
     reset();
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "blue";
-    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin); // TODO: delete
+    currPositionPaths = bNodeRow1.pathIndices.map(i => dataset_bPathList[i]);
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap);
     currWinrateHeatmapData = formatWinrateData(bNodeRow1.winHeatMap);
     updateWinrate(currWinrateHeatmapData);
@@ -537,7 +524,7 @@ function init() {
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "red";
 
-    currPositionPaths = dataset_rPathList.slice(0,numPositionsMin);// TODO: delete
+    currPositionPaths = rNodeRow1.pathIndices.map(i => dataset_rPathList[i]);
     currHeatmapData = formatHeatmapData(rNodeRow1.heatMap);
     currWinrateHeatmapData = formatWinrateData(rNodeRow1.winHeatMap);
     updateWinrate(currWinrateHeatmapData);
