@@ -82,7 +82,7 @@ function init() {
       }
     });
     // Win rate heatmap instance
-    currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap);
+    currWinrateHeatmapData = formatWinrateData(bNodeRow1.winHeatMap);
     winrateHeatmapInstance = h337.create({
       container: document.getElementById("winrate-heatmap-container"),
       radius: bucketWidth*1.3,
@@ -163,7 +163,7 @@ function init() {
     else { currPositionPaths = currPathIndices.map(i => dataset_rPathList[i]); }
     // For heatmap dataset
     currHeatmapData = formatHeatmapData(currData.heatMap);
-    currWinrateHeatmapData = formatHeatmapData(currData.winHeatMap);
+    currWinrateHeatmapData = formatWinrateData(currData.winHeatMap);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") {
@@ -171,7 +171,11 @@ function init() {
       heatmapInstance.setDataMax(45);
       heatmapInstance.setDataMin(0);
     }
-    else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
+    else {
+      winrateHeatmapInstance.setData(currWinrateHeatmapData);
+      winrateHeatmapInstance.setDataMax(30);
+      winrateHeatmapInstance.setDataMin(-10);
+    };
 
     // NODES
     // Append selected node to list of selected nodes
@@ -394,7 +398,7 @@ function init() {
       var currPathIndices = currNodeData.pathIndices;
       currPositionPaths = currPathIndices.map(i => dataset_path[i]);
       currHeatmapData = formatHeatmapData(currNodeData.heatMap);
-      currWinrateHeatmapData = formatHeatmapData(currNodeData.winHeatMap);
+      currWinrateHeatmapData = formatWinrateData(currNodeData.winHeatMap);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") {
@@ -402,7 +406,11 @@ function init() {
         heatmapInstance.setDataMax(45);
         heatmapInstance.setDataMin(0);
       }
-      else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
+      else {
+        winrateHeatmapInstance.setData(currWinrateHeatmapData);
+        winrateHeatmapInstance.setDataMax(30);
+        winrateHeatmapInstance.setDataMin(-10);
+       };
       // Plot nodes
       plotSelectedNodes(selectedNodesList); // plot nodes that have already been selected
       plotNewNodes(currNodeIndices, selectedNodesList[selectedNodesList.length-1]); // plot new nodes
@@ -411,7 +419,7 @@ function init() {
     else {
       currPositionPaths = firstRow.pathIndices.map(i => dataset_path[i])
       currHeatmapData = formatHeatmapData(firstRow.heatMap);
-      currWinrateHeatmapData = formatHeatmapData(firstRow.winHeatMap);
+      currWinrateHeatmapData = formatWinrateData(firstRow.winHeatMap);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") {
@@ -419,7 +427,11 @@ function init() {
         heatmapInstance.setDataMax(45);
         heatmapInstance.setDataMin(0);
       }
-      else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
+      else {
+        winrateHeatmapInstance.setData(currWinrateHeatmapData);
+        winrateHeatmapInstance.setDataMax(30);
+        winrateHeatmapInstance.setDataMin(-10);
+       };
       // Plot nodes
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
@@ -436,10 +448,25 @@ function init() {
                            value: dataset[j]*8}) // what needs to go into heatmap setData
       // added radius/2 to center it in the bucket square
     };
-    return {max: d3.max(dataset, function(d) { return d; }),
-            min: d3.min(dataset, function(d) { return d; }),
+    return {max: d3.max(dataset_output, function(d) { return d.value; }),
+            min: d3.min(dataset_output, function(d) { return d.value; }),
             data: dataset_output };
   }; // end formatHeatmapData
+  function formatWinrateData(dataset) {
+    var dataset_output = [];
+    for (var j=0; j<900; j++) { // for every bucket in counts array
+      // assign x y coordinates to buckets
+      var rowBucket = numRowBuckets - Math.floor(j / numRowBuckets); // tells what row you're in; determines y position
+      var colBucket = (j % numRowBuckets); // tells what col you're in; determines x position
+      dataset_output.push({x: colBucket*bucketWidth+Math.floor(bucketWidth/2),
+                           y: rowBucket*bucketWidth-Math.floor(bucketWidth/2),
+                           value: dataset[j]-50}) // what needs to go into heatmap setData
+      // added radius/2 to center it in the bucket square
+    };
+    return {max: d3.max(dataset_output, function(d) { return d.value; }),
+            min: d3.min(dataset_output, function(d) { return d.value; }),
+            data: dataset_output };
+  }; // end formatWinrateData
 
   reset();// Initial settings
   setup();// Create elements for initial load
@@ -454,7 +481,7 @@ function init() {
 
     currPositionPaths = bNodeRow1.pathIndices.map(i => dataset_bPathList[i]);
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap);
-    currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap);
+    currWinrateHeatmapData = formatWinrateData(bNodeRow1.winHeatMap);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") {
@@ -462,7 +489,11 @@ function init() {
       heatmapInstance.setDataMax(45);
       heatmapInstance.setDataMin(0);
     }
-    else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
+    else {
+      winrateHeatmapInstance.setData(currWinrateHeatmapData);
+      winrateHeatmapInstance.setDataMax(30);
+      winrateHeatmapInstance.setDataMin(-10);
+    };
     // Plot nodes
     currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
@@ -479,7 +510,7 @@ function init() {
 
     currPositionPaths = rNodeRow1.pathIndices.map(i => dataset_rPathList[i]);
     currHeatmapData = formatHeatmapData(rNodeRow1.heatMap);
-    currWinrateHeatmapData = formatHeatmapData(rNodeRow1.winHeatMap);
+    currWinrateHeatmapData = formatWinrateData(rNodeRow1.winHeatMap);
     // Plot dots or heatmap
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") {
@@ -487,7 +518,11 @@ function init() {
       heatmapInstance.setDataMax(45);
       heatmapInstance.setDataMin(0);
     }
-    else { winrateHeatmapInstance.setData(currWinrateHeatmapData) };
+    else {
+      winrateHeatmapInstance.setData(currWinrateHeatmapData);
+      winrateHeatmapInstance.setDataMax(30);
+      winrateHeatmapInstance.setDataMin(-10);
+    };
     // Plot nodes
     currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
     plotNewNodes(currNodeIndices, -1);
@@ -519,7 +554,7 @@ function init() {
     currDisplay = "heatmap";
     // plot heatmap
     heatmapInstance.setData(currHeatmapData);
-    heatmapInstance.setDataMax(45);
+    heatmapInstance.setDataMax(40);
     heatmapInstance.setDataMin(0);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
@@ -535,6 +570,8 @@ function init() {
     currDisplay = "winrate";
     // plot heatmap
     winrateHeatmapInstance.setData(currWinrateHeatmapData);
+    winrateHeatmapInstance.setDataMax(30);
+    winrateHeatmapInstance.setDataMin(-10);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
     // Remove position heat map
