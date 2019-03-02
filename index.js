@@ -9,7 +9,6 @@ function init() {
                       .domain([0,14700])
                       .range([h_map,0]);
   var numRowBuckets = 30;
-  var numPositionsMin = 5000; // TODO: delete
   var bucketWidth = document.getElementById("graphic").getBoundingClientRect().height/numRowBuckets;
   // Variables to store
   var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
@@ -26,7 +25,7 @@ function init() {
        .attr("y", 25);
 
     // Path positions
-    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin); // TODO: delete
+    currPositionPaths = bNodeRow1.pathIndices.map(i => dataset_bPathList[i]);
     svg.selectAll("pathPoints")
        .data(currPositionPaths)
        .enter()
@@ -65,12 +64,37 @@ function init() {
     heatmapInstance = h337.create({
       container: document.getElementById("heatmap-container"),
       radius: bucketWidth*1.3,
+      maxOpacity: 1,
+      minOpacity: 0,
+      gradient: {
+        0: d3.rgb(0,0,127.5),
+        0.08: d3.rgb(0,0,222.95),
+        0.17: d3.rgb(0,40.5,255),
+        0.25: d3.rgb(0,128.5,255),
+        0.32: d3.rgb(0,212.5,255),
+        0.4: d3.rgb(54.03,255,255),
+        0.48: d3.rgb(125,255,255),
+        0.56: d3.rgb(192.74,255,255),
+        0.64: d3.rgb(255,229.81,0),
+        0.72: d3.rgb(255,148.33,0),
+        0.8: d3.rgb(255,70.56,0),
+        0.88: d3.rgb(222.95,0,0),
+        1: d3.rgb(127.5,0,0)
+      }
     });
     // Win rate heatmap instance
     currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
     winrateHeatmapInstance = h337.create({
       container: document.getElementById("winrate-heatmap-container"),
       radius: bucketWidth*1.3,
+      opacity: 0.5,
+      gradient: {
+        0: d3.rgb(225,0,0),
+        0.1: d3.rgb(222.95,0,0),
+        0.5: d3.color("#9F9EA6"),
+        0.9: d3.rgb(0,40.5,255),
+        1: d3.rgb(0,0,255)
+      }
     });
   }; // end setup
   // Resent settings
@@ -354,14 +378,12 @@ function init() {
     if (currTeam == "blue") { // blue team
       var dataset_node = dataset_bNodeList;
       var dataset_path = dataset_bPathList;
-      var dataset_heatmap = bNodeRow1.heatMap;
-      var dataset_winHeatMap = bNodeRow1.winHeatMap;
+      var firstRow = bNodeRow1;
     }
     else { // red team
       var dataset_node = dataset_rNodeList;
       var dataset_path = dataset_rPathList;
-      var dataset_heatmap = rNodeRow1.heatMap;
-      var dataset_winHeatMap = rNodeRow1.winHeatMap;
+      var firstRow = rNodeRow1;
     };
 
     // Re plot positions (if any) and nodes
@@ -382,9 +404,9 @@ function init() {
     }
     // Else, you're back at min 2 and you need to plot those path points
     else {
-      currPositionPaths = dataset_path.slice(0, numPositionsMin); // TODO: delete
-      currHeatmapData = formatHeatmapData(dataset_heatmap, numRowBuckets, bucketWidth);
-      currWinrateHeatmapData = formatHeatmapData(dataset_winHeatMap, numRowBuckets, bucketWidth);
+      currPositionPaths = firstRow.pathIndices.map(i => dataset_path[i])
+      currHeatmapData = formatHeatmapData(firstRow.heatMap, numRowBuckets, bucketWidth);
+      currWinrateHeatmapData = formatHeatmapData(firstRow.winHeatMap, numRowBuckets, bucketWidth);
       // Plot dots or heatmap
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") { heatmapInstance.setData(currHeatmapData); }
@@ -421,7 +443,7 @@ function init() {
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "blue";
 
-    currPositionPaths = dataset_bPathList.slice(0,numPositionsMin); // TODO: delete
+    currPositionPaths = bNodeRow1.pathIndices.map(i => dataset_bPathList[i]);
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap, numRowBuckets, bucketWidth);
     currWinrateHeatmapData = formatHeatmapData(bNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
@@ -442,7 +464,7 @@ function init() {
     svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
     currTeam = "red";
 
-    currPositionPaths = dataset_rPathList.slice(0,numPositionsMin);// TODO: delete
+    currPositionPaths = rNodeRow1.pathIndices.map(i => dataset_rPathList[i]);
     currHeatmapData = formatHeatmapData(rNodeRow1.heatMap, numRowBuckets, bucketWidth);
     currWinrateHeatmapData = formatHeatmapData(rNodeRow1.winHeatMap, numRowBuckets, bucketWidth);
     // Plot dots or heatmap
@@ -469,45 +491,16 @@ function init() {
     svg.selectAll(".selectedNodesGroup").moveToFront();
     // Hide heatmap
     heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
+    winrateHeatmapInstance.setData({max:0, min:0, data:[]});
     // Change button styles
     d3.selectAll(".button-dots").select(".checkmark").classed("checked", true);
     d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
     d3.selectAll(".button-winrate").select(".checkmark").classed("checked", false);
   })
   // Heatmap button selected
-  var heatmapConfig = {
-    maxOpacity: 1,
-    minOpacity: 0,
-    gradient: {
-      0: d3.rgb(0,0,127.5),
-      0.08: d3.rgb(0,0,222.95),
-      0.17: d3.rgb(0,40.5,255),
-      0.25: d3.rgb(0,128.5,255),
-      0.32: d3.rgb(0,212.5,255),
-      0.4: d3.rgb(54.03,255,255),
-      0.48: d3.rgb(125,255,255),
-      0.56: d3.rgb(192.74,255,255),
-      0.64: d3.rgb(255,229.81,0),
-      0.72: d3.rgb(255,148.33,0),
-      0.8: d3.rgb(255,70.56,0),
-      0.88: d3.rgb(222.95,0,0),
-      1: d3.rgb(127.5,0,0)
-    }
-  };
-  var winConfig = {
-    opacity: 0.5,
-    gradient: {
-      0: d3.rgb(225,0,0),
-      0.1: d3.rgb(222.95,0,0),
-      0.5: d3.color("#9F9EA6"), 
-      0.9: d3.rgb(0,40.5,255),
-      1: d3.rgb(0,0,255)
-    }
-  };
   d3.selectAll(".button-heatmap").on("click", function() {
     currDisplay = "heatmap";
     // plot heatmap
-    heatmapInstance.configure(heatmapConfig);
     heatmapInstance.setData(currHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
@@ -522,7 +515,6 @@ function init() {
   d3.selectAll(".button-winrate").on("click", function() {
     currDisplay = "winrate";
     // plot heatmap
-    winrateHeatmapInstance.configure(winConfig);
     winrateHeatmapInstance.setData(currWinrateHeatmapData);
     // Remove dots
     svg.selectAll(".pathPoints").remove();
