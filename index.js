@@ -16,7 +16,7 @@ function init() {
   var currDisplay = "dots"; // default
   // Styles for heatmap
   var winrateRainbow = new Rainbow();
-  winrateRainbow.setSpectrum("7F0000", "FF4600", "0028FF","0000FF");
+  winrateRainbow.setSpectrum("7F0000", "0000FF");
   var filter = svg.append("defs")
                   .append("filter")
                   .attr("id", "blur")
@@ -97,21 +97,25 @@ function init() {
     winrateRainbow.setNumberRange(40, 60);
     winrateOpacity1 = d3.scaleLinear()
                         .domain([d3.min(currWinrateHeatmapData, function(d) { return d.value; }), 50])
-                        .range([0.7, 0]);
+                        .range([0.8, 0.1]);
     winrateOpacity2 = d3.scaleLinear()
                         .domain([50.0001, d3.max(currWinrateHeatmapData, function(d) { return d.value; })])
-                        .range([0,0.7]);
+                        .range([0.1,0.8]);
     svg.selectAll("winHeatmapCircles")
        .data(currWinrateHeatmapData)
        .enter()
-       .append("circle")
+       .append("rect")
        .attr("class", "winHeatmapCircles")
-       .attr("cx", function(d) { return d.x; })
-       .attr("cy", function(d) { return d.y; })
-       .attr("r", bucketWidth*.7)
-       .style("filter", "url(#blur)")
+       .attr("x", function(d) { return d.x; })
+       .attr("y", function(d) { return d.y; })
+       .attr("width", bucketWidth)
+       .attr("height", bucketWidth)
+       //.style("filter", "url(#blur)")
        .style("opacity", function(d) {
-         if (d.value <= 50) {
+         if (d.value == 50) {
+           return 0;
+         }
+         else if (d.value < 50) {
            return winrateOpacity1(d.value);
          }
          else { return winrateOpacity2(d.value); }
