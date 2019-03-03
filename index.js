@@ -86,24 +86,24 @@ function init() {
     winrateBlueInstance = h337.create({
       container: document.getElementById("winrate-blue-container"),
       radius: bucketWidth*1.3,
-      minOpacity: 0,
-      maxOpacity: 1,
       gradient: {
         0: "white",
+        0.2: d3.rgb(255,230,0),
+        0.4: d3.rgb(54,255,255),
+        0.6: d3.rgb(0,129,255),
         0.8: d3.rgb(0,41,255),
-        0.9: d3.rgb(0,0,223),
-        1: d3.rgb(0,0,128)
+        1: d3.rgb(0,0,223)
       }
     });
     winrateRedInstance = h337.create({
       container: document.getElementById("winrate-red-container"),
       radius: bucketWidth*1.3,
-      minOpacity: 0,
-      maxOpacity: 1,
       gradient: {
         0: "white",
-        0.8: d3.rgb(255,30,0),
-        0.9: d3.rgb(223,0,0),
+        0.2: d3.rgb(255,230,0),
+        0.4: d3.rgb(255, 102, 0),
+        0.6: d3.rgb(224, 92, 21),
+        0.8: d3.rgb(219, 6, 6),
         1: d3.rgb(128,0,0)
       }
     });
@@ -186,11 +186,11 @@ function init() {
     else {
       // Blue side of win rates
       winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-      winrateBlueInstance.setDataMax(45);
+      winrateBlueInstance.setDataMax(150);
       winrateBlueInstance.setDataMin(0);
       // Red side of win rates
       winrateRedInstance.setData(currWinrateHeatmapData[1]);
-      winrateRedInstance.setDataMax(45);
+      winrateRedInstance.setDataMax(150);
       winrateRedInstance.setDataMin(0);
     };
 
@@ -426,11 +426,11 @@ function init() {
       else {
         // Blue side of win rates
         winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-        winrateBlueInstance.setDataMax(45);
+        winrateBlueInstance.setDataMax(150);
         winrateBlueInstance.setDataMin(0);
         // Red side of win rates
         winrateRedInstance.setData(currWinrateHeatmapData[1]);
-        winrateRedInstance.setDataMax(45);
+        winrateRedInstance.setDataMax(150);
         winrateRedInstance.setDataMin(0);
        };
       // Plot nodes
@@ -452,11 +452,11 @@ function init() {
       else {
         // Blue side of win rates
         winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-        winrateBlueInstance.setDataMax(45);
+        winrateBlueInstance.setDataMax(150);
         winrateBlueInstance.setDataMin(0);
         // Red side of win rates
         winrateRedInstance.setData(currWinrateHeatmapData[1]);
-        winrateRedInstance.setDataMax(45);
+        winrateRedInstance.setDataMax(150);
         winrateRedInstance.setDataMin(0);
        };
       // Plot nodes
@@ -488,11 +488,11 @@ function init() {
       var colBucket = (j % numRowBuckets); // tells what col you're in; determines x position
       if (dataset[j] >= 50) {
         var redValue = 0;
-        var blueValue = (dataset[j]-50)*3;
+        var blueValue = (dataset[j]-50)*10;
       }
       else { // less than 50
         var blueValue = 0;
-        var redValue = Math.abs(dataset[j]-50)*3;
+        var redValue = Math.abs(dataset[j]-50)*10;
       }
       dataset_blue.push({x: colBucket*bucketWidth+Math.floor(bucketWidth/2), y: rowBucket*bucketWidth-Math.floor(bucketWidth/2), value: blueValue});
       dataset_red.push({x: colBucket*bucketWidth+Math.floor(bucketWidth/2), y: rowBucket*bucketWidth-Math.floor(bucketWidth/2), value: redValue});
@@ -500,6 +500,103 @@ function init() {
     return [{max: d3.max(dataset_blue, function(d) { return d.value; }),min: d3.min(dataset_blue, function(d) { return d.value; }),data: dataset_blue},
             {max: d3.max(dataset_red, function(d) { return d.value; }),min: d3.min(dataset_red, function(d) { return d.value; }),data: dataset_red}];
   }; // end formatWinrateData
+  function teamButtonClick(color) {
+    // start over when color is changed
+    reset();
+    svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
+    currTeam = color;
+    if (color == "blue") {
+      var data_path = dataset_bPathList;
+      var firstRow = bNodeRow1;
+      var index_winrate = 0;
+      var data_lookup = dataset_bLookup;
+      // Change button styles
+      d3.selectAll(".radio-blue").select(".checkmark").classed("checked", true);
+      d3.selectAll(".radio-red").select(".checkmark").classed("checked", false);
+    }
+    else {
+      var data_path = dataset_rPathList;
+      var firstRow = rNodeRow1;
+      var index_winrate = 1;
+      var data_lookup = dataset_rLookup;
+      // Change button styles
+      d3.selectAll(".radio-red").select(".checkmark").classed("checked", true);
+      d3.selectAll(".radio-blue").select(".checkmark").classed("checked", false);
+    }
+
+    currPositionPaths = firstRow.pathIndices.map(i => data_path[i]);
+    currHeatmapData = formatHeatmapData(firstRow.heatMap);
+    currWinrateHeatmapData = formatWinrateData(firstRow.winHeatMap);
+    // Plot dots or heatmap
+    if (currDisplay == "dots") { plotPositions(currPositionPaths); }
+    else if (currDisplay == "heatmap") {
+      heatmapInstance.setData(currHeatmapData);
+      heatmapInstance.setDataMax(45);
+      heatmapInstance.setDataMin(0);
+    }
+    else {
+      // Blue side of win rates
+      winrateBlueInstance.setData(currWinrateHeatmapData[0]);
+      winrateBlueInstance.setDataMax(150);
+      winrateBlueInstance.setDataMin(0);
+      // Red side of win rates
+      winrateRedInstance.setData(currWinrateHeatmapData[1]);
+      winrateRedInstance.setDataMax(150);
+      winrateRedInstance.setDataMin(0);
+    };
+    // Plot nodes
+    currNodeIndices = data_lookup[currMinute-2].nodeIndices;
+    plotNewNodes(currNodeIndices, -1);
+  }; // end teamButtonClick
+  function switchView(view) {
+    currDisplay = view;
+    if (currDisplay == "dots") {
+      // Plot dots
+      plotPositions(currPositionPaths);
+      svg.selectAll(".nodes").moveToFront();
+      svg.selectAll(".selectedNodesGroup").moveToFront();
+      // Hide heatmap
+      heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
+      winrateBlueInstance.setData({max:0, min:0, data:[]});
+      winrateRedInstance.setData({max:0, min:0, data:[]});
+      // Change button styles
+      d3.selectAll(".radio-dots").select(".checkmark").classed("checked", true);
+      d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", false);
+      d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", false);
+    }
+    else if (currDisplay == "heatmap") {
+      // plot heatmap
+      heatmapInstance.setData(currHeatmapData);
+      heatmapInstance.setDataMax(40);
+      heatmapInstance.setDataMin(0);
+      // Remove dots
+      svg.selectAll(".pathPoints").remove();
+      // Hide win rate heat map
+      winrateBlueInstance.setData({max:0, min:0, data:[]});
+      winrateRedInstance.setData({max:0, min:0, data:[]});
+      // Change button styles
+      d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", true);
+      d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
+      d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", false);
+    }
+    else {
+      // plot heatmap
+      winrateBlueInstance.setData(currWinrateHeatmapData[0]);
+      winrateBlueInstance.setDataMax(150);
+      winrateBlueInstance.setDataMin(0);
+      winrateRedInstance.setData(currWinrateHeatmapData[1]);
+      winrateRedInstance.setDataMax(150);
+      winrateRedInstance.setDataMin(0);
+      // Remove dots
+      svg.selectAll(".pathPoints").remove();
+      // Remove position heat map
+      heatmapInstance.setData({max:0, min:0, data:[]});
+      // Change button styles
+      d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", true);
+      d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", false);
+      d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
+    };
+  }; // end switchView
 
   reset();// Initial settings
   setup();// Create elements for initial load
@@ -507,127 +604,27 @@ function init() {
   // Interactivity
   // Blue team button selected
   d3.selectAll(".button-blue").on("click", function() {
-    // start over when color is changed
-    reset();
-    svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
-    currTeam = "blue";
-
-    currPositionPaths = bNodeRow1.pathIndices.map(i => dataset_bPathList[i]);
-    currHeatmapData = formatHeatmapData(bNodeRow1.heatMap);
-    currWinrateHeatmapData = formatWinrateData(bNodeRow1.winHeatMap);
-    // Plot dots or heatmap
-    if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else if (currDisplay == "heatmap") {
-      heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(45);
-      heatmapInstance.setDataMin(0);
-    }
-    else {
-      // Blue side of win rates
-      winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-      winrateBlueInstance.setDataMax(45);
-      winrateBlueInstance.setDataMin(0);
-      // Red side of win rates
-      winrateRedInstance.setData(currWinrateHeatmapData[1]);
-      winrateRedInstance.setDataMax(45);
-      winrateRedInstance.setDataMin(0);
-    };
-    // Plot nodes
-    currNodeIndices = dataset_bLookup[currMinute-2].nodeIndices;
-    plotNewNodes(currNodeIndices, -1);
-    // Change button styles
-    d3.selectAll(".button-blue").select(".checkmark").classed("checked", true);
-    d3.selectAll(".button-red").select(".checkmark").classed("checked", false);
-  }) // end on blue button select
+    teamButtonClick("blue");
+  })
   // Red team button selected
   d3.selectAll(".button-red").on("click", function() {
-    // start over when color is changed
-    reset();
-    svg.select("#minuteMark").text("Minute " + currMinute); // change minute mark back to min 2
-    currTeam = "red";
-
-    currPositionPaths = rNodeRow1.pathIndices.map(i => dataset_rPathList[i]);
-    currHeatmapData = formatHeatmapData(rNodeRow1.heatMap);
-    currWinrateHeatmapData = formatWinrateData(rNodeRow1.winHeatMap);
-    // Plot dots or heatmap
-    if (currDisplay == "dots") { plotPositions(currPositionPaths); }
-    else if (currDisplay == "heatmap") {
-      heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(45);
-      heatmapInstance.setDataMin(0);
-    }
-    else {
-      // Blue side of win rates
-      winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-      winrateBlueInstance.setDataMax(45);
-      winrateBlueInstance.setDataMin(0);
-      // Red side of win rates
-      winrateRedInstance.setData(currWinrateHeatmapData[1]);
-      winrateRedInstance.setDataMax(45);
-      winrateRedInstance.setDataMin(0);
-    };
-    // Plot nodes
-    currNodeIndices = dataset_rLookup[currMinute-2].nodeIndices;
-    plotNewNodes(currNodeIndices, -1);
-    // Change button styles
-    d3.selectAll(".button-red").select(".checkmark").classed("checked", true);
-    d3.selectAll(".button-blue").select(".checkmark").classed("checked", false);
-  }) // end on red button select
+    teamButtonClick("red");
+  })
   // Back button selected
   d3.select("#button-back").on("click", function() {
     backClick(1);
   })
   // Dot button selected
   d3.selectAll(".button-dots").on("click", function() {
-    currDisplay = "dots";
-    // Plot dots
-    plotPositions(currPositionPaths);
-    svg.selectAll(".nodes").moveToFront();
-    svg.selectAll(".selectedNodesGroup").moveToFront();
-    // Hide heatmap
-    heatmapInstance.setData({max:0, min:0, data:[]}); // hide heatmap
-    winrateBlueInstance.setData({max:0, min:0, data:[]});
-    winrateRedInstance.setData({max:0, min:0, data:[]});
-    // Change button styles
-    d3.selectAll(".button-dots").select(".checkmark").classed("checked", true);
-    d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
-    d3.selectAll(".button-winrate").select(".checkmark").classed("checked", false);
+    switchView("dots");
   })
   // Heatmap button selected
   d3.selectAll(".button-heatmap").on("click", function() {
-    currDisplay = "heatmap";
-    // plot heatmap
-    heatmapInstance.setData(currHeatmapData);
-    heatmapInstance.setDataMax(40);
-    heatmapInstance.setDataMin(0);
-    // Remove dots
-    svg.selectAll(".pathPoints").remove();
-    // Hide win rate heat map
-    winrateBlueInstance.setData({max:0, min:0, data:[]});
-    winrateRedInstance.setData({max:0, min:0, data:[]});
-    // Change button styles
-    d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", true);
-    d3.selectAll(".button-dots").select(".checkmark").classed("checked", false);
-    d3.selectAll(".button-winrate").select(".checkmark").classed("checked", false);
+    switchView("heatmap");
   })
   // Win rate heatmap button selected
   d3.selectAll(".button-winrate").on("click", function() {
-    currDisplay = "winrate";
-    // plot heatmap
-    winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-    winrateBlueInstance.setDataMax(45);
-    winrateBlueInstance.setDataMin(0);
-    winrateRedInstance.setData(currWinrateHeatmapData[1]);
-    winrateRedInstance.setDataMax(45);
-    winrateRedInstance.setDataMin(0);
-    // Remove dots
-    svg.selectAll(".pathPoints").remove();
-    // Remove position heat map
-    heatmapInstance.setData({max:0, min:0, data:[]});
-    // Change button styles
-    d3.selectAll(".button-winrate").select(".checkmark").classed("checked", true);
-    d3.selectAll(".button-heatmap").select(".checkmark").classed("checked", false);
-    d3.selectAll(".button-dots").select(".checkmark").classed("checked", false);
+    switchView("winrate");
   })
   // Breadcrumb "buttons"
   for (var i=2; i<5; i++) {
