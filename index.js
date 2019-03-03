@@ -584,7 +584,11 @@ function init() {
     currDisplay = "winrate";
     // plot heatmap
     svg.selectAll(".winHeatmapCircles")
-       .style("fill", function(d) { return winrateRainbow.colourAt(d.value); });
+       .style("fill", function(d) {
+         if (d.value < 50) { return "7F0000"; }
+         else if (d.value > 50) { return "0000FF"; }
+         else { return "none"; }
+       });
     svg.selectAll(".nodes").moveToFront();
     // Hide
     heatmapInstance.setData({max:0, min:0, data:[]}); // heatmap
