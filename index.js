@@ -64,8 +64,6 @@ function init() {
     heatmapInstance = h337.create({
       container: document.getElementById("heatmap-container"),
       radius: bucketWidth*1.3,
-      minOpacity: 0.0001,
-      maxOpacity: 1,
       gradient: {
         '0': d3.rgb(0,0,128),
         '0.08': d3.rgb(0,0,223),
