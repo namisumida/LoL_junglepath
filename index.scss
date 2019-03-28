@@ -172,11 +172,14 @@ i {
     font-size: 13px;
     text-align: center;
     margin-top: 0.25em;
-    color: $purple;
+  }
+  .preset-name-blue {
+    color: $blueNode;
+  }
+  .preset-name-red {
+    color: $redNode;
   }
   #preset-box-red-container {
-    position: absolute;
-    bottom: 0px;
     display: none;
   }
   #menu-desktop {
