@@ -511,6 +511,9 @@ function init() {
       // Change button styles
       d3.selectAll(".radio-blue").select(".checkmark").classed("checked", true);
       d3.selectAll(".radio-red").select(".checkmark").classed("checked", false);
+      // Show the correct presets
+      d3.select("#preset-box-blue-container").style("display", "inline");
+      d3.select("#preset-box-red-container").style("display", "none");
     }
     else {
       var data_path = dataset_rPathList;
@@ -520,6 +523,9 @@ function init() {
       // Change button styles
       d3.selectAll(".radio-red").select(".checkmark").classed("checked", true);
       d3.selectAll(".radio-blue").select(".checkmark").classed("checked", false);
+      // Show the correct presets
+      d3.select("#preset-box-red-container").style("display", "inline");
+      d3.select("#preset-box-blue-container").style("display", "none");
     }
 
     currPositionPaths = firstRow.pathIndices.map(i => data_path[i]);

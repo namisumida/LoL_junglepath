@@ -108,11 +108,11 @@ $maxMapWidth: 512px;
   border: none;
   font-size: 16px;
   font-family: stratum-bold;
-  color: $purple;
+  color: $lightGray;
   cursor: pointer;
 }
 i {
-  border: solid $purple;
+  border: solid $lightGray;
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 3px;
@@ -144,9 +144,11 @@ i {
     margin: auto;
   }
   #presets {
+    position: relative;
     margin: auto;
     margin-top: 45px;
     max-width: 100px;
+    height: 530px;
   }
   #preset-text {
     text-align: right;
@@ -156,16 +158,26 @@ i {
     margin-left: 0;
     margin-right: 0.5em;
   }
-  #preset-box-wrapper {
-    width: 90px;
-  }
   .preset-box {
     border: solid 1px gray;
     border-radius: 4px;
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     margin: auto;
     margin-bottom: 20px;
+  }
+  .preset-name {
+    font-family: stratum-medium;
+    cursor: pointer;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 0.25em;
+    color: $purple;
+  }
+  #preset-box-red-container {
+    position: absolute;
+    bottom: 0px;
+    display: none;
   }
   #menu-desktop {
     position: relative;
@@ -330,9 +342,11 @@ i {
   fill: $redNode;
 }
 #selectedNodesBlue {
+  stroke: white;
   fill: $blueNode;
 }
 #selectedNodesRed {
+  stroke: white;
   fill: $redNode;
 }
 .selectedNodeRings {
