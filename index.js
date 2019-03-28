@@ -158,8 +158,8 @@ function init() {
     d3.select("#arrow-1").style("display", "none");
     d3.select("#arrow-2").style("display", "none");
   }; // end clearBreadcrumbs
+  // What happens when you click on a node
   function updateNodeClick(currNode) {
-
     var currData = currNode.data()[0];
     // Update minute
     currMinute = d3.min([currMinute+1, 5], function(d) { return d; }); // don't want it to be larger than 5
@@ -215,7 +215,7 @@ function init() {
       d3.select(arrowID).style("display", "inline-block");
     };
   }; // end updateNodeClick
-  // Update nodes
+  // What happens when a node is moused over
   function updateMouseoverRing(currNode) {
     currNode.style("opacity", 1);
     svg.append("circle")
@@ -228,6 +228,7 @@ function init() {
        .attr("cy", parseFloat(currNode.attr("cy")))
        .attr("r", xScale_posX(750));
   }; // end updateMouseoverRing
+  // Function that plots the new nodes, once a node is clicked on
   function plotNewNodes(currNodeIndices, parentIndex) {
     if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
     else { var dataset_node = dataset_rNodeList; }
@@ -275,7 +276,7 @@ function init() {
        });
 
   }; // end plotNewNodes
-  // Plot path positions
+  // Function that plos already selected nodes (and updates when a new node is clicked)
   function plotSelectedNodes(selectedNodesList) {
     // Set the right datasets depending on the team color
     if (currTeam == "blue") { var dataset_node = dataset_bNodeList; }
@@ -348,6 +349,7 @@ function init() {
                       .text(function(d,i) { return i+1; })
                       .moveToFront();
   }; // end plotSelectedNodes
+  // Function that plots all the position points/tiny dots
   function plotPositions(currPositionPaths) {
     // Plot paths
     var pathPoints = svg.selectAll(".pathPoints")
@@ -498,6 +500,7 @@ function init() {
     return [{max: d3.max(dataset_blue, function(d) { return d.value; }),min: d3.min(dataset_blue, function(d) { return d.value; }),data: dataset_blue},
             {max: d3.max(dataset_red, function(d) { return d.value; }),min: d3.min(dataset_red, function(d) { return d.value; }),data: dataset_red}];
   }; // end formatWinrateData
+  // Function when team is switched
   function teamButtonClick(color) {
     // start over when color is changed
     reset();
@@ -601,6 +604,13 @@ function init() {
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
     };
   }; // end switchView
+  // Function to animate preset paths
+  function animatePresets(teamColor, pos1, pos2, pos3) {
+    teamButtonClick(teamColor);
+    updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos1; }));
+    setTimeout(function() { updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos2; })); }, 1000);
+    setTimeout(function() { updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos3; })); }, 2000);
+  }; // end animatePresets
 
   reset();// Initial settings
   setup();// Create elements for initial load
@@ -629,6 +639,19 @@ function init() {
   // Win rate heatmap button selected
   d3.selectAll(".button-winrate").on("click", function() {
     switchView("winrate");
+  })
+  // Presets selected
+  d3.select("#preset-box-blue1").on("click", function() {
+    animatePresets("blue", "Near Krugs", "Near Raptors", "Near Blue");
+  })
+  d3.select("#preset-box-blue2").on("click", function() {
+    animatePresets("blue", "Near Krugs", "Near Enemy Blue", "Near Raptors");
+  })
+  d3.select("#preset-box-red1").on("click", function() {
+    animatePresets("red", "Near Krugs", "Near Raptors", "Near Blue");
+  })
+  d3.select("#preset-box-red2").on("click", function() {
+    animatePresets("red", "Near Krugs", "Near Enemy Blue", "Near Raptors");
   })
   // Breadcrumb "buttons"
   for (var i=2; i<5; i++) {
