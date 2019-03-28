@@ -26,12 +26,8 @@
   font-family: stratum-bold;
   src: url("fonts/Stratum2-Bold.otf");
 }
-$blueNode: #486DAF;
-$redNode: #BB0000;
-$blueRingFill: #486DAF;
-$redRingFill: #B4616B;
-$blueSelectedNode: #486DAF;
-$redSelectedNode: #FE8585;
+$blueNode: #0023FF;
+$redNode: #EE0000;
 $purple: #7D6199;
 $lightGray: #9F9EA6;
 $maxMapWidth: 512px;
@@ -312,6 +308,7 @@ i {
 .nodes {
   cursor: pointer;
   opacity: 0.8;
+  stroke: white;
 }
 #nodesBlue {
   fill: $blueNode;
@@ -326,27 +323,27 @@ i {
 }
 #nodeRingsBlue {
   stroke: $blueNode;
-  fill: $blueRingFill;
+  fill: $blueNode;
 }
 #nodeRingsRed {
   stroke: $redNode;
-  fill: $redRingFill;
+  fill: $redNode;
 }
 #selectedNodesBlue {
-  fill: $blueSelectedNode;
+  fill: $blueNode;
 }
 #selectedNodesRed {
-  fill: $redSelectedNode;
+  fill: $redNode;
 }
 .selectedNodeRings {
   fill: none;
   stroke-width: 2;
 }
 #selectedNodeRingsBlue {
-  stroke: $blueSelectedNode;
+  stroke: $blueNode;
 }
 #selectedNodeRingsRed {
-  stroke: $redSelectedNode;
+  stroke: $redNode;
 }
 .selectedNodeText {
   font-family: stratum-medium;
@@ -358,10 +355,10 @@ i {
   stroke-dasharray: 5;
 }
 #selectedLinesBlue {
-  stroke: $blueSelectedNode;
+  stroke: $blueNode;
 }
 #selectedLinesRed {
-  stroke: $redSelectedNode;
+  stroke: $redNode;
 }
 .pathPoints {
   opacity: 0.4;
