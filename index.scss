@@ -137,6 +137,12 @@ i {
   display: flex;
   float: right;
 }
+.posHeatmap-legend {
+  display: none;
+}
+.winHeatmap-legend {
+  display: none;
+}
 @media screen and (min-width: 870px) { // desktop
   #menu-graphic-container {
     display: flex;
@@ -204,6 +210,12 @@ i {
   #options2 {
     margin-top: 40px;
   }
+  #posHeatmap-legend-desktop {
+    margin-top: 40px;
+  }
+  #winHeatmap-legend-desktop {
+    margin-top: 40px;
+  }
 }
 @media screen and (max-width: 869px) { // not desktop
   #menu-mobile {
@@ -236,6 +248,12 @@ i {
   #main {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+  }
+  #posHeatmap-legend-mobile {
+    margin-left: 30px;
+  }
+  #winHeatmap-legend-mobile {
+    margin-left: 30px;
   }
 }
 

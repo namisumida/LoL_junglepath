@@ -346,7 +346,7 @@ function init() {
                       })
                       .attr("x", function(d) { return xScale_posX(d.pos[0])-3; })
                       .attr("y", function(d) { return yScale_posY(d.pos[1])+5; })
-                      .text(function(d,i) { return i+1; })
+                      .text(function(d,i) { return i+2; })
                       .moveToFront();
   }; // end plotSelectedNodes
   // Function that plots all the position points/tiny dots
@@ -570,6 +570,9 @@ function init() {
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", true);
       d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", false);
+      // Do not show heatmap legends
+      d3.selectAll(".posHeatmap-legend").style("display", "none");
+      d3.selectAll(".winHeatmap-legend").style("display", "none");
     }
     else if (currDisplay == "heatmap") {
       // plot heatmap
@@ -585,6 +588,9 @@ function init() {
       d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", true);
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", false);
+      // Show heatmap legend
+      d3.selectAll(".posHeatmap-legend").style("display", "block");
+      d3.selectAll(".winHeatmap-legend").style("display", "none");
     }
     else {
       // plot heatmap
@@ -602,6 +608,9 @@ function init() {
       d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", true);
       d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
+      // Show heatmap legend
+      d3.selectAll(".posHeatmap-legend").style("display", "none");
+      d3.selectAll(".winHeatmap-legend").style("display", "block");
     };
   }; // end switchView
   // Function to animate preset paths
