@@ -1,7 +1,10 @@
 function init() {
   var svg = d3.select("#graphic-svg");
+  var svg_heatmapLegend_desktop = d3.select("#svg-heatmapLegend-desktop");
+  var svg_heatmapLegend_mobile = d3.select("#svg-heatmapLegend-mobile");
   var w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
   var h_map = document.getElementById("graphic-svg").getBoundingClientRect().height;
+  var w = document.documentElement.clientWidth;
   var xScale_posX = d3.scaleLinear() // x scale that converts a position to X coord
                       .domain([0,14700])
                       .range([0, w_map]); // svg/map doesn't start at 0 since centered
@@ -14,6 +17,7 @@ function init() {
   var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
+  var mobileWidthMax = 869;
 
   ////////////////////////////////////////////////////////////////////////////////////
   function setup() {
@@ -83,28 +87,176 @@ function init() {
     currWinrateHeatmapData = formatWinrateData(bNodeRow1.winHeatMap);
     winrateBlueInstance = h337.create({
       container: document.getElementById("winrate-blue-container"),
-      radius: bucketWidth*1.3,
+      radius: bucketWidth*1.2,
       gradient: {
         0: "white",
-        0.2: d3.rgb(255,230,0),
-        0.4: d3.rgb(54,255,255),
-        0.6: d3.rgb(0,129,255),
-        0.8: d3.rgb(0,41,255),
+        0.25: d3.rgb(54,255,255),
+        0.5: d3.rgb(0,129,255),
+        0.75: d3.rgb(0,41,255),
         1: d3.rgb(0,0,223)
       }
     });
     winrateRedInstance = h337.create({
       container: document.getElementById("winrate-red-container"),
-      radius: bucketWidth*1.3,
+      radius: bucketWidth*1.2,
       gradient: {
         0: "white",
-        0.2: d3.rgb(255,230,0),
-        0.4: d3.rgb(255, 102, 0),
-        0.6: d3.rgb(224, 92, 21),
-        0.8: d3.rgb(219, 6, 6),
+        0.25: d3.rgb(255,230,0),
+        0.5: d3.rgb(224, 92, 21),
+        0.75: d3.rgb(219, 6, 6),
         1: d3.rgb(128,0,0)
       }
     });
+    // Heat map legend DESKTOP
+    var defs_desktop = svg_heatmapLegend_desktop.append("defs")
+    // Gradient for positional heatmap
+    defs_desktop.append("linearGradient")
+                 .attr("id", "heatmapGradient1_desktop")
+                 .attr("x1", "0%")
+                 .attr("x2", "0%")
+                 .attr("y1", "0%")
+                 .attr("y2", "100%");
+    for (var i=0; i<13; i++) {
+      defs_desktop.select("#heatmapGradient1_desktop")
+                   .append("stop")
+                   .attr("class", "heatmapGradientStop")
+                   .attr("offset", function() {
+                      return Math.floor(100/12)*i + "%";
+                   })
+                   .attr("stop-color", function() {
+                      if (i==0) { return d3.rgb(128,0,0); }
+                      else if (i==1) { return d3.rgb(223,0,0); }
+                      else if (i==2) { return d3.rgb(255,71,0); }
+                      else if (i==3) { return d3.rgb(255,148,0); }
+                      else if (i==4) { return d3.rgb(255,230,0); }
+                      else if (i==5) { return d3.rgb(125,255,255); }
+                      else if (i==6) { return d3.rgb(54,255,255); }
+                      else if (i==7) { return d3.rgb(0,213,255); }
+                      else if (i==8) { return d3.rgb(0,129,255); }
+                      else if (i==9) { return d3.rgb(0,41,255); }
+                      else if (i==10) { return d3.rgb(0,0,223); }
+                      else { return d3.rgb(0,0,128); }
+                   });
+    };
+    // Gradient for win rate heatmap
+    defs_desktop.append("linearGradient")
+                 .attr("id", "heatmapGradient2_desktop")
+                 .attr("x1", "0%")
+                 .attr("x2", "0%")
+                 .attr("y1", "0%")
+                 .attr("y2", "100%");
+    for (var i=0; i<11; i++) {
+      defs_desktop.select("#heatmapGradient2_desktop")
+                   .append("stop")
+                   .attr("class", "heatmapGradientStop")
+                   .attr("offset", function() {
+                      return Math.floor(100/10)*i + "%";
+                   })
+                   .attr("stop-color", function() {
+                      if (i==0) { return d3.rgb(0,0,223); }
+                      else if (i==1) { return d3.rgb(0,41,255); }
+                      else if (i==2) { return d3.rgb(0,129,255); }
+                      else if (i==3) { return d3.rgb(54,255,255); }
+                      else if (i==4) { return "white"; }
+                      else if (i==5) { return "white"; }
+                      else if (i==6) { return d3.rgb(255,230,0); }
+                      else if (i==7) { return d3.rgb(224, 92, 21); }
+                      else if (i==8) { return d3.rgb(219, 6, 6); }
+                      else { return d3.rgb(128,0,0); }
+                   });
+    }; // end for loop
+    svg_heatmapLegend_desktop.append("rect") // rectangle with the gradient
+                             .attr("class", "legendRect")
+                             .attr("width", 10)
+                             .attr("height", 70)
+                             .attr("x", 10)
+                             .attr("y", 5);
+    svg_heatmapLegend_desktop.selectAll("legendText")
+                             .data(["", "", ""]) // placeholders
+                             .enter()
+                             .append("text")
+                             .attr("class", "legendText")
+                             .attr("x", 25)
+                             .attr("y", function(d,i) {
+                               if (i==0) { return 13; }
+                               else if (i==1) { return 43; }
+                               else { return 75; }
+                             });
+    // Heat map legend MOBILE
+    var defs_mobile = svg_heatmapLegend_mobile.append("defs")
+    // Gradient for positional heatmap
+    defs_mobile.append("linearGradient")
+               .attr("id", "heatmapGradient1_mobile")
+               .attr("x1", "0%")
+               .attr("x2", "0%")
+               .attr("y1", "0%")
+               .attr("y2", "100%");
+    for (var i=0; i<13; i++) {
+      defs_mobile.select("#heatmapGradient1_mobile")
+                 .append("stop")
+                 .attr("class", "heatmapGradientStop")
+                 .attr("offset", function() {
+                    return Math.floor(100/12)*i + "%";
+                 })
+                 .attr("stop-color", function() {
+                    if (i==0) { return d3.rgb(128,0,0); }
+                    else if (i==1) { return d3.rgb(223,0,0); }
+                    else if (i==2) { return d3.rgb(255,71,0); }
+                    else if (i==3) { return d3.rgb(255,148,0); }
+                    else if (i==4) { return d3.rgb(255,230,0); }
+                    else if (i==5) { return d3.rgb(125,255,255); }
+                    else if (i==6) { return d3.rgb(54,255,255); }
+                    else if (i==7) { return d3.rgb(0,213,255); }
+                    else if (i==8) { return d3.rgb(0,129,255); }
+                    else if (i==9) { return d3.rgb(0,41,255); }
+                    else if (i==10) { return d3.rgb(0,0,223); }
+                    else { return d3.rgb(0,0,128); }
+                 });
+    };
+    // Gradient for win rate heatmap
+    defs_mobile.append("linearGradient")
+               .attr("id", "heatmapGradient2_mobile")
+               .attr("x1", "0%")
+               .attr("x2", "0%")
+               .attr("y1", "0%")
+               .attr("y2", "100%");
+    for (var i=0; i<11; i++) {
+      defs_mobile.select("#heatmapGradient2_mobile")
+                 .append("stop")
+                 .attr("class", "heatmapGradientStop")
+                 .attr("offset", function() {
+                    return Math.floor(100/10)*i + "%";
+                 })
+                 .attr("stop-color", function() {
+                    if (i==0) { return d3.rgb(0,0,223); }
+                    else if (i==1) { return d3.rgb(0,41,255); }
+                    else if (i==2) { return d3.rgb(0,129,255); }
+                    else if (i==3) { return d3.rgb(54,255,255); }
+                    else if (i==4) { return "white"; }
+                    else if (i==5) { return "white"; }
+                    else if (i==6) { return d3.rgb(255,230,0); }
+                    else if (i==7) { return d3.rgb(224, 92, 21); }
+                    else if (i==8) { return d3.rgb(219, 6, 6); }
+                    else { return d3.rgb(128,0,0); }
+                 });
+    }; // end for loop
+    svg_heatmapLegend_mobile.append("rect") // rectangle with the gradient
+                             .attr("class", "legendRect")
+                             .attr("width", 10)
+                             .attr("height", 70)
+                             .attr("x", 10)
+                             .attr("y", 5);
+    svg_heatmapLegend_mobile.selectAll("legendText")
+                             .data(["", "", ""]) // placeholders
+                             .enter()
+                             .append("text")
+                             .attr("class", "legendText")
+                             .attr("x", 25)
+                             .attr("y", function(d,i) {
+                               if (i==0) { return 13; }
+                               else if (i==1) { return 43; }
+                               else { return 75; }
+                             });
   }; // end setup
   // Resent settings
   function reset() {
@@ -115,6 +267,7 @@ function init() {
     clearBreadcrumbs(); // clear breadcrumbs
   }; // end reset function
   function resize() {
+    w = document.documentElement.clientWidth;
     w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
     h_map = document.getElementById("graphic-svg").getBoundingClientRect().height;
     xScale_posX = d3.scaleLinear() // x scale that converts a position to X coord
@@ -142,6 +295,19 @@ function init() {
     svg.selectAll(".selectedNodeRings")
        .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
        .attr("cy", function(d) { return yScale_posY(d.pos[1]); });
+    // Heatmap legend
+    if (currDisplay != "dots") { // if it's a heatmap view, show legend
+      if (w>mobileWidthMax) {
+        d3.select("#heatmap-legend-desktop").style("display", "block");
+        d3.select("#heatmap-legend-mobile").style("display", "none");
+        drawHeatmapLegend(currDisplay);
+      }
+      else {
+        d3.select("#heatmap-legend-mobile").style("display", "block");
+        d3.select("#heatmap-legend-desktop").style("display", "none");
+        drawHeatmapLegend(currDisplay);
+      }
+    };
   }; // end resize
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -500,6 +666,23 @@ function init() {
     return [{max: d3.max(dataset_blue, function(d) { return d.value; }),min: d3.min(dataset_blue, function(d) { return d.value; }),data: dataset_blue},
             {max: d3.max(dataset_red, function(d) { return d.value; }),min: d3.min(dataset_red, function(d) { return d.value; }),data: dataset_red}];
   }; // end formatWinrateData
+  // Draw a heatmap legend
+  function drawHeatmapLegend(type) {
+    if (type=="heatmap") { var legendLabels = ["High traffic", "", "Low traffic"]; }
+    else { var legendLabels = ["High win rate", "50% win rate", "Low win rate"]; }
+    if (w>mobileWidthMax) {
+      var svg_legend = svg_heatmapLegend_desktop;
+      if (type=="heatmap") { var currUrl = "url(#heatmapGradient1_desktop)"; }
+      else { var currUrl = "url(#heatmapGradient2_desktop)"; }
+    }
+    else {
+      var svg_legend = svg_heatmapLegend_mobile;
+      if (type=="heatmap") { var currUrl = "url(#heatmapGradient1_mobile)"; }
+      else { var currUrl = "url(#heatmapGradient2_mobile)"; }
+    }
+    svg_legend.select(".legendRect").style("fill", currUrl);
+    svg_legend.selectAll(".legendText").data(legendLabels).text(function(d) { return d; })
+  }; // end drawHeatmapLegend
   // Function when team is switched
   function teamButtonClick(color) {
     // start over when color is changed
@@ -571,8 +754,7 @@ function init() {
       d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", false);
       // Do not show heatmap legends
-      d3.selectAll(".posHeatmap-legend").style("display", "none");
-      d3.selectAll(".winHeatmap-legend").style("display", "none");
+      d3.selectAll(".heatmap-legend").style("display", "none");
     }
     else if (currDisplay == "heatmap") {
       // plot heatmap
@@ -589,11 +771,12 @@ function init() {
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", false);
       // Show heatmap legend
-      d3.selectAll(".posHeatmap-legend").style("display", "block");
-      d3.selectAll(".winHeatmap-legend").style("display", "none");
+      if (w>mobileWidthMax) { d3.select("#heatmap-legend-desktop").style("display", "block"); } // desktop
+      else { d3.select("#heatmap-legend-mobile").style("display", "block"); }// mobile
+      drawHeatmapLegend(currDisplay);
     }
     else {
-      // plot heatmap
+      // plot winrate heatmap
       winrateBlueInstance.setData(currWinrateHeatmapData[0]);
       winrateBlueInstance.setDataMax(150);
       winrateBlueInstance.setDataMin(0);
@@ -609,8 +792,9 @@ function init() {
       d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
       // Show heatmap legend
-      d3.selectAll(".posHeatmap-legend").style("display", "none");
-      d3.selectAll(".winHeatmap-legend").style("display", "block");
+      if (w>mobileWidthMax) { d3.select("#heatmap-legend-desktop").style("display", "block"); } // desktop
+      else { d3.select("#heatmap-legend-mobile").style("display", "block"); } // mobile
+      drawHeatmapLegend(currDisplay);
     };
   }; // end switchView
   // Function to animate preset paths

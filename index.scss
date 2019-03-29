@@ -137,11 +137,17 @@ i {
   display: flex;
   float: right;
 }
-.posHeatmap-legend {
+.heatmap-legend {
   display: none;
 }
-.winHeatmap-legend {
-  display: none;
+.svg-heatmapLegend {
+  width: 180px;
+  height: 80px;
+}
+.legendText {
+  font-family: stratum-medium;
+  font-size: 11px;
+  fill: $purple;
 }
 @media screen and (min-width: 870px) { // desktop
   #menu-graphic-container {
@@ -210,10 +216,10 @@ i {
   #options2 {
     margin-top: 40px;
   }
-  #posHeatmap-legend-desktop {
+  #heatmap-legend-desktop {
     margin-top: 40px;
   }
-  #winHeatmap-legend-desktop {
+  #heatmap-legend-desktop {
     margin-top: 40px;
   }
 }
@@ -237,6 +243,7 @@ i {
   #options {
     display: flex;
     margin-bottom: 20px;
+    height: 100px;
   }
   #options2 {
     margin-left: 30px;
@@ -249,10 +256,10 @@ i {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
   }
-  #posHeatmap-legend-mobile {
+  #heatmap-legend-mobile {
     margin-left: 30px;
   }
-  #winHeatmap-legend-mobile {
+  #heatmap-legend-mobile {
     margin-left: 30px;
   }
 }
