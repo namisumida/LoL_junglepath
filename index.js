@@ -265,6 +265,7 @@ function init() {
     svg.selectAll(".selectedNodesGroup").remove(); // remove all selected node groups which include rings and selected nodes
     svg.selectAll(".selectedLines").remove();
     clearBreadcrumbs(); // clear breadcrumbs
+    document.getElementById("info-text").innerHTML = "All 2-minute jungler positions from patches 9.1 and 9.2 are displayed. Choose the jungler position at 2 minutes to start your path.";
   }; // end reset function
   function resize() {
     w = document.documentElement.clientWidth;
@@ -330,6 +331,7 @@ function init() {
     // Update minute
     currMinute = d3.min([currMinute+1, 5], function(d) { return d; }); // don't want it to be larger than 5
     svg.select("#minuteMark").text("Minute " + currMinute);
+    document.getElementById("info-text").innerHTML = "Based on the path you have selected so far, predicted " + currMinute + "-minute jungler positions are displayed. Click another location to continue your path.";
 
     // PATH POSITIONS
     // Find path positions for the next minute
@@ -539,16 +541,20 @@ function init() {
     // Update breadcrumbs
     if (currMinute==2) {
       clearBreadcrumbs();
+      document.getElementById("info-text").innerHTML = "All 2-minute jungler positions from patches 9.1 and 9.2 are displayed. Choose the jungler position at 2 minutes to start your path.";
     }
-    else if (currMinute==3) {
-      d3.select("#button-min3").style("display", "none");
-      d3.select("#button-min4").style("display", "none");
-      d3.select("#arrow-1").style("display", "none");
-      d3.select("#arrow-2").style("display", "none");
-    }
-    else if (currMinute==4) {
-      d3.select("#button-min4").style("display", "none");
-      d3.select("#arrow-2").style("display", "none");
+    else {
+      document.getElementById("info-text").innerHTML = "Based on the path you have selected so far, predicted " + currMinute + "-minute jungler positions are displayed. Click another location to continue your path.";
+      if (currMinute==3) {
+        d3.select("#button-min3").style("display", "none");
+        d3.select("#button-min4").style("display", "none");
+        d3.select("#arrow-1").style("display", "none");
+        d3.select("#arrow-2").style("display", "none");
+      }
+      else if (currMinute==4) {
+        d3.select("#button-min4").style("display", "none");
+        d3.select("#arrow-2").style("display", "none");
+      }
     };
     d3.select("#button-min"+(currMinute-1)).classed("active", true);
     // Remove previous node from list if there are any to be removed
