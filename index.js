@@ -268,8 +268,19 @@ function init() {
     document.getElementById("info-text").innerHTML = "All 2-minute jungler positions from patches 9.1 and 9.2 are displayed. Choose the jungler position at 2 minutes to start your path.";
   }; // end reset function
   function resize() {
-    w = document.documentElement.clientWidth;
     w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
+    svg.append("rect")
+       .attr("x", 0)
+       .attr("y", 0)
+       .attr("width", w_map)
+       .attr("height", w_map)
+       .style("fill", d3.color("#9F9EA6"));
+    svg.append("text")
+       .attr("id", "reload-text")
+       .attr("x", w_map/2)
+       .attr("y", w_map/3)
+       .text("Please refresh the page to reload the map");
+    /*
     h_map = document.getElementById("graphic-svg").getBoundingClientRect().height;
     xScale_posX = d3.scaleLinear() // x scale that converts a position to X coord
                     .domain([0,14700])
@@ -308,7 +319,7 @@ function init() {
         d3.select("#heatmap-legend-desktop").style("display", "none");
         drawHeatmapLegend(currDisplay);
       }
-    };
+    };*/
   }; // end resize
 
   ////////////////////////////////////////////////////////////////////////////////////
