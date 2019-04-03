@@ -67,6 +67,8 @@ function init() {
     currHeatmapData = formatHeatmapData(bNodeRow1.heatMap);
     heatmapInstance = h337.create({
       container: document.getElementById("heatmap-container"),
+      minOpacity: 0,
+      maxOpacity: 1,
       radius: bucketWidth*1.3,
       gradient: {
         '0': d3.rgb(0,0,128),
@@ -88,6 +90,8 @@ function init() {
     winrateBlueInstance = h337.create({
       container: document.getElementById("winrate-blue-container"),
       radius: bucketWidth*1.2,
+      minOpacity: 0,
+      maxOpacity: 1,
       gradient: {
         0: "white",
         0.25: d3.rgb(54,255,255),
@@ -99,6 +103,8 @@ function init() {
     winrateRedInstance = h337.create({
       container: document.getElementById("winrate-red-container"),
       radius: bucketWidth*1.2,
+      minOpacity: 0,
+      maxOpacity: 1,
       gradient: {
         0: "white",
         0.25: d3.rgb(255,230,0),
