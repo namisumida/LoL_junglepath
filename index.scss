@@ -427,6 +427,12 @@ i {
   text-anchor: start;
   font-size: 18px;
 }
+#teamMark {
+  font-family: stratum-medium;
+  fill: white;
+  text-anchor: end;
+  font-size: 18px;
+}
 @media screen and (max-width: 400px) { // mobile text sizes
   .options-title {
     font-size: 10px;

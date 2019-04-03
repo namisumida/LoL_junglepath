@@ -27,6 +27,12 @@ function init() {
        .attr("id", "minuteMark")
        .attr("x", 10)
        .attr("y", 25);
+    // Team mark
+    svg.append("text")
+       .text("Blue team")
+       .attr("id", "teamMark")
+       .attr("x", w_map-10)
+       .attr("y", h_map-10);
 
     // Path positions
     currPositionPaths = bNodeRow1.pathIndices.map(i => dataset_bPathList[i]);
@@ -717,6 +723,8 @@ function init() {
       var firstRow = bNodeRow1;
       var index_winrate = 0;
       var data_lookup = dataset_bLookup;
+      // Change team mark
+      svg.select("#teamMark").text("Blue team");
       // Change button styles
       d3.selectAll(".radio-blue").select(".checkmark").classed("checked", true);
       d3.selectAll(".radio-red").select(".checkmark").classed("checked", false);
@@ -729,6 +737,8 @@ function init() {
       var firstRow = rNodeRow1;
       var index_winrate = 1;
       var data_lookup = dataset_rLookup;
+      // Change team mark
+      svg.select("#teamMark").text("Red team");
       // Change button styles
       d3.selectAll(".radio-red").select(".checkmark").classed("checked", true);
       d3.selectAll(".radio-blue").select(".checkmark").classed("checked", false);
