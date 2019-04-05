@@ -272,6 +272,7 @@ function init() {
   }; // end setup
   // Resent settings
   function reset() {
+    d3.selectAll(".preset-box").classed("preset-box-clicked", false); // remove clicked class from presets
     currMinute = 2; // reset minute
     selectedNodesList = []; // reset selected nodes list
     svg.selectAll(".selectedNodesGroup").remove(); // remove all selected node groups which include rings and selected nodes
@@ -556,7 +557,7 @@ function init() {
   }; // end plotPositions
   // Function for when the back button is clicked: remove most recently selected node and replot nodes
   function backClick(numClicks) {
-
+    d3.selectAll(".preset-box").classed("preset-box-clicked", false); // remove clicked class from preset boxes
     // Update minute
     currMinute = d3.max([currMinute-numClicks, 2], function(d) { return d; }); // don't want it to be smaller than 2
     svg.select("#minuteMark").text("Minute " + currMinute);
@@ -869,15 +870,23 @@ function init() {
   // Presets selected
   d3.select("#preset-box-blue1").on("click", function() {
     animatePresets("blue", "Near Krugs", "Near Raptors", "Near Blue");
+    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+    d3.select(this).classed("preset-box-clicked", true);
   })
   d3.select("#preset-box-blue2").on("click", function() {
     animatePresets("blue", "Near Krugs", "Near Enemy Blue", "Near Raptors");
+    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+    d3.select(this).classed("preset-box-clicked", true);
   })
   d3.select("#preset-box-red1").on("click", function() {
     animatePresets("red", "Near Krugs", "Near Raptors", "Near Blue");
+    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+    d3.select(this).classed("preset-box-clicked", true);
   })
   d3.select("#preset-box-red2").on("click", function() {
     animatePresets("red", "Near Krugs", "Near Enemy Blue", "Near Raptors");
+    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+    d3.select(this).classed("preset-box-clicked", true);
   })
   // Breadcrumb "buttons"
   for (var i=2; i<5; i++) {
