@@ -855,6 +855,10 @@ function init() {
   d3.select("#button-back").on("click", function() {
     backClick(1);
   })
+  // Reset button selected
+  d3.select("#button-reset").on("click", function() {
+    teamButtonClick(currTeam); // same as setting new team
+  })
   // Dot button selected
   d3.selectAll(".button-dots").on("click", function() {
     switchView("dots");
