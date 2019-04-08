@@ -831,75 +831,83 @@ function init() {
       drawHeatmapLegend(currDisplay);
     };
   }; // end switchView
+  function buttonClicks() {
+    // Interactivity
+    // Blue team button selected
+    d3.selectAll(".button-blue").on("click", function() {
+      teamButtonClick("blue");
+    })
+    // Red team button selected
+    d3.selectAll(".button-red").on("click", function() {
+      teamButtonClick("red");
+    })
+    // Back button selected
+    d3.select("#button-back").on("click", function() {
+      backClick(1);
+    })
+    // Reset button selected
+    d3.select("#button-reset").on("click", function() {
+      teamButtonClick(currTeam); // same as setting new team
+    })
+    // Dot button selected
+    d3.selectAll(".button-dots").on("click", function() {
+      switchView("dots");
+    })
+    // Heatmap button selected
+    d3.selectAll(".button-heatmap").on("click", function() {
+      switchView("heatmap");
+    })
+    // Win rate heatmap button selected
+    d3.selectAll(".button-winrate").on("click", function() {
+      switchView("winrate");
+    })
+    // Presets selected
+    d3.select("#preset-box-blue1").on("click", function() {
+      animatePresets("blue", "Near Krugs", "Near Raptors", "Near Blue");
+      d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+      d3.select(this).classed("preset-box-clicked", true);
+    })
+    d3.select("#preset-box-blue2").on("click", function() {
+      animatePresets("blue", "Near Krugs", "Near Enemy Blue", "Near Raptors");
+      d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+      d3.select(this).classed("preset-box-clicked", true);
+    })
+    d3.select("#preset-box-red1").on("click", function() {
+      animatePresets("red", "Near Krugs", "Near Raptors", "Near Blue");
+      d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+      d3.select(this).classed("preset-box-clicked", true);
+    })
+    d3.select("#preset-box-red2").on("click", function() {
+      animatePresets("red", "Near Krugs", "Near Enemy Blue", "Near Raptors");
+      d3.selectAll(".preset-box").classed("preset-box-clicked", false);
+      d3.select(this).classed("preset-box-clicked", true);
+    })
+    // Breadcrumb "buttons"
+    for (var i=2; i<5; i++) {
+      var breadcrumbID = "#button-min" + i;
+      d3.select(breadcrumbID).on("click", function() {
+        var breadcrumbIndex = d3.select(this).node().value; // value of breadcrumb/which min
+        backClick(currMinute-breadcrumbIndex-1);
+      }); // end on click
+    }; // end for loop for breadcrumb buttons
+  }; // end buttonClicks
   // Function to animate preset paths
   function animatePresets(teamColor, pos1, pos2, pos3) {
+    // disable buttons
+    d3.selectAll("button").on("click", null);
     teamButtonClick(teamColor);
     updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos1; }));
     setTimeout(function() { updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos2; })); }, 1000);
     setTimeout(function() { updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos3; })); }, 2000);
+
+    setTimeout(function() { buttonClicks(); }, 3000);
+
   }; // end animatePresets
 
   reset();// Initial settings
   setup();// Create elements for initial load
+  buttonClicks(); // allow button clicks
 
-  // Interactivity
-  // Blue team button selected
-  d3.selectAll(".button-blue").on("click", function() {
-    teamButtonClick("blue");
-  })
-  // Red team button selected
-  d3.selectAll(".button-red").on("click", function() {
-    teamButtonClick("red");
-  })
-  // Back button selected
-  d3.select("#button-back").on("click", function() {
-    backClick(1);
-  })
-  // Reset button selected
-  d3.select("#button-reset").on("click", function() {
-    teamButtonClick(currTeam); // same as setting new team
-  })
-  // Dot button selected
-  d3.selectAll(".button-dots").on("click", function() {
-    switchView("dots");
-  })
-  // Heatmap button selected
-  d3.selectAll(".button-heatmap").on("click", function() {
-    switchView("heatmap");
-  })
-  // Win rate heatmap button selected
-  d3.selectAll(".button-winrate").on("click", function() {
-    switchView("winrate");
-  })
-  // Presets selected
-  d3.select("#preset-box-blue1").on("click", function() {
-    animatePresets("blue", "Near Krugs", "Near Raptors", "Near Blue");
-    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
-    d3.select(this).classed("preset-box-clicked", true);
-  })
-  d3.select("#preset-box-blue2").on("click", function() {
-    animatePresets("blue", "Near Krugs", "Near Enemy Blue", "Near Raptors");
-    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
-    d3.select(this).classed("preset-box-clicked", true);
-  })
-  d3.select("#preset-box-red1").on("click", function() {
-    animatePresets("red", "Near Krugs", "Near Raptors", "Near Blue");
-    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
-    d3.select(this).classed("preset-box-clicked", true);
-  })
-  d3.select("#preset-box-red2").on("click", function() {
-    animatePresets("red", "Near Krugs", "Near Enemy Blue", "Near Raptors");
-    d3.selectAll(".preset-box").classed("preset-box-clicked", false);
-    d3.select(this).classed("preset-box-clicked", true);
-  })
-  // Breadcrumb "buttons"
-  for (var i=2; i<5; i++) {
-    var breadcrumbID = "#button-min" + i;
-    d3.select(breadcrumbID).on("click", function() {
-      var breadcrumbIndex = d3.select(this).node().value; // value of breadcrumb/which min
-      backClick(currMinute-breadcrumbIndex-1);
-    }); // end on click
-  }; // end for loop for breadcrumb buttons
   // Resizing window
   window.addEventListener("resize", resize);
 }; // end init function
