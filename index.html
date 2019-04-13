@@ -11,7 +11,6 @@
 <body>
 	<div id="menu-graphic-container">
 		<div id="menu-mobile">
-			<div id="info-box"></div>
 			<div id="options">
 				<div id="options1">
 					<h3 class="options-title">SHOW</h3>
@@ -44,61 +43,11 @@
 					<svg class="svg-heatmapLegend" id="svg-heatmapLegend-mobile"></svg>
 				</div>
 			</div>
-		</div>
-		<div id="presets">
-			<h3 class="options-title" id="preset-text">EXPLORE COMMON JUNGLE PATHS</h3>
-			<div id="preset-box-blue-container">
-				<div class="preset-box" id="preset-box-blue1">
-					<p class="preset-name preset-name-blue" id="preset-name-blue">Full Clear</p>
-					<img src="icons/blue-fullclear.png" class="preset-icon"></img>
-				</div>
-				<div class="preset-box" id="preset-box-blue2">
-					<p class="preset-name preset-name-blue" id="preset-name-blue">Vertical</p>
-					<img src="icons/blue-vertical.png" class="preset-icon"></img>
-				</div>
-			</div>
-			<div id="preset-box-red-container">
-				<div class="preset-box" id="preset-box-red1">
-					<p class="preset-name preset-name-red" id="preset-name-red">Full Clear</p>
-					<img src="icons/red-fullclear.png" class="preset-icon"></img>
-				</div>
-				<div class="preset-box" id="preset-box-red2">
-					<p class="preset-name preset-name-red" id="preset-name-red">Vertical</p>
-					<img src="icons/red-vertical.png" class="preset-icon"></img>
-				</div>
-			</div>
-		</div>
-		<div id="main">
-			<div id="breadcrumbs-back-container">
-				<div id="breadcrumb-container">
-					<button type="button" class="breadcrumb" id="button-min2" value=2></button>
-					<i class="arrow right breadcrumbArrow" id="arrow-1"></i>
-					<button type="button" class="breadcrumb" id="button-min3" value=3></button>
-					<i class="arrow right breadcrumbArrow" id="arrow-2"></i>
-					<button type="button" class="breadcrumb" id="button-min4" value=4></button>
-				</div>
-				<div id="back-container">
-					<button type="button" id="button-back"><i class="arrow left"></i> BACK</button>
-					<button type="button" id="button-reset">RESET</button>
-				</div>
-			</div>
-			<div id="graphic">
-				<div class="img-overlay-container">
-					<div id="heatmap-container"></div>
-					<div id="winrate-blue-container"></div>
-					<div id="winrate-red-container"></div>
-					<img src="SRFull.png"></img>
-					<svg id="graphic-svg"></svg>
-					<div class="spinner" id="loading-spinner">
-					  <div class="double-bounce1"></div>
-					  <div class="double-bounce2"></div>
-					</div>
-				</div>
-			</div>
+			<p id="info-text-mobile">Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. Choose a position to start your path.</p>
 		</div>
 		<div id="menu-desktop">
-			<div id="info-box">
-				<p id="info-text">All 2-minute jungler positions from patches 9.1 and 9.2 are displayed. Choose the jungler position at 2 minutes to start your path.</p>
+			<div id="info-box-desktop">
+				<p id="info-text-desktop">Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. <br><br>Choose a position to start your path.</p>
 			</div>
 			<div id="options">
 				<div id="options1">
@@ -130,6 +79,57 @@
 				<div class="heatmap-legend" id="heatmap-legend-desktop">
 					<h3 class="options-title">HEATMAP LEGEND</h3>
 					<svg class="svg-heatmapLegend" id="svg-heatmapLegend-desktop"></svg>
+				</div>
+			</div>
+		</div>
+		<div id="main">
+			<div id="breadcrumbs-back-container">
+				<div id="breadcrumb-container">
+					<button type="button" class="breadcrumb" id="button-min2" value=2></button>
+					<i class="arrow right breadcrumbArrow" id="arrow-1"></i>
+					<button type="button" class="breadcrumb" id="button-min3" value=3></button>
+					<i class="arrow right breadcrumbArrow" id="arrow-2"></i>
+					<button type="button" class="breadcrumb" id="button-min4" value=4></button>
+				</div>
+				<div id="back-container">
+					<button type="button" id="button-back"><i class="arrow left"></i> BACK</button>
+					<button type="button" id="button-reset">RESET</button>
+				</div>
+			</div>
+			<div id="graphic">
+				<div class="img-overlay-container">
+					<div id="heatmap-container"></div>
+					<div id="winrate-blue-container"></div>
+					<div id="winrate-red-container"></div>
+					<img src="SRFull.png"></img>
+					<svg id="graphic-svg"></svg>
+					<div class="spinner" id="loading-spinner">
+					  <div class="double-bounce1"></div>
+					  <div class="double-bounce2"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="presets">
+			<h3 class="options-title" id="preset-text">EXPLORE COMMON JUNGLE PATHS</h3>
+			<div id="preset-box-blue-container">
+				<div class="preset-box" id="preset-box-blue1">
+					<p class="preset-name preset-name-blue" id="preset-name-blue">Full Clear</p>
+					<img src="icons/blue-fullclear.png" class="preset-icon"></img>
+				</div>
+				<div class="preset-box" id="preset-box-blue2">
+					<p class="preset-name preset-name-blue" id="preset-name-blue">Vertical</p>
+					<img src="icons/blue-vertical.png" class="preset-icon"></img>
+				</div>
+			</div>
+			<div id="preset-box-red-container">
+				<div class="preset-box" id="preset-box-red1">
+					<p class="preset-name preset-name-red" id="preset-name-red">Full Clear</p>
+					<img src="icons/red-fullclear.png" class="preset-icon"></img>
+				</div>
+				<div class="preset-box" id="preset-box-red2">
+					<p class="preset-name preset-name-red" id="preset-name-red">Vertical</p>
+					<img src="icons/red-vertical.png" class="preset-icon"></img>
 				</div>
 			</div>
 		</div>

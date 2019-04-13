@@ -17,7 +17,18 @@ function init() {
   var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
-  var mobileWidthMax = 869;
+  var mobileWidthMax = 869; // max width for showing three column view
+  // Node size
+  if (w>400) {
+    var nodeRadius = 7;
+    var selectedNodeRadius = 8;
+    var selectedNodeRingRadius = 11;
+  }
+  else {
+    var nodeRadius = 5;
+    var selectedNodeRadius = 6;
+    var selectedNodeRingRadius = 9;
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////
   function setup() {
@@ -55,7 +66,7 @@ function init() {
        .attr("id", "nodesBlue")
        .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
        .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-       .attr("r", 7)
+       .attr("r", nodeRadius)
        .moveToFront()
        .on("mouseover", function() {
          updateMouseoverRing(d3.select(this));
@@ -96,26 +107,24 @@ function init() {
     winrateBlueInstance = h337.create({
       container: document.getElementById("winrate-blue-container"),
       radius: bucketWidth*1.2,
-      minOpacity: 0,
+      minOpacity: 0.05,
       maxOpacity: 1,
       gradient: {
-        0: "white",
-        0.25: d3.rgb(54,255,255),
-        0.5: d3.rgb(0,129,255),
-        0.75: d3.rgb(0,41,255),
+        0: d3.rgb(255,230,0),
+        0.4: d3.rgb(0,129,255),
+        0.8: d3.rgb(0,41,255),
         1: d3.rgb(0,0,223)
       }
     });
     winrateRedInstance = h337.create({
       container: document.getElementById("winrate-red-container"),
       radius: bucketWidth*1.2,
-      minOpacity: 0,
+      minOpacity: 0.05,
       maxOpacity: 1,
       gradient: {
-        0: "white",
-        0.25: d3.rgb(255,230,0),
-        0.5: d3.rgb(224, 92, 21),
-        0.75: d3.rgb(219, 6, 6),
+        0: d3.rgb(255,230,0),
+        0.4: d3.rgb(224, 92, 21),
+        0.8: d3.rgb(219, 6, 6),
         1: d3.rgb(128,0,0)
       }
     });
@@ -168,9 +177,9 @@ function init() {
                       if (i==0) { return d3.rgb(0,0,223); }
                       else if (i==1) { return d3.rgb(0,41,255); }
                       else if (i==2) { return d3.rgb(0,129,255); }
-                      else if (i==3) { return d3.rgb(54,255,255); }
-                      else if (i==4) { return "white"; }
-                      else if (i==5) { return "white"; }
+                      else if (i==3) { return d3.rgb(255,230,0); }
+                      else if (i==4) { return d3.rgb(255,230,0); }
+                      else if (i==5) { return d3.rgb(255,230,0); }
                       else if (i==6) { return d3.rgb(255,230,0); }
                       else if (i==7) { return d3.rgb(224, 92, 21); }
                       else if (i==8) { return d3.rgb(219, 6, 6); }
@@ -278,7 +287,7 @@ function init() {
     svg.selectAll(".selectedNodesGroup").remove(); // remove all selected node groups which include rings and selected nodes
     svg.selectAll(".selectedLines").remove();
     clearBreadcrumbs(); // clear breadcrumbs
-    document.getElementById("info-text").innerHTML = "All 2-minute jungler positions from patches 9.1 and 9.2 are displayed. Choose the jungler position at 2 minutes to start your path.";
+    generateInstructions(); // change info text instructions
   }; // end reset function
   function resize() {
     w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
@@ -293,46 +302,6 @@ function init() {
        .attr("x", w_map/2)
        .attr("y", w_map/3)
        .text("Please refresh the page to reload the map");
-    /*
-    h_map = document.getElementById("graphic-svg").getBoundingClientRect().height;
-    xScale_posX = d3.scaleLinear() // x scale that converts a position to X coord
-                    .domain([0,14700])
-                    .range([0, w_map]); // svg/map doesn't start at 0 since centered
-    yScale_posY = d3.scaleLinear()
-                    .domain([0,14700])
-                    .range([h_map,0]);
-    if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
-    else { var dataset_node = dataset_rNodeList; }
-    svg.selectAll(".pathPoints")
-       .attr("cx", function(d) { return xScale_posX(d.path[(currMinute-2)][0]); })
-       .attr("cy", function(d) { return yScale_posY(d.path[(currMinute-2)][1]); });
-    svg.selectAll(".nodes")
-       .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
-       .attr("cy", function(d) { return yScale_posY(d.pos[1]); });
-    svg.selectAll(".selectedLines")
-       .attr("x1", function(d,i) { return xScale_posX(dataset_node[selectedNodesList[i]].pos[0]); })
-       .attr("y1", function(d,i) { return yScale_posY(dataset_node[selectedNodesList[i]].pos[1]); })
-       .attr("x2", function(d,i) { return xScale_posX(d.pos[0]); })
-       .attr("y2", function(d,i) { return yScale_posY(d.pos[1]); });
-    svg.selectAll(".selectedNodes")
-       .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
-       .attr("cy", function(d) { return yScale_posY(d.pos[1]); });
-    svg.selectAll(".selectedNodeRings")
-       .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
-       .attr("cy", function(d) { return yScale_posY(d.pos[1]); });
-    // Heatmap legend
-    if (currDisplay != "dots") { // if it's a heatmap view, show legend
-      if (w>mobileWidthMax) {
-        d3.select("#heatmap-legend-desktop").style("display", "block");
-        d3.select("#heatmap-legend-mobile").style("display", "none");
-        drawHeatmapLegend(currDisplay);
-      }
-      else {
-        d3.select("#heatmap-legend-mobile").style("display", "block");
-        d3.select("#heatmap-legend-desktop").style("display", "none");
-        drawHeatmapLegend(currDisplay);
-      }
-    };*/
   }; // end resize
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -355,7 +324,6 @@ function init() {
     // Update minute
     currMinute = d3.min([currMinute+1, 5], function(d) { return d; }); // don't want it to be larger than 5
     svg.select("#minuteMark").text("Minute " + currMinute);
-    document.getElementById("info-text").innerHTML = "Based on the path you have selected so far, predicted " + currMinute + "-minute jungler positions are displayed. Click another location to continue your path.";
 
     // PATH POSITIONS
     // Find path positions for the next minute
@@ -406,6 +374,9 @@ function init() {
       var arrowID = "#arrow-" + (currMinute-3);
       d3.select(arrowID).style("display", "inline-block");
     };
+
+    // Change info text instructions
+    generateInstructions();
   }; // end updateNodeClick
   // What happens when a node is moused over
   function updateMouseoverRing(currNode) {
@@ -438,7 +409,7 @@ function init() {
                           .attr("cy", function(d) {
                             return yScale_posY(d.pos[1]);
                           })
-                          .attr("r", 7);
+                          .attr("r", nodeRadius);
     nodes = nodes.merge(nodesEnter);
     nodes.attr("id", function() {
             if (currTeam == "blue") { return "nodesBlue"; }
@@ -450,17 +421,15 @@ function init() {
           .attr("cy", function(d) {
             return yScale_posY(d.pos[1]);
           })
-          .attr("r", 7);
+          .attr("r", nodeRadius);
     svg.selectAll(".nodes")
        .moveToFront()
        .on("mouseover", function() {
-         d3.select(this).attr("r", 7); // shrink the node
          updateMouseoverRing(d3.select(this));
        })
        .on("mouseout", function() {
          svg.selectAll(".nodeRings").remove();
-         d3.select(this).attr("r", 7) // expand node to normal size
-                        .style("opacity", 0.8);
+         d3.select(this).style("opacity", 0.8);
        })
        .on("click", function() {
          svg.selectAll(".nodeRings").remove();
@@ -522,7 +491,7 @@ function init() {
                       })
                       .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
                       .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-                      .attr("r", 8);
+                      .attr("r", selectedNodeRadius);
     selectedNodesGroup.select(".selectedNodeRings")
                       .attr("id", function() {
                         if (currTeam == "blue") { return "selectedNodeRingsBlue"; }
@@ -530,14 +499,17 @@ function init() {
                       })
                       .attr("cx", function(d) { return xScale_posX(d.pos[0]); })
                       .attr("cy", function(d) { return yScale_posY(d.pos[1]); })
-                      .attr("r", 11);
+                      .attr("r", selectedNodeRingRadius);
     selectedNodesGroup.select(".selectedNodeText")
                       .attr("id", function() {
                         if (currTeam == "blue") { return "selectedNodeTextBlue"; }
                         else { return "selectedNodeTextRed"; }
                       })
                       .attr("x", function(d) { return xScale_posX(d.pos[0])-3; })
-                      .attr("y", function(d) { return yScale_posY(d.pos[1])+5; })
+                      .attr("y", function(d) {
+                        if (w>400) { return yScale_posY(d.pos[1])+5; }
+                        else { return yScale_posY(d.pos[1])+4; }
+                      })
                       .text(function(d,i) { return i+2; })
                       .moveToFront();
   }; // end plotSelectedNodes
@@ -564,22 +536,19 @@ function init() {
 
     // Update breadcrumbs
     if (currMinute==2) {
-      clearBreadcrumbs();
-      document.getElementById("info-text").innerHTML = "All 2-minute jungler positions from patches 9.1 and 9.2 are displayed. Choose the jungler position at 2 minutes to start your path.";
+      d3.select("#button-min2").style("display", "none");
+      d3.select("#arrow-1").style("display", "none");
     }
-    else {
-      document.getElementById("info-text").innerHTML = "Based on the path you have selected so far, predicted " + currMinute + "-minute jungler positions are displayed. Click another location to continue your path.";
-      if (currMinute==3) {
-        d3.select("#button-min3").style("display", "none");
-        d3.select("#button-min4").style("display", "none");
-        d3.select("#arrow-1").style("display", "none");
-        d3.select("#arrow-2").style("display", "none");
-      }
-      else if (currMinute==4) {
-        d3.select("#button-min4").style("display", "none");
-        d3.select("#arrow-2").style("display", "none");
-      }
-    };
+    else if (currMinute==3) {
+      d3.select("#button-min3").style("display", "none");
+      d3.select("#button-min4").style("display", "none");
+      d3.select("#arrow-1").style("display", "none");
+      d3.select("#arrow-2").style("display", "none");
+    }
+    else if (currMinute==4) {
+      d3.select("#button-min4").style("display", "none");
+      d3.select("#arrow-2").style("display", "none");
+    }
     d3.select("#button-min"+(currMinute-1)).classed("active", true);
     // Remove previous node from list if there are any to be removed
     if (selectedNodesList.length > 0) { // if it's not at Minute 2 (back to the beginning)
@@ -659,6 +628,8 @@ function init() {
       plotNewNodes(currNodeIndices, -1); // plot minute 2 nodes which are nodes with a parentIndex of 0
       svg.selectAll(".selectedNodesGroup").remove();
     };
+    // Change info text instructions
+    generateInstructions();
   }; // end backClick
   function formatHeatmapData(dataset) {
     var dataset_output = [];
@@ -830,6 +801,7 @@ function init() {
       else { d3.select("#heatmap-legend-mobile").style("display", "block"); } // mobile
       drawHeatmapLegend(currDisplay);
     };
+    generateInstructions(); // change info text box depending on min and display
   }; // end switchView
   function buttonClicks() {
     // Interactivity
@@ -903,6 +875,58 @@ function init() {
     setTimeout(function() { buttonClicks(); }, 3000);
 
   }; // end animatePresets
+  function generateInstructions() {
+    if (w>mobileWidthMax) { // desktop
+      if (currMinute == 2) {
+        if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. <br><br>Choose a position to start your path."; }
+        else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Regions are colored based on how many junglers were nearby at minute 2. <br><br>Choose a position to start your path."; }
+        else { document.getElementById("info-text-desktop").innerHTML = "Regions are colored based on the percentage of nearby junglers at minute 2 who went on to win. <br><br>Choose a position to start your path."; }
+      }
+      else {
+        var nextMin = currMinute + 1;
+        if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
+        else { var dataset_node = dataset_rNodeList; }
+        var newNodes = currNodeIndices.map(i => dataset_node[i]).filter(function(d) {
+          return d.parent == selectedNodesList[selectedNodesList.length-1];
+        })
+        if (newNodes.length != 0) { // if there are more nodes
+          if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". <br><br>Click another position to continue your path."; }
+          else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". <br><br>Regions are colored based on how many junglers were nearby at minute " + nextMin + ". <br><br>Choose another position to continue your path."; }
+          else { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". <br><br>Regions are colored based on the percentage of nearby junglers at minute " + nextMin + " who went on to win. <br><br>Choose another position to continue your path."; }
+        }
+        else { // end of the path
+          if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". <br><br>Not enough data to proceed. Click \"Back\" to explore a different path."; }
+          else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". <br><br>Regions are colored based on how many junglers were nearby at minute " + nextMin + ". <br><br>Not enough data to proceed. Click \"Back\" to explore a different path."; }
+          else { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". <br><br>Regions are colored based on the percentage of nearby junglers at minute " + nextMin + " who went on to win. <br><br>Not enough data to proceed. Click \"Back\" to explore a different path."; }
+        }
+      }
+    }
+    else {
+      if (currMinute == 2) {
+        if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. Choose a position to start your path."; }
+        else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Regions are colored based on how many junglers were nearby at minute 2. Choose a position to start your path."; }
+        else { document.getElementById("info-text-mobile").innerHTML = "Regions are colored based on the percentage of nearby junglers at minute 2 who went on to win. Choose a position to start your path."; }
+      }
+      else {
+        var nextMin = currMinute + 1;
+        if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
+        else { var dataset_node = dataset_rNodeList; }
+        var newNodes = currNodeIndices.map(i => dataset_node[i]).filter(function(d) {
+          return d.parent == selectedNodesList[selectedNodesList.length-1];
+        })
+        if (newNodes.length != 0) { // if there are more nodes
+          if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". Click another position to continue your path."; }
+          else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". Regions are colored based on how many junglers were nearby at minute " + nextMin + ". Choose another position to continue your path."; }
+          else { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". Regions are colored based on the percentage of nearby junglers at minute " + nextMin + " who went on to win. Choose another position to continue your path."; }
+        }
+        else { // end of the path
+          if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". Not enough data to proceed. Click \"Back\" to explore a different path."; }
+          else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". Regions are colored based on how many junglers were nearby at minute " + nextMin + ". Not enough data to proceed. Click \"Back\" to explore a different path."; }
+          else { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + nextMin + ". Regions are colored based on the percentage of nearby junglers at minute " + nextMin + " who went on to win. Not enough data to proceed. Click \"Back\" to explore a different path."; }
+        }
+      }
+    }
+  }; // end generateInstructions
 
   reset();// Initial settings
   setup();// Create elements for initial load

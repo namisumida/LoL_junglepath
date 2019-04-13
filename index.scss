@@ -85,23 +85,6 @@ $maxMapWidth: 512px;
 #breadcrumbs-back-container {
   height: 35px;
 }
-#breadcrumb-container {
-  height: 35px;
-  float: left;
-}
-.breadcrumb {
-  display: none;
-  margin: 0.5em;
-  margin-top: 0;
-  font-size: 14px;
-  border: solid 1px $lightGray;
-  border-radius: 3px;
-  font-weight: 500;
-  height: 25px;
-  color: $lightGray;
-  font-family: stratum-medium;
-  cursor: pointer;
-}
 #button-back {
   margin-left: 5px;
   margin-top: 5px;
@@ -170,6 +153,23 @@ i {
     max-width: 1000px;
     margin: auto;
   }
+  #breadcrumb-container {
+    height: 35px;
+    float: left;
+  }
+  .breadcrumb {
+    display: none;
+    margin: 0.5em;
+    margin-top: 0;
+    font-size: 14px;
+    border: solid 1px $lightGray;
+    border-radius: 3px;
+    font-weight: 500;
+    height: 25px;
+    color: $lightGray;
+    font-family: stratum-medium;
+    cursor: pointer;
+  }
   #presets {
     position: relative;
     margin: auto;
@@ -186,8 +186,6 @@ i {
     margin-right: 0.5em;
   }
   .preset-box {
-    border: solid 1px gray;
-    border-radius: 4px;
     width: 90px;
     height: 90px;
     margin: auto;
@@ -213,30 +211,28 @@ i {
   .preset-icon {
     display: block;
     margin: auto;
-    width: 60px;
+    width: 50px;
     margin-top: 5px;
   }
   .preset-box-clicked {
-    border: solid 1.5px black;
-    background: #E8E8E8;
+    // TODO: find a good selected style
   }
   #menu-desktop {
     position: relative;
     margin: auto;
-    margin-top: 45px;
+    margin-top: 10px;
   }
   #menu-mobile {
     display: none;
   }
-  #info-box {
+  #info-box-desktop {
     width: 180px;
-    height: 100px;
     padding: 0.5em;
     margin-bottom: 1em;
     border: solid 1px gray;
     border-radius: 4px;
   }
-  #info-text {
+  #info-text-desktop {
     font-size: 14px;
     font-family: radnika-regular;
     margin-top: 0;
@@ -247,13 +243,10 @@ i {
     padding: 0.5em;
   }
   #options2 {
-    margin-top: 40px;
+    margin-top: 30px;
   }
   #heatmap-legend-desktop {
-    margin-top: 40px;
-  }
-  #heatmap-legend-desktop {
-    margin-top: 40px;
+    margin-top: 30px;
   }
 }
 @media screen and (max-width: 869px) { // not desktop
@@ -266,17 +259,21 @@ i {
   #menu-desktop {
     display: none;
   }
+  #breadcrumb-container {
+    display: none;
+  }
   #presets {
     display: none;
   }
-  #info-box {
-    display: none;
-    //max-width: $maxMapWidth;
+  #info-text-mobile {
+    font-size: 13px;
+    font-family: radnika-regular;
+    margin-top: 20px;
+    margin-bottom: 0;
+    margin-left: 5px;
   }
   #options {
     display: flex;
-    margin-bottom: 20px;
-    height: 100px;
   }
   #options2 {
     margin-left: 30px;
@@ -477,7 +474,23 @@ i {
   #button-back {
     font-size: 11px;
   }
+  #button-reset {
+    font-size: 11px;
+  }
   #minuteMark {
     font-size: 13px;
+  }
+  #teamMark {
+    font-size: 13px;
+  }
+  #info-text-mobile {
+    font-size: 12px;
+  }
+  .selectedNodeText {
+    font-size: 11px;
+  }
+  i {
+    border-width: 0 2px 2px 0;
+    padding: 2.5px;
   }
 }
