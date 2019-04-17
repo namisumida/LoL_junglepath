@@ -45,7 +45,7 @@ $maxMapWidth: 512px;
 .radiobutton-container {
   display: block;
   position: relative;
-  padding-left: 25px;
+  padding-left: 28px;
   margin-top: 5px;
   margin-left: 5px;
   cursor: pointer;
@@ -230,7 +230,7 @@ i {
     margin-top: 35px;
     width: 180px;
     padding: 0.5em;
-    margin-bottom: 1em;
+    margin-bottom: 20px;
     border: solid 1px gray;
     border-radius: 4px;
   }
@@ -242,13 +242,14 @@ i {
     margin-left: 5px;
   }
   #options {
-    padding: 0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
   }
   #options2 {
-    margin-top: 30px;
+    margin-top: 20px;
   }
   #heatmap-legend-desktop {
-    margin-top: 30px;
+    margin-top: 20px;
   }
   #faq {
     max-width: 800px;
@@ -279,6 +280,7 @@ i {
   }
   #options {
     display: flex;
+    height: 102px;
   }
   #options2 {
     margin-left: 30px;
