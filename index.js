@@ -290,6 +290,15 @@ function init() {
     generateInstructions(); // change info text instructions
   }; // end reset function
   function resize() {
+    // disable button clicks
+    d3.selectAll("button").on("click", null);
+    d3.selectAll(".button-dots").on("click", null);
+    d3.selectAll(".button-heatmap").on("click", null);
+    d3.selectAll(".button-winrate").on("click", null);
+    d3.selectAll(".button-blue").on("click", null);
+    d3.selectAll(".button-red").on("click", null);
+    d3.selectAll(".preset-box").on("click", null);
+    // Add rectangle with message
     w_map = document.getElementById("graphic-svg").getBoundingClientRect().width;
     svg.append("rect")
        .attr("x", 0)
