@@ -102,6 +102,14 @@ function init() {
         '1': d3.rgb(128,0,0)
       }
     });
+    heatmapInstance.setDataMax(195);
+    heatmapInstance.setDataMin(0);
+    /* TO FIND MAX WIN RATE HEAT MAP VALUE. RUN THIS ON BLUE AND RED NODE LISTS. RED IS 9.57 AND BLUE IS 11.5.
+    var maxList = [];
+    for (var i=0; i<dataset_bNodeList.length; i++) {
+      maxList.push(d3.max(dataset_bNodeList[i].heatMap, function(d) { return d; }));
+    }
+    console.log(d3.max(maxList, function(d) { return d; }));*/
     // Win rate heatmap instance
     currWinrateHeatmapData = formatWinrateData(bNodeRow1.winHeatMap);
     winrateBlueInstance = h337.create({
@@ -363,7 +371,7 @@ function init() {
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") {
       heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(45);
+      heatmapInstance.setDataMax(195);
       heatmapInstance.setDataMin(0);
     }
     else {
@@ -608,7 +616,7 @@ function init() {
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") {
         heatmapInstance.setData(currHeatmapData);
-        heatmapInstance.setDataMax(45);
+        heatmapInstance.setDataMax(195);
         heatmapInstance.setDataMin(0);
       }
       else {
@@ -634,7 +642,7 @@ function init() {
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") {
         heatmapInstance.setData(currHeatmapData);
-        heatmapInstance.setDataMax(45);
+        heatmapInstance.setDataMax(195);
         heatmapInstance.setDataMin(0);
       }
       else {
@@ -662,7 +670,7 @@ function init() {
       var colBucket = (j % numRowBuckets); // tells what col you're in; determines x position
       dataset_output.push({x: colBucket*bucketWidth+Math.floor(bucketWidth/2),
                            y: rowBucket*bucketWidth-Math.floor(bucketWidth/2),
-                           value: dataset[j]*8}) // what needs to go into heatmap setData
+                           value: dataset[j]*20}) // what needs to go into heatmap setData
       // added radius/2 to center it in the bucket square
     };
     return {max: d3.max(dataset_output, function(d) { return d.value; }),
@@ -749,7 +757,7 @@ function init() {
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") {
       heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(45);
+      heatmapInstance.setDataMax(195);
       heatmapInstance.setDataMin(0);
     }
     else {
@@ -787,7 +795,7 @@ function init() {
     else if (currDisplay == "heatmap") {
       // plot heatmap
       heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(40);
+      heatmapInstance.setDataMax(195);
       heatmapInstance.setDataMin(0);
       // Remove dots
       svg.selectAll(".pathPoints").remove();
@@ -836,7 +844,6 @@ function init() {
       } // mobile
       drawHeatmapLegend(currDisplay);
     };
-    generateInstructions(); // change info text box depending on min and display
   }; // end switchView
   function buttonClicks() {
     // Interactivity
