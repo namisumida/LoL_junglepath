@@ -133,7 +133,7 @@ i {
   display: none;
 }
 .svg-heatmapLegend {
-  width: 180px;
+  width: 100px;
   height: 80px;
 }
 .legendText {
@@ -274,7 +274,7 @@ i {
   #info-text-mobile {
     font-size: 13px;
     font-family: radnika-regular;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 0;
     margin-left: 5px;
   }
@@ -283,7 +283,7 @@ i {
     height: 102px;
   }
   #options2 {
-    margin-left: 30px;
+    margin-left: 20px;
   }
   #breadcrumbs-back-container {
     max-width: $maxMapWidth;
@@ -294,10 +294,7 @@ i {
     margin-bottom: 0.5em;
   }
   #heatmap-legend-mobile {
-    margin-left: 30px;
-  }
-  #heatmap-legend-mobile {
-    margin-left: 30px;
+    margin-left: 20px;
   }
   #faq {
     max-width: $maxMapWidth;

@@ -29,7 +29,6 @@ function init() {
     var selectedNodeRadius = 6;
     var selectedNodeRingRadius = 9;
   }
-
   ////////////////////////////////////////////////////////////////////////////////////
   function setup() {
     // Minute mark
@@ -78,6 +77,7 @@ function init() {
        .on("click", function() {
          svg.selectAll(".nodeRings").remove();
          updateNodeClick(d3.select(this));
+         generateInstructions();
        });
 
     // Heatmap instance
@@ -116,6 +116,14 @@ function init() {
         1: d3.rgb(0,0,223)
       }
     });
+    winrateBlueInstance.setDataMax(200);
+    winrateBlueInstance.setDataMin(0);
+    /* TO FIND MAX WIN RATE HEAT MAP VALUE. RUN THIS ON BLUE AND RED NODE LISTS. BLUE IS 64.4 AND RED IS 63.6, so use (70-50)*10 so it mirrors the red side which is 20 points away
+    var maxList = [];
+    for (var i=0; i<dataset_rNodeList.length; i++) {
+      maxList.push(d3.max(dataset_rNodeList[i].winHeatMap, function(d) { return d; }));
+    }
+    console.log(d3.max(maxList, function(d) { return d; }));*/
     winrateRedInstance = h337.create({
       container: document.getElementById("winrate-red-container"),
       radius: bucketWidth*1.2,
@@ -128,6 +136,14 @@ function init() {
         1: d3.rgb(128,0,0)
       }
     });
+    winrateRedInstance.setDataMax(200);
+    winrateRedInstance.setDataMin(0);
+    /* TO FIND MIN WIN RATE HEAT MAP VALUE. RUN THIS ON BLUE AND RED NODE LISTS. BLUE IS 33.6 AND RED IS 37.1, so use (30-50)*10
+    var maxList = [];
+    for (var i=0; i<dataset_rNodeList.length; i++) {
+      maxList.push(d3.min(dataset_rNodeList[i].winHeatMap, function(d) { return d; }));
+    }
+    console.log(d3.min(maxList, function(d) { return d; }));*/
     // Heat map legend DESKTOP
     var defs_desktop = svg_heatmapLegend_desktop.append("defs")
     // Gradient for positional heatmap
@@ -249,16 +265,16 @@ function init() {
                     return Math.floor(100/10)*i + "%";
                  })
                  .attr("stop-color", function() {
-                    if (i==0) { return d3.rgb(0,0,223); }
-                    else if (i==1) { return d3.rgb(0,41,255); }
-                    else if (i==2) { return d3.rgb(0,129,255); }
-                    else if (i==3) { return d3.rgb(54,255,255); }
-                    else if (i==4) { return "white"; }
-                    else if (i==5) { return "white"; }
-                    else if (i==6) { return d3.rgb(255,230,0); }
-                    else if (i==7) { return d3.rgb(224, 92, 21); }
-                    else if (i==8) { return d3.rgb(219, 6, 6); }
-                    else { return d3.rgb(128,0,0); }
+                   if (i==0) { return d3.rgb(0,0,223); }
+                   else if (i==1) { return d3.rgb(0,41,255); }
+                   else if (i==2) { return d3.rgb(0,129,255); }
+                   else if (i==3) { return d3.rgb(255,230,0); }
+                   else if (i==4) { return d3.rgb(255,230,0); }
+                   else if (i==5) { return d3.rgb(255,230,0); }
+                   else if (i==6) { return d3.rgb(255,230,0); }
+                   else if (i==7) { return d3.rgb(224, 92, 21); }
+                   else if (i==8) { return d3.rgb(219, 6, 6); }
+                   else { return d3.rgb(128,0,0); }
                  });
     }; // end for loop
     svg_heatmapLegend_mobile.append("rect") // rectangle with the gradient
@@ -353,11 +369,11 @@ function init() {
     else {
       // Blue side of win rates
       winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-      winrateBlueInstance.setDataMax(150);
+      winrateBlueInstance.setDataMax(200);
       winrateBlueInstance.setDataMin(0);
       // Red side of win rates
       winrateRedInstance.setData(currWinrateHeatmapData[1]);
-      winrateRedInstance.setDataMax(150);
+      winrateRedInstance.setDataMax(200);
       winrateRedInstance.setDataMin(0);
     };
 
@@ -383,9 +399,6 @@ function init() {
       var arrowID = "#arrow-" + (currMinute-3);
       d3.select(arrowID).style("display", "inline-block");
     };
-
-    // Change info text instructions
-    generateInstructions();
   }; // end updateNodeClick
   // What happens when a node is moused over
   function updateMouseoverRing(currNode) {
@@ -443,6 +456,7 @@ function init() {
        .on("click", function() {
          svg.selectAll(".nodeRings").remove();
          updateNodeClick(d3.select(this));
+         generateInstructions();
        });
 
   }; // end plotNewNodes
@@ -600,11 +614,11 @@ function init() {
       else {
         // Blue side of win rates
         winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-        winrateBlueInstance.setDataMax(150);
+        winrateBlueInstance.setDataMax(200);
         winrateBlueInstance.setDataMin(0);
         // Red side of win rates
         winrateRedInstance.setData(currWinrateHeatmapData[1]);
-        winrateRedInstance.setDataMax(150);
+        winrateRedInstance.setDataMax(200);
         winrateRedInstance.setDataMin(0);
        };
       // Plot nodes
@@ -626,11 +640,11 @@ function init() {
       else {
         // Blue side of win rates
         winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-        winrateBlueInstance.setDataMax(150);
+        winrateBlueInstance.setDataMax(200);
         winrateBlueInstance.setDataMin(0);
         // Red side of win rates
         winrateRedInstance.setData(currWinrateHeatmapData[1]);
-        winrateRedInstance.setDataMax(150);
+        winrateRedInstance.setDataMax(200);
         winrateRedInstance.setDataMin(0);
        };
       // Plot nodes
@@ -678,8 +692,8 @@ function init() {
   }; // end formatWinrateData
   // Draw a heatmap legend
   function drawHeatmapLegend(type) {
-    if (type=="heatmap") { var legendLabels = ["High traffic", "", "Low traffic"]; }
-    else { var legendLabels = ["High win rate", "50% win rate", "Low win rate"]; }
+    if (type=="heatmap") { var legendLabels = ["10%", "", "0%"]; }
+    else { var legendLabels = ["70%", "50%", "30%"]; }
     if (w>mobileWidthMax) {
       var svg_legend = svg_heatmapLegend_desktop;
       if (type=="heatmap") { var currUrl = "url(#heatmapGradient1_desktop)"; }
@@ -741,11 +755,11 @@ function init() {
     else {
       // Blue side of win rates
       winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-      winrateBlueInstance.setDataMax(150);
+      winrateBlueInstance.setDataMax(200);
       winrateBlueInstance.setDataMin(0);
       // Red side of win rates
       winrateRedInstance.setData(currWinrateHeatmapData[1]);
-      winrateRedInstance.setDataMax(150);
+      winrateRedInstance.setDataMax(200);
       winrateRedInstance.setDataMin(0);
     };
     // Plot nodes
@@ -785,17 +799,23 @@ function init() {
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-winrate").select(".checkmark").classed("checked", false);
       // Show heatmap legend
-      if (w>mobileWidthMax) { d3.select("#heatmap-legend-desktop").style("display", "block"); } // desktop
-      else { d3.select("#heatmap-legend-mobile").style("display", "block"); }// mobile
+      if (w>mobileWidthMax) {
+        d3.select("#heatmap-legend-desktop").style("display", "block");
+        d3.select("#options-title-desktop").text("POSITIONAL HEAT MAP LEGEND");
+      }
+      else {
+        d3.select("#heatmap-legend-mobile").style("display", "block");
+        d3.select("#options-title-mobile").text("POSITIONAL HEAT MAP LEGEND");
+      }// mobile
       drawHeatmapLegend(currDisplay);
     }
     else {
       // plot winrate heatmap
       winrateBlueInstance.setData(currWinrateHeatmapData[0]);
-      winrateBlueInstance.setDataMax(150);
+      winrateBlueInstance.setDataMax(200);
       winrateBlueInstance.setDataMin(0);
       winrateRedInstance.setData(currWinrateHeatmapData[1]);
-      winrateRedInstance.setDataMax(150);
+      winrateRedInstance.setDataMax(200);
       winrateRedInstance.setDataMin(0);
       // Remove dots
       svg.selectAll(".pathPoints").remove();
@@ -806,8 +826,14 @@ function init() {
       d3.selectAll(".radio-heatmap").select(".checkmark").classed("checked", false);
       d3.selectAll(".radio-dots").select(".checkmark").classed("checked", false);
       // Show heatmap legend
-      if (w>mobileWidthMax) { d3.select("#heatmap-legend-desktop").style("display", "block"); } // desktop
-      else { d3.select("#heatmap-legend-mobile").style("display", "block"); } // mobile
+      if (w>mobileWidthMax) {
+        d3.select("#heatmap-legend-desktop").style("display", "block");
+        d3.select("#options-title-desktop").text("ESTIMATED WIN RATE");
+      } // desktop
+      else {
+        d3.select("#heatmap-legend-mobile").style("display", "block");
+        d3.select("#options-title-mobile").text("ESTIMATED WIN RATE");
+      } // mobile
       drawHeatmapLegend(currDisplay);
     };
     generateInstructions(); // change info text box depending on min and display
@@ -844,22 +870,22 @@ function init() {
     })
     // Presets selected
     d3.select("#preset-box-blue1").on("click", function() {
-      animatePresets("blue", "Near Krugs", "Near Raptors", "Near Blue");
+      animatePresets("blue", "Near Krugs", "Near Raptors", "Near Blue", "fullclear");
       d3.selectAll(".preset-box").classed("preset-box-clicked", false);
       d3.select(this).classed("preset-box-clicked", true);
     })
     d3.select("#preset-box-blue2").on("click", function() {
-      animatePresets("blue", "Near Krugs", "Near Enemy Blue", "Near Raptors");
+      animatePresets("blue", "Near Krugs", "Near Enemy Blue", "Near Raptors", "vertical");
       d3.selectAll(".preset-box").classed("preset-box-clicked", false);
       d3.select(this).classed("preset-box-clicked", true);
     })
     d3.select("#preset-box-red1").on("click", function() {
-      animatePresets("red", "Near Krugs", "Near Raptors", "Near Blue");
+      animatePresets("red", "Near Krugs", "Near Raptors", "Near Blue", "fullclear");
       d3.selectAll(".preset-box").classed("preset-box-clicked", false);
       d3.select(this).classed("preset-box-clicked", true);
     })
     d3.select("#preset-box-red2").on("click", function() {
-      animatePresets("red", "Near Krugs", "Near Enemy Blue", "Near Raptors");
+      animatePresets("red", "Near Krugs", "Near Enemy Blue", "Near Raptors", "vertical");
       d3.selectAll(".preset-box").classed("preset-box-clicked", false);
       d3.select(this).classed("preset-box-clicked", true);
     })
@@ -873,63 +899,73 @@ function init() {
     }; // end for loop for breadcrumb buttons
   }; // end buttonClicks
   // Function to animate preset paths
-  function animatePresets(teamColor, pos1, pos2, pos3) {
+  function animatePresets(teamColor, pos1, pos2, pos3, presetName) {
     // disable buttons
     d3.selectAll("button").on("click", null);
     teamButtonClick(teamColor);
+    generateInstructions(presetName);
     updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos1; }));
     setTimeout(function() { updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos2; })); }, 1000);
     setTimeout(function() { updateNodeClick(d3.selectAll(".nodes").filter(function(d) { return d.name==pos3; })); }, 2000);
-
     setTimeout(function() { buttonClicks(); }, 3000);
 
   }; // end animatePresets
-  function generateInstructions() {
-    if (w>mobileWidthMax) { // desktop
-      if (currMinute == 2) {
-        if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. <br><br>Choose a position to start your path."; }
-        else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Regions are colored based on how many junglers were nearby at minute 2. <br><br>Choose a position to start your path."; }
-        else { document.getElementById("info-text-desktop").innerHTML = "Regions are colored based on the percentage of nearby junglers at minute 2 who went on to win. <br><br>Choose a position to start your path."; }
-      }
-      else {
-        if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
-        else { var dataset_node = dataset_rNodeList; }
-        var newNodes = currNodeIndices.map(i => dataset_node[i]).filter(function(d) {
-          return d.parent == selectedNodesList[selectedNodesList.length-1];
-        })
-        if (newNodes.length != 0) { // if there are more nodes
-          if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Click another position to continue your path."; }
-          else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on how many junglers were nearby at minute " + currMinute + ". <br><br>Choose another position to continue your path."; }
-          else { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. <br><br>Choose another position to continue your path."; }
-        }
-        else { // end of the path
-          if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Not enough data to proceed. Click \"Back\" to explore a different path."; }
-          else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on how many junglers were nearby at minute " + currMinute + ". <br><br>Not enough data to proceed. Click \"Back\" to explore a different path."; }
-          else { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. <br><br>Not enough data to proceed. Click \"Back\" to explore a different path."; }
-        }
-      }
+  function generateInstructions(presetName) {
+    if (presetName=="vertical") {
+      if (w>mobileWidthMax) { document.getElementById("info-text-desktop").innerHTML = "A vertical path typically involves clearing jungle camps from one of your allied quadrants as well as the nearest quadrant of your opponent."; }
+      else { document.getElementById("info-text-mobile").innerHTML = "A vertical path typically involves clearing jungle camps from one of your allied quadrants as well as the nearest quadrant of your opponent."; }
+    }
+    else if (presetName=="fullclear") {
+      if (w>mobileWidthMax) { document.getElementById("info-text-desktop").innerHTML = "A full clear path typically involves clearing the majority if not all of the camps in your two allied jungle quadrants."; }
+      else { document.getElementById("info-text-mobile").innerHTML = "A full clear path typically involves clearing the majority if not all of the camps in your two allied jungle quadrants."; }
     }
     else {
-      if (currMinute == 2) {
-        if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. Choose a position to start your path."; }
-        else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Regions are colored based on how many junglers were nearby at minute 2. Choose a position to start your path."; }
-        else { document.getElementById("info-text-mobile").innerHTML = "Regions are colored based on the percentage of nearby junglers at minute 2 who went on to win. Choose a position to start your path."; }
+      if (w>mobileWidthMax) { // desktop
+        if (currMinute == 2) {
+          if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. <br><br>Choose a position to start your path."; }
+          else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Regions are colored based on how many junglers were nearby at minute 2. <br><br>Choose a position to start your path."; }
+          else { document.getElementById("info-text-desktop").innerHTML = "Regions are colored based on the percentage of nearby junglers at minute 2 who went on to win. <br><br>Choose a position to start your path."; }
+        }
+        else {
+          if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
+          else { var dataset_node = dataset_rNodeList; }
+          var newNodes = currNodeIndices.map(i => dataset_node[i]).filter(function(d) {
+            return d.parent == selectedNodesList[selectedNodesList.length-1];
+          })
+          if (newNodes.length != 0) { // if there are more nodes
+            if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Click another position to continue your path."; }
+            else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on how many junglers were nearby at minute " + currMinute + ". <br><br>Choose another position to continue your path."; }
+            else { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. <br><br>Choose another position to continue your path."; }
+          }
+          else { // end of the path
+            if (currDisplay == "dots") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br><span style='font-family:radnika-bold'>You have reached the end of this path.</span> Click \"Back\" to explore a different path."; }
+            else if (currDisplay == "heatmap") { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on how many junglers were nearby at minute " + currMinute + ". <br><br><span style='font-family:radnika-bold'>You have reached the end of this path.</span> Click \"Back\" to explore a different path."; }
+            else { document.getElementById("info-text-desktop").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <br><br>Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. <br><br><span style='font-family:radnika-bold'>You have reached the end of this path.</span> Click \"Back\" to explore a different path."; }
+          }
+        }
       }
       else {
-        if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
-        else { var dataset_node = dataset_rNodeList; }
-        var newNodes = currNodeIndices.map(i => dataset_node[i]).filter(function(d) {
-          return d.parent == selectedNodesList[selectedNodesList.length-1];
-        })
-        if (newNodes.length != 0) { // if there are more nodes
-          if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Click another position to continue your path."; }
-          else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on how many junglers were nearby at minute " + currMinute + ". Choose another position to continue your path."; }
-          else { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. Choose another position to continue your path."; }
+        if (currMinute == 2) {
+          if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. Choose a position to start your path."; }
+          else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Regions are colored based on how many junglers were nearby at minute 2. Choose a position to start your path."; }
+          else { document.getElementById("info-text-mobile").innerHTML = "Regions are colored based on the percentage of nearby junglers at minute 2 who went on to win. Choose a position to start your path."; }
         }
-        else { // end of the path
-          if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Not enough data to proceed. Click \"Back\" to explore a different path."; }
-          else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on how many junglers were nearby at minute " + currMinute + ". Not enough data to proceed. Click \"Back\" to explore a different path."; }
-          else { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. Not enough data to proceed. Click \"Back\" to explore a different path."; }
+        else {
+          if (currTeam == "blue") {  var dataset_node = dataset_bNodeList; }
+          else { var dataset_node = dataset_rNodeList; }
+          var newNodes = currNodeIndices.map(i => dataset_node[i]).filter(function(d) {
+            return d.parent == selectedNodesList[selectedNodesList.length-1];
+          })
+          if (newNodes.length != 0) { // if there are more nodes
+            if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Click another position to continue your path."; }
+            else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on how many junglers were nearby at minute " + currMinute + ". Choose another position to continue your path."; }
+            else { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. Choose another position to continue your path."; }
+          }
+          else { // end of the path
+            if (currDisplay == "dots") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". <span style='font-family:radnika-bold'>You have reached the end of this path.</span> Click \"Back\" to explore a different path."; }
+            else if (currDisplay == "heatmap") { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on how many junglers were nearby at minute " + currMinute + ". <span style='font-family:radnika-bold'>You have reached the end of this path.</span> Click \"Back\" to explore a different path."; }
+            else { document.getElementById("info-text-mobile").innerHTML = "Junglers on your current path advanced to these positions at minute " + currMinute + ". Regions are colored based on the percentage of nearby junglers at minute " + currMinute + " who went on to win. <span style='font-family:radnika-bold'>You have reached the end of this path.</span> Click \"Back\" to explore a different path."; }
+          }
         }
       }
     }
