@@ -9,132 +9,136 @@
 
 </head>
 <body>
-	<div id="menu-graphic-container">
-		<div id="menu-mobile">
-			<div id="options">
-				<div id="options1">
-					<h3 class="options-title">SHOW</h3>
-					<label class="radiobutton-container radio-dots">Individual Positions
-					  <input type="checkbox" class="button-dots">
-					  <span class="checkmark checked"></span>
-					</label>
-					<label class="radiobutton-container radio-heatmap">Positional Heat Map
-					  <input type="checkbox" class="button-heatmap">
-					  <span class="checkmark"></span>
-					</label>
-					<label class="radiobutton-container radio-winrate">Win Rate Heat Map
-					  <input type="checkbox" class="button-winrate">
-					  <span class="checkmark"></span>
-					</label>
-				</div>
-				<div id="options2">
-					<h3 class="options-title">TEAM</h3>
-					<label class="radiobutton-container radio-blue">Blue
-					  <input type="checkbox" class="button-blue">
-					  <span class="checkmark checked"></span>
-					</label>
-					<label class="radiobutton-container radio-red">Red
-					  <input type="checkbox" class="button-red">
-					  <span class="checkmark"></span>
-					</label>
-				</div>
-				<div class="heatmap-legend" id="heatmap-legend-mobile">
-					<h3 class="options-title" id="options-title-mobile">HEAT MAP LEGEND</h3>
-					<svg class="svg-heatmapLegend" id="svg-heatmapLegend-mobile"></svg>
-				</div>
-			</div>
-			<p id="info-text-mobile">Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. Choose a position to start your path.</p>
+	<div>
+		<div id="title-container">
+			<h1>Choose Your Path</h1>
 		</div>
-		<div id="menu-desktop">
-			<div id="info-box-desktop">
-				<p id="info-text-desktop">Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. <br><br>Choose a position to start your path.</p>
+		<div id="menu-graphic-container">
+			<div id="menu-mobile">
+				<div id="options">
+					<div id="options1">
+						<h3 class="options-title">SHOW</h3>
+						<label class="radiobutton-container radio-dots">Individual Positions
+						  <input type="checkbox" class="button-dots">
+						  <span class="checkmark checked"></span>
+						</label>
+						<label class="radiobutton-container radio-heatmap">Positional Heat Map
+						  <input type="checkbox" class="button-heatmap">
+						  <span class="checkmark"></span>
+						</label>
+						<label class="radiobutton-container radio-winrate">Win Rate Heat Map
+						  <input type="checkbox" class="button-winrate">
+						  <span class="checkmark"></span>
+						</label>
+					</div>
+					<div id="options2">
+						<h3 class="options-title">TEAM</h3>
+						<label class="radiobutton-container radio-blue">Blue
+						  <input type="checkbox" class="button-blue">
+						  <span class="checkmark checked"></span>
+						</label>
+						<label class="radiobutton-container radio-red">Red
+						  <input type="checkbox" class="button-red">
+						  <span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="heatmap-legend" id="heatmap-legend-mobile">
+						<h3 class="options-title" id="options-title-mobile">HEAT MAP LEGEND</h3>
+						<svg class="svg-heatmapLegend" id="svg-heatmapLegend-mobile"></svg>
+					</div>
+				</div>
+				<p id="info-text-mobile">Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. Choose a position to start your path.</p>
 			</div>
-			<div id="options">
-				<div id="options1">
-					<h3 class="options-title">SHOW</h3>
-					<label class="radiobutton-container radio-dots">Individual Positions
-					  <input type="checkbox" class="button-dots">
-					  <span class="checkmark checked"></span>
-					</label>
-					<label class="radiobutton-container radio-heatmap">Positional Heat Map
-					  <input type="checkbox" class="button-heatmap">
-					  <span class="checkmark"></span>
-					</label>
-					<label class="radiobutton-container radio-winrate">Win Rate Heat Map
-					  <input type="checkbox" class="button-winrate">
-					  <span class="checkmark"></span>
-					</label>
+			<div id="menu-desktop">
+				<div id="info-box-desktop">
+					<p id="info-text-desktop">Each point shows the position of a jungler at 2 minutes in a Diamond+ NA solo queue game. <br><br>Choose a position to start your path.</p>
 				</div>
-				<div id="options2">
-					<h3 class="options-title">TEAM</h3>
-					<label class="radiobutton-container radio-blue">Blue
-					  <input type="checkbox" class="button-blue">
-					  <span class="checkmark checked"></span>
-					</label>
-					<label class="radiobutton-container radio-red">Red
-					  <input type="checkbox" class="button-red">
-					  <span class="checkmark"></span>
-					</label>
-				</div>
-				<div class="heatmap-legend" id="heatmap-legend-desktop">
-					<h3 class="options-title" id="options-title-desktop">HEAT MAP LEGEND</h3>
-					<svg class="svg-heatmapLegend" id="svg-heatmapLegend-desktop"></svg>
-				</div>
-			</div>
-		</div>
-		<div id="main">
-			<div id="breadcrumbs-back-container">
-				<div id="breadcrumb-container">
-					<button type="button" class="breadcrumb" id="button-min2" value=2></button>
-					<i class="arrow right breadcrumbArrow" id="arrow-1"></i>
-					<button type="button" class="breadcrumb" id="button-min3" value=3></button>
-					<i class="arrow right breadcrumbArrow" id="arrow-2"></i>
-					<button type="button" class="breadcrumb" id="button-min4" value=4></button>
-				</div>
-				<div id="back-container">
-					<button type="button" id="button-back"><i class="arrow left"></i> BACK</button>
-					<button type="button" id="button-reset">RESET</button>
+				<div id="options">
+					<div id="options1">
+						<h3 class="options-title">SHOW</h3>
+						<label class="radiobutton-container radio-dots">Individual Positions
+						  <input type="checkbox" class="button-dots">
+						  <span class="checkmark checked"></span>
+						</label>
+						<label class="radiobutton-container radio-heatmap">Positional Heat Map
+						  <input type="checkbox" class="button-heatmap">
+						  <span class="checkmark"></span>
+						</label>
+						<label class="radiobutton-container radio-winrate">Win Rate Heat Map
+						  <input type="checkbox" class="button-winrate">
+						  <span class="checkmark"></span>
+						</label>
+					</div>
+					<div id="options2">
+						<h3 class="options-title">TEAM</h3>
+						<label class="radiobutton-container radio-blue">Blue
+						  <input type="checkbox" class="button-blue">
+						  <span class="checkmark checked"></span>
+						</label>
+						<label class="radiobutton-container radio-red">Red
+						  <input type="checkbox" class="button-red">
+						  <span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="heatmap-legend" id="heatmap-legend-desktop">
+						<h3 class="options-title" id="options-title-desktop">HEAT MAP LEGEND</h3>
+						<svg class="svg-heatmapLegend" id="svg-heatmapLegend-desktop"></svg>
+					</div>
 				</div>
 			</div>
-			<div id="graphic">
-				<div class="img-overlay-container">
-					<div id="heatmap-container"></div>
-					<div id="winrate-blue-container"></div>
-					<div id="winrate-red-container"></div>
-					<img src="SRFull.png"></img>
-					<svg id="graphic-svg"></svg>
-					<div class="spinner" id="loading-spinner">
-					  <div class="double-bounce1"></div>
-					  <div class="double-bounce2"></div>
+			<div id="main">
+				<div id="breadcrumbs-back-container">
+					<div id="breadcrumb-container">
+						<button type="button" class="breadcrumb" id="button-min2" value=2></button>
+						<i class="arrow right breadcrumbArrow" id="arrow-1"></i>
+						<button type="button" class="breadcrumb" id="button-min3" value=3></button>
+						<i class="arrow right breadcrumbArrow" id="arrow-2"></i>
+						<button type="button" class="breadcrumb" id="button-min4" value=4></button>
+					</div>
+					<div id="back-container">
+						<button type="button" id="button-back"><i class="arrow left"></i> BACK</button>
+						<button type="button" id="button-reset">RESET</button>
+					</div>
+				</div>
+				<div id="graphic">
+					<div class="img-overlay-container">
+						<div id="heatmap-container"></div>
+						<div id="winrate-blue-container"></div>
+						<div id="winrate-red-container"></div>
+						<img src="SRFull.png"></img>
+						<svg id="graphic-svg"></svg>
+						<div class="spinner" id="loading-spinner">
+						  <div class="double-bounce1"></div>
+						  <div class="double-bounce2"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="presets">
+				<h3 class="options-title" id="preset-text">EXPLORE COMMON JUNGLE PATHS</h3>
+				<div id="preset-box-blue-container">
+					<div class="preset-box" id="preset-box-blue1">
+						<p class="preset-name preset-name-blue" id="preset-name-blue">Full Clear</p>
+						<img src="icons/blue-fullclear.png" class="preset-icon"></img>
+					</div>
+					<div class="preset-box" id="preset-box-blue2">
+						<p class="preset-name preset-name-blue" id="preset-name-blue">Vertical</p>
+						<img src="icons/blue-vertical.png" class="preset-icon"></img>
+					</div>
+				</div>
+				<div id="preset-box-red-container">
+					<div class="preset-box" id="preset-box-red1">
+						<p class="preset-name preset-name-red" id="preset-name-red">Full Clear</p>
+						<img src="icons/red-fullclear.png" class="preset-icon"></img>
+					</div>
+					<div class="preset-box" id="preset-box-red2">
+						<p class="preset-name preset-name-red" id="preset-name-red">Vertical</p>
+						<img src="icons/red-vertical.png" class="preset-icon"></img>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="presets">
-			<h3 class="options-title" id="preset-text">EXPLORE COMMON JUNGLE PATHS</h3>
-			<div id="preset-box-blue-container">
-				<div class="preset-box" id="preset-box-blue1">
-					<p class="preset-name preset-name-blue" id="preset-name-blue">Full Clear</p>
-					<img src="icons/blue-fullclear.png" class="preset-icon"></img>
-				</div>
-				<div class="preset-box" id="preset-box-blue2">
-					<p class="preset-name preset-name-blue" id="preset-name-blue">Vertical</p>
-					<img src="icons/blue-vertical.png" class="preset-icon"></img>
-				</div>
-			</div>
-			<div id="preset-box-red-container">
-				<div class="preset-box" id="preset-box-red1">
-					<p class="preset-name preset-name-red" id="preset-name-red">Full Clear</p>
-					<img src="icons/red-fullclear.png" class="preset-icon"></img>
-				</div>
-				<div class="preset-box" id="preset-box-red2">
-					<p class="preset-name preset-name-red" id="preset-name-red">Vertical</p>
-					<img src="icons/red-vertical.png" class="preset-icon"></img>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id="faq">
+		<div id="faq">
 		<h3 id="faq-title">Frequently Asked Questions</h3>
 		<div class="faq-item">
 			<span class="faq-question">What am I looking at?</span>
@@ -180,6 +184,7 @@
 			<span class="faq-question">Why does the win rate Heatmap get washed out in low sample size regions?</span>
 			<p class="faq-answer">As an example, think about a region where only two junglers passed through. If both junglers won their games, then the win rate of that region would be 100% and it would overwhelm the rest of colors on the map even though we don’t think we can draw meaningful conclusions from two data points. To combat this, we bumped the win rates of all regions to be closer to 50% than they actually were, but made it so this “shrinkage” towards 50% didn’t apply as much to large sample size regions. This way, the colors correspond to more realistic estimates of win rates in each region. For those of you who know a bit about Bayesian statistics, we used a Beta Binomial model. In essence, this method normalizes most low sample size regions to be around 50% without drastically impacting the win rates calculated in higher sample size regions. </p>
 		</div>
+	</div>
 	</div>
 
   <script src="https://d3js.org/d3.v4.min.js"></script>

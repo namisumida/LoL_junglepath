@@ -32,6 +32,9 @@ $purple: #7D6199;
 $lightGray: #9F9EA6;
 $maxMapWidth: 512px;
 
+#title-container {
+  margin-bottom: 30px;
+}
 // OPTIONS/MENU AREA
 .options-title {
   margin: 0;
@@ -100,6 +103,11 @@ i {
   display: inline-block;
   padding: 3px;
 }
+h1 {
+  font-family: radnika-black;
+  font-size: 30px;
+  text-align: center;
+}
 #button-reset {
   margin-left: 5px;
   margin-top: 5px;
@@ -152,7 +160,6 @@ i {
     display: flex;
     max-width: 1000px;
     margin: auto;
-    margin-top: 50px;
   }
   #breadcrumb-container {
     height: 35px;
