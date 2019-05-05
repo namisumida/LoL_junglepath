@@ -102,7 +102,7 @@ function init() {
         '1': d3.rgb(128,0,0)
       }
     });
-    heatmapInstance.setDataMax(195);
+    heatmapInstance.setDataMax(currHeatmapData.max);
     heatmapInstance.setDataMin(0);
     /* TO FIND MAX WIN RATE HEAT MAP VALUE. RUN THIS ON BLUE AND RED NODE LISTS. RED IS 9.57 AND BLUE IS 11.5.
     var maxList = [];
@@ -371,7 +371,7 @@ function init() {
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") {
       heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(195);
+      heatmapInstance.setDataMax(currHeatmapData.max);
       heatmapInstance.setDataMin(0);
     }
     else {
@@ -616,7 +616,7 @@ function init() {
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") {
         heatmapInstance.setData(currHeatmapData);
-        heatmapInstance.setDataMax(195);
+        heatmapInstance.setDataMax(currHeatmapData.max);
         heatmapInstance.setDataMin(0);
       }
       else {
@@ -642,7 +642,7 @@ function init() {
       if (currDisplay == "dots") { plotPositions(currPositionPaths); }
       else if (currDisplay == "heatmap") {
         heatmapInstance.setData(currHeatmapData);
-        heatmapInstance.setDataMax(195);
+        heatmapInstance.setDataMax(currHeatmapData.max);
         heatmapInstance.setDataMin(0);
       }
       else {
@@ -757,7 +757,7 @@ function init() {
     if (currDisplay == "dots") { plotPositions(currPositionPaths); }
     else if (currDisplay == "heatmap") {
       heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(195);
+      heatmapInstance.setDataMax(currHeatmapData.max);
       heatmapInstance.setDataMin(0);
     }
     else {
@@ -795,7 +795,7 @@ function init() {
     else if (currDisplay == "heatmap") {
       // plot heatmap
       heatmapInstance.setData(currHeatmapData);
-      heatmapInstance.setDataMax(195);
+      heatmapInstance.setDataMax(currHeatmapData.max);
       heatmapInstance.setDataMin(0);
       // Remove dots
       svg.selectAll(".pathPoints").remove();
