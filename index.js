@@ -707,7 +707,7 @@ function init() {
   }; // end formatWinrateData
   // Draw a heatmap legend
   function drawHeatmapLegend(type) {
-    if (type=="heatmap") { var legendLabels = ["High concentration", "", "Low concentration"]; }
+    if (type=="heatmap") { var legendLabels = ["High", "", "Low"]; }
     else { var legendLabels = ["70%", "50%", "30%"]; }
     if (w>mobileWidthMax) {
       var svg_legend = svg_heatmapLegend_desktop;
