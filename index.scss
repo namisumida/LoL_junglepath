@@ -178,12 +178,11 @@ h1 {
     font-family: stratum-medium;
     cursor: pointer;
   }
-  #presets {
+  #preset-winrate {
     position: relative;
     margin: auto;
     margin-top: 45px;
     max-width: 100px;
-    height: 530px;
   }
   #preset-text {
     text-align: center;
@@ -222,8 +221,18 @@ h1 {
     width: 50px;
     margin-top: 5px;
   }
-  .preset-box-clicked {
-    // TODO: find a good selected style
+  #winrate {
+    display: none;
+  }
+  #current-winrate-title {
+    text-align: center;
+  }
+  #current-winrate {
+    font-family: stratum-bold;
+    text-align: center;
+    font-size: 18px;
+    margin-top: 8px;
+    color: $purple;
   }
   #menu-desktop {
     position: relative;
@@ -275,7 +284,7 @@ h1 {
   #breadcrumb-container {
     display: none;
   }
-  #presets {
+  #preset-winrate {
     display: none;
   }
   #info-text-mobile {
