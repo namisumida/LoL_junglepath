@@ -783,6 +783,7 @@ function init() {
   }; // end teamButtonClick
   function switchView(view) {
     currDisplay = view;
+    generateInstructions();
     if (currDisplay == "dots") {
       // Plot dots
       plotPositions(currPositionPaths);
