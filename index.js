@@ -200,7 +200,7 @@ function init() {
   var numRowBuckets = 30;
   var bucketWidth = document.getElementById("graphic").getBoundingClientRect().height/numRowBuckets;
   // Variables to store
-  var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, numBuckets, currMinute, selectedNodesList;
+  var currTeam, currNodeIndices, currPositionPaths, currWinrateHeatmapData, currHeatmapData, heatmapInstance, radius, currMinute, selectedNodesList;
   var currTeam = "blue"; // default
   var currDisplay = "dots"; // default
   var mobileWidthMax = 869; // max width for showing three column view
