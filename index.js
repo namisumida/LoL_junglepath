@@ -985,7 +985,9 @@ function init() {
       }
     }
   }; // end generateInstructions
-
+  function isMobileDevice() {
+      return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+  };
   reset();// Initial settings
   setup();// Create elements for initial load
   buttonClicks(); // allow button clicks
@@ -1007,8 +1009,10 @@ function init() {
     })
   }; // end for loop
 
-  // Resizing window
-  window.addEventListener("resize", resize);
+  // Resizing window on desktop
+  if (!isMobileDevice()) {
+    window.addEventListener("resize", resize);
+  }
 }; // end init function
 ////////////////////////////////////////////////////////////////////////////////////
 // Load data
@@ -1051,7 +1055,7 @@ d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
             dataset_rPathList = data_rPathList;
 
             init();
-            document.getElementById("loading-spinner").style.display = "none"; // make the loading icon disappear
+            document.getElementById("loading-container").style.display = "none"; // make the loading icon disappear
 
           });
         });
