@@ -189,8 +189,6 @@ h1 {
     width: 90px;
     margin-bottom: 20px;
     font-size: 11px;
-    margin-left: 0;
-    margin-right: 0.5em;
   }
   .preset-box {
     width: 90px;
@@ -226,6 +224,8 @@ h1 {
   }
   #current-winrate-title {
     text-align: center;
+    margin-left: 2px;
+    margin-right: 2px;
   }
   #current-winrate {
     font-family: stratum-bold;
