@@ -1055,8 +1055,8 @@ d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
             dataset_rPathList = data_rPathList;
 
             init();
-            document.getElementById("loading-container").style.display = "none"; // make the loading icon disappear
-
+            document.getElementById("loading-spinner").style.display = "none"; // make the loading icon disappear
+            document.getElementById("load-text").style.display = "none";
           });
         });
       });

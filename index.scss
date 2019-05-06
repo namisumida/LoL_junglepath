@@ -340,30 +340,33 @@ h1 {
   width: 100%;
   height: 100%;
 }
-#loading-container {
-  position: absolute;
-  top: 40%;
-  left: 30%;
-  height: 55px;
-}
 #load-text {
   font-family: stratum-medium;
-  font-size: 17px;
+  font-size: 20px;
   text-align: center;
-  position: relative;
-  top: 50%;
-  background: white;
+  position: absolute;
+  top: 53%;
+  margin-top: 10px;
+  left: 25%;
 }
-.double-bounce1, .double-bounce2 {
+.spinner {
   width: 40px;
   height: 40px;
+  position: absolute;
+  top: 46%;
+  left: 46%;
+}
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   background-color: #ADADAD;
   opacity: 0.6;
   position: absolute;
+  top: 0;
+  left: 0;
   -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
   animation: sk-bounce 2.0s infinite ease-in-out;
-  left: 45%;
 }
 .double-bounce2 {
   -webkit-animation-delay: -1.0s;
@@ -569,5 +572,8 @@ h1 {
   }
   .faq-answer {
     font-size: 13px;
+  }
+  #load-text {
+    font-size: 14px;
   }
 }
