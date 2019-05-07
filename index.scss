@@ -96,6 +96,7 @@ $maxMapWidth: 512px;
   font-family: stratum-bold;
   color: $lightGray;
   cursor: pointer;
+  background-color: white;
 }
 i {
   border: solid $lightGray;
@@ -120,6 +121,7 @@ p {
   font-family: stratum-bold;
   color: $lightGray;
   cursor: pointer;
+  background-color: white;
 }
 .left {
   transform: rotate(135deg);
@@ -238,7 +240,7 @@ p {
     display: none;
     font-family: radnika-bold;
     text-align: center;
-    font-size: 50px;
+    font-size: 35px;
     margin-top: 0px;
     color: black;
   }
