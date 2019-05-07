@@ -39,7 +39,8 @@ $maxMapWidth: 512px;
 .options-title {
   margin: 0;
   margin-left: 0.5em;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
+  margin-top: 10px;
   color: $lightGray;
   font-family: stratum-medium;
   font-size: 11px;
@@ -195,14 +196,14 @@ p {
   #preset-text {
     text-align: center;
     width: 90px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     font-size: 11px;
   }
   .preset-box {
     width: 90px;
     height: 90px;
     margin: auto;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
     cursor: pointer;
   }
   .preset-name {
@@ -238,7 +239,7 @@ p {
     font-family: radnika-bold;
     text-align: center;
     font-size: 50px;
-    margin-top: 8px;
+    margin-top: 0px;
     color: black;
   }
   #menu-desktop {
