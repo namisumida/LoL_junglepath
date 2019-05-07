@@ -40,7 +40,6 @@ $maxMapWidth: 512px;
   margin: 0;
   margin-left: 0.5em;
   margin-bottom: 0px;
-  margin-top: 10px;
   color: $lightGray;
   font-family: stratum-medium;
   font-size: 11px;
@@ -233,6 +232,7 @@ p {
     text-align: center;
     margin-left: 5px;
     margin-right: 5px;
+    margin-top: 20px;
   }
   #current-winrate {
     display: none;
