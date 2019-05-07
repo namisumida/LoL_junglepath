@@ -26,8 +26,8 @@
   font-family: stratum-bold;
   src: url("fonts/Stratum2-Bold.otf");
 }
-$blueNode: #0023FF;
-$redNode: #EE0000;
+$blueNode: #0026E2;
+$redNode: #CC0000;
 $purple: #7D6199;
 $lightGray: #9F9EA6;
 $maxMapWidth: 512px;
@@ -54,7 +54,7 @@ $maxMapWidth: 512px;
   cursor: pointer;
   font-size: 15px;
   font-family: stratum-medium;
-  color: $purple;
+  color: black;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -75,12 +75,12 @@ $maxMapWidth: 512px;
   left: 0;
   height: 13px;
   width: 13px;
-  border: solid 2px $purple;
+  border: solid 2px black;
   border-radius: 50%;
 }
-/* When the radio button is checked, add a purple background */
+/* When the radio button is checked, add a black background */
 .checked {
-  background-color: $purple;
+  background-color: black;
 }
 #main {
   margin-top: 10px;
@@ -151,7 +151,7 @@ p {
 .legendText {
   font-family: stratum-medium;
   font-size: 11px;
-  fill: $purple;
+  fill: black;
 }
 #reload-text {
   font-family: stratum-medium;
@@ -238,7 +238,7 @@ p {
     text-align: center;
     font-size: 18px;
     margin-top: 8px;
-    color: $purple;
+    color: black;
   }
   #menu-desktop {
     position: relative;
