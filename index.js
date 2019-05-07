@@ -1035,8 +1035,7 @@ function rowConverterLookup(d) {
 }; // end rowconverter lookup
 function rowConverterPaths(d) {
   return {
-    path: d.pos.split("],[").map(function(d) { return d.replace("[[", "").replace("]]", "").replace("[", "").split(",").map(function(d) { return parseInt(d); }); }),
-    win: parseInt(d.win)
+    path: d.pos.split("],[").map(function(d) { return d.replace("[[", "").replace("]]", "").replace("[", "").split(",").map(function(d) { return parseInt(d); }); })
   };
 }; // end rowconverter paths
 d3.csv('Data/bLookupTable.csv', rowConverterLookup, function(data_bLookup) {
