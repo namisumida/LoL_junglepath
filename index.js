@@ -305,7 +305,8 @@ function init() {
   }; // end setup
   // Resent settings
   function reset() {
-    d3.select("#winrate").style("display", "none"); // hide winrate
+    d3.select("#current-winrate-title").style("display", "none"); // hide winrate
+    d3.select("#current-winrate").style("display", "none");
     d3.selectAll(".preset-box").classed("preset-box-clicked", false); // remove clicked class from presets
     currMinute = 2; // reset minute
     selectedNodesList = []; // reset selected nodes list
@@ -359,7 +360,8 @@ function init() {
     currMinute = d3.min([currMinute+1, 5], function(d) { return d; }); // don't want it to be larger than 5
     svg.select("#minuteMark").text("Minute " + currMinute);
     // Update current win rate
-    d3.select("#winrate").style("display", "block"); // show
+    d3.select("#current-winrate-title").style("display", "block"); // show winrate
+    d3.select("#current-winrate").style("display", "block");
     document.getElementById("current-winrate").innerHTML = currData.winRate + "%";
 
     // PATH POSITIONS
@@ -641,7 +643,8 @@ function init() {
     }
     // Else, you're back at min 2 and you need to plot those path points
     else { // back to the beginning
-      d3.select("#winrate").style("display", "none"); // hide winrate
+      d3.select("#current-winrate-title").style("display", "none"); // hide winrate
+      d3.select("#current-winrate").style("display", "none");
       currPositionPaths = firstRow.pathIndices.map(i => dataset_path[i])
       currHeatmapData = formatHeatmapData(firstRow.heatMap);
       currWinrateHeatmapData = formatWinrateData(firstRow.winHeatMap);

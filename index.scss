@@ -189,7 +189,7 @@ p {
     position: relative;
     margin: auto;
     margin-top: 45px;
-    max-width: 100px;
+    width: 100px;
   }
   #preset-text {
     text-align: center;
@@ -226,15 +226,14 @@ p {
     width: 50px;
     margin-top: 5px;
   }
-  #winrate {
-    display: none;
-  }
   #current-winrate-title {
+    display: none;
     text-align: center;
-    margin-left: 2px;
-    margin-right: 2px;
+    margin-left: 5px;
+    margin-right: 5px;
   }
   #current-winrate {
+    display: none;
     font-family: stratum-bold;
     text-align: center;
     font-size: 18px;
