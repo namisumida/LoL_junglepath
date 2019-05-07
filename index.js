@@ -817,11 +817,11 @@ function init() {
       // Show heatmap legend
       if (w>mobileWidthMax) {
         d3.select("#heatmap-legend-desktop").style("display", "block");
-        d3.select("#options-title-desktop").text("FREQUENCY OF JUNGLERS");
+        d3.select("#options-title-desktop").text("CONCENTRATION OF JUNGLERS");
       }
       else {
         d3.select("#heatmap-legend-mobile").style("display", "block");
-        d3.select("#options-title-mobile").text("FREQUENCY OF JUNGLERS");
+        d3.select("#options-title-mobile").text("CONCENTRATION OF JUNGLERS");
       }// mobile
       drawHeatmapLegend(currDisplay);
     }
